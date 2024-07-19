@@ -13,7 +13,7 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 const Admin = () => {
   return (
     <>
-      <h1>Learner Dashboard</h1>
+      <h1>Admin Dashboard</h1>
       <Box
         sx={{
           display: "flex",

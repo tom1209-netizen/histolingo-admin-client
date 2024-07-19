@@ -21,6 +21,8 @@ import { mainListItems } from "./SidebarListItems";
 import Avatar from "@mui/material/Avatar";
 import { grey, indigo } from "@mui/material/colors";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
+import { Outlet } from "react-router-dom";
+import AvatarMenu from "./AvatarMenu";
 
 function Copyright(props: any) {
   return (
@@ -93,11 +95,8 @@ const Drawer = styled(MuiDrawer, {
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
-interface DashboardProps {
-  children?: React.ReactNode; // Define children prop type
-}
 
-const Dashboard: React.FC<DashboardProps> = ({ children }) => {
+const Dashboard: React.FC = () => {
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -138,9 +137,7 @@ const Dashboard: React.FC<DashboardProps> = ({ children }) => {
             >
               <span style={{ fontSize: "32px" }}>🇺🇸</span>
             </IconButton>
-            <IconButton color="inherit">
-              <Avatar sx={{ bgcolor: grey[100], color: grey[800] }}>LT</Avatar>
-            </IconButton>
+            <AvatarMenu />
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -173,7 +170,7 @@ const Dashboard: React.FC<DashboardProps> = ({ children }) => {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            {children}
+            <Outlet />
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
