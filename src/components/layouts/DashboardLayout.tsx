@@ -23,6 +23,9 @@ import { grey, indigo } from "@mui/material/colors";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import { Outlet } from "react-router-dom";
 import AvatarMenu from "./AvatarMenu";
+import Chip from "@mui/material/Chip";
+import { Language } from "@mui/icons-material";
+import LanguageSelect from "./LanguageSelect";
 
 function Copyright(props: any) {
   return (
@@ -106,7 +109,7 @@ const Dashboard: React.FC = () => {
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute" open={open} sx={{zIndex: 1}}>
           <Toolbar
             sx={{
               pr: "24px", // keep right padding when drawer closed
@@ -125,7 +128,7 @@ const Dashboard: React.FC = () => {
               <MenuIcon />
             </IconButton>
             <Box sx={{ flexGrow: 1 }}></Box>
-            <IconButton
+            {/* <IconButton
               sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -136,7 +139,8 @@ const Dashboard: React.FC = () => {
               }}
             >
               <span style={{ fontSize: "32px" }}>🇺🇸</span>
-            </IconButton>
+            </IconButton> */}
+            <LanguageSelect/>
             <AvatarMenu />
           </Toolbar>
         </AppBar>
