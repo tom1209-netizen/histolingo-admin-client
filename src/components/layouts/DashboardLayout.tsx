@@ -109,10 +109,10 @@ const Dashboard: React.FC = () => {
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open} sx={{zIndex: 1}}>
+        <AppBar position="absolute" open={open} sx={{ zIndex: 1 }}>
           <Toolbar
             sx={{
-              pr: "24px", // keep right padding when drawer closed
+              pr: "24px",
             }}
           >
             <IconButton
@@ -128,19 +128,7 @@ const Dashboard: React.FC = () => {
               <MenuIcon />
             </IconButton>
             <Box sx={{ flexGrow: 1 }}></Box>
-            {/* <IconButton
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: grey[800],
-                borderRadius: "12px",
-                marginRight: "12px",
-              }}
-            >
-              <span style={{ fontSize: "32px" }}>🇺🇸</span>
-            </IconButton> */}
-            <LanguageSelect/>
+            <LanguageSelect />
             <AvatarMenu />
           </Toolbar>
         </AppBar>
@@ -165,7 +153,7 @@ const Dashboard: React.FC = () => {
           sx={{
             backgroundColor: (theme) =>
               theme.palette.mode === "light"
-                ? theme.palette.grey[100]
+                ? theme.palette.grey[50]
                 : theme.palette.grey[900],
             flexGrow: 1,
             height: "100vh",
