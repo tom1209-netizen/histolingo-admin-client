@@ -26,6 +26,7 @@ import AvatarMenu from "./AvatarMenu";
 import Chip from "@mui/material/Chip";
 import { Language } from "@mui/icons-material";
 import LanguageSelect from "./LanguageSelect";
+import theme from "../../theme/GlobalCustomTheme";
 
 function Copyright(props: any) {
   return (
@@ -106,10 +107,10 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open} sx={{ zIndex: 1 }}>
+        <AppBar position="absolute" open={open} sx={{ zIndex: 50 }}>
           <Toolbar
             sx={{
               pr: "24px",
