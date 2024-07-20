@@ -13,6 +13,7 @@ import Feedback from "./pages/Feedback";
 import Topic from "./pages/Topic";
 import NotFound from "./pages/NotFound";
 import MyAccount from "./pages/MyAccount";
+import AddAdmin from "./pages/admin/AddAdmin";
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,8 @@ const App: React.FC = () => {
         <Route element={<Dashboard />}>
           <Route path="/" element={<Admin />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/addadmin" element={<AddAdmin />} />
+          
           <Route path="/learner" element={<Learner />} />
           <Route path="/country" element={<Country />} />
           <Route path="/topic" element={<Topic />} />

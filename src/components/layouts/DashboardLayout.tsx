@@ -78,6 +78,7 @@ const Drawer = styled(MuiDrawer, {
     position: "relative",
     whiteSpace: "nowrap",
     width: drawerWidth,
+    backgroundColor: grey[100],
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -154,7 +155,7 @@ const Dashboard: React.FC = () => {
           sx={{
             backgroundColor: (theme) =>
               theme.palette.mode === "light"
-                ? theme.palette.grey[50]
+                ? "white"
                 : theme.palette.grey[900],
             flexGrow: 1,
             height: "100vh",
