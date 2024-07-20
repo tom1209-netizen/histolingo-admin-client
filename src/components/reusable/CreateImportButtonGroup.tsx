@@ -7,7 +7,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 const CreateImportButtonGroup = () => {
   return (
     <Box sx={{ display: "flex", gap: 2 }}>
-      <Button variant="outlined">
+      <Button variant="outlined" color="primary">
         <PostAddIcon sx={{ marginRight: "4px" }} />
         Import
       </Button>
