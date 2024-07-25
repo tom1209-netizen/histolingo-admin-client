@@ -3,141 +3,83 @@ import { createTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@mui/system";
 import { CssBaseline } from "@mui/material";
 import { Grid } from "@mui/material";
-import { OutlinedInput } from "@mui/material";
 import { FormLabel } from "@mui/material";
-import { Select } from "@mui/material";
-import { MenuItem } from "@mui/material";
 import { styled } from "@mui/system";
 import getFormTheme from "../../theme/FormTheme";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
+import EmailInputField from "../../components/formComponents/EmailInputField";
+import { useForm } from "react-hook-form";
+import theme from "../../theme/GlobalCustomTheme";
+import NameInputField from "../../components/formComponents/NameInputField";
+import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
+import SelectInputField from "../../components/formComponents/SelectInputField";
+import { roleOptions } from "../../data/roleOptions";
+
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
   flexDirection: "column",
 }));
 
-const roleOptions = [
-  { value: "1", label: "Admin" },
-  { value: "2", label: "Analyst" },
-  { value: "3", label: "Tester" },
-];
+interface FormValues {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    adminName: string;
+    selectRole: string;
+    selectStatus: string;
+  }
 
-const statusOptions = [
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
-];
+// const formTheme = createTheme(getFormTheme("light"));
 
-const formTheme = createTheme(getFormTheme("light"));
 const AdminForm = () => {
-  const [role, setRole] = React.useState("");
-  const [status, setStatus] = React.useState("active");
+    const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({mode: "onChange"});
 
-  const handleRoleChange = (event) => {
-    setRole(event.target.value);
-  };
-
-  const handleStatusChange = (event) => {
-    setStatus(event.target.value);
-  };
+    const onSubmit =  (data: FormValues) => {
+        console.log("Hi");
+    }
 
   return (
-    <ThemeProvider theme={formTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <h1>Create an admin</h1>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} component="form" noValidate
+            onSubmit={handleSubmit(onSubmit)}>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="first-name" required>
             First name (max 50 characters)
           </FormLabel>
-          <OutlinedInput
-            id="first-name"
-            name="first-name"
-            type="name"
-            placeholder="John"
-            autoComplete="first name"
-            required
-          />
+          <NameInputField control={control} errors={errors} fieldLabel="firstName" />
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="last-name" required>
             Last name (max 50 characters)
           </FormLabel>
-          <OutlinedInput
-            id="last-name"
-            name="last-name"
-            type="last-name"
-            placeholder="Snow"
-            autoComplete="last name"
-            required
-          />
+          <NameInputField control={control} errors={errors} fieldLabel="lastName" />
         </FormGrid>
-
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="admin-name" required>
             Admin name
           </FormLabel>
-          <OutlinedInput
-            id="admin-name"
-            name="admin-name"
-            type="admin-name"
-            placeholder="Suggested name"
-            autoComplete="admin name"
-            required
-          />
+          <NameInputField control={control} errors={errors} fieldLabel="adminName" />
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="email" required>
             Email
           </FormLabel>
-          <OutlinedInput
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Email"
-            autoComplete="email"
-            required
-          />
+          <EmailInputField control={control} errors={errors} />
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="role" required>
             Role
           </FormLabel>
-          <Select
-            id="role"
-            name="role"
-            value={role}
-            onChange={handleRoleChange}
-            label="role"
-            placeholder="Select a role"
-            autoComplete=""
-            required
-          >
-            {roleOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
+          <SelectInputField control={control} errors={errors} name="selectRole" label="Select role" options={roleOptions}/>
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
             Status
           </FormLabel>
-          <Select
-            id="status"
-            name="status"
-            value={status}
-            onChange={handleStatusChange}
-            label="status"
-            placeholder="Select a status"
-            autoComplete=""
-            required
-          >
-            {statusOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
+          <SelectStatusInputField control={control} errors={errors} />
         </FormGrid>
         <FormGrid item>
           <CreateButtonGroup createPath="/admin" cancelPath="/admin" />
