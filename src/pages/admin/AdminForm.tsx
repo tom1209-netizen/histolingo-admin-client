@@ -1,16 +1,15 @@
-import { Box, CssBaseline } from "@mui/material";
 import React from "react";
-import { styled } from "@mui/system";
+import { createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/system";
+import { CssBaseline } from "@mui/material";
 import { Grid } from "@mui/material";
 import { OutlinedInput } from "@mui/material";
 import { FormLabel } from "@mui/material";
-import { FormControlLabel } from "@mui/material";
-import { Checkbox } from "@mui/material";
-import { ThemeProvider } from "@emotion/react";
-import getFormTheme from "../../theme/FormTheme";
-import { createTheme } from "@mui/material/styles";
 import { Select } from "@mui/material";
 import { MenuItem } from "@mui/material";
+import { styled } from "@mui/system";
+import getFormTheme from "../../theme/FormTheme";
+import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
   flexDirection: "column",
@@ -28,7 +27,7 @@ const statusOptions = [
 ];
 
 const formTheme = createTheme(getFormTheme("light"));
-const AddAdmin = () => {
+const AdminForm = () => {
   const [role, setRole] = React.useState("");
   const [status, setStatus] = React.useState("active");
 
@@ -104,7 +103,7 @@ const AddAdmin = () => {
           </FormLabel>
           <Select
             id="role"
-            name="zip"
+            name="role"
             value={role}
             onChange={handleRoleChange}
             label="role"
@@ -140,9 +139,12 @@ const AddAdmin = () => {
             ))}
           </Select>
         </FormGrid>
+        <FormGrid item>
+          <CreateButtonGroup createPath="/admin" cancelPath="/admin" />
+        </FormGrid>
       </Grid>
     </ThemeProvider>
   );
 };
 
-export default AddAdmin;
+export default AdminForm;
