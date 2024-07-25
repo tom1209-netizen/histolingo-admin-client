@@ -9,6 +9,7 @@ import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
+import MilitaryTechOutlinedIcon from '@mui/icons-material/MilitaryTechOutlined';
 import { Link } from 'react-router-dom';
 
 export const mainListItems = (
@@ -19,6 +20,12 @@ export const mainListItems = (
         <PersonOutlineOutlinedIcon />
       </ListItemIcon>
       <ListItemText primary="Admin" />
+    </ListItemButton>
+    <ListItemButton component={Link} to="/role">
+      <ListItemIcon>
+        <MilitaryTechOutlinedIcon />
+      </ListItemIcon>
+      <ListItemText primary="Role" />
     </ListItemButton>
     <ListItemButton component={Link} to="/learner">
       <ListItemIcon>

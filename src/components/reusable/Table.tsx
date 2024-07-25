@@ -3,10 +3,10 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { auto } from "@popperjs/core";
 import { createTheme, Switch } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import { indigo } from "@mui/material/colors";
 import { ThemeProvider } from "@mui/system";
 import { EditOutlined } from "@mui/icons-material";
 import theme from "../../theme/GlobalCustomTheme";
+
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },

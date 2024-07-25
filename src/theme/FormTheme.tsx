@@ -21,16 +21,16 @@ declare module '@mui/material/styles/createPalette' {
 }
 
 export const brand = {
-  50: '#F0F7FF',
-  100: '#CEE5FD',
-  200: '#9CCCFC',
-  300: '#55A6F6',
-  400: '#0A66C2',
-  500: '#0959AA',
-  600: '#064079',
-  700: '#033363',
-  800: '#02294F',
-  900: '#021F3B',
+  50: '#e8eaf6',
+  100: '#c5cae9',
+  200: '#9fa8da',
+  300: '#7986cb',
+  400: '#5c6bc0',
+  500: '#3f51b5',
+  600: '#3949ab',
+  700: '#303f9f',
+  800: '#283593',
+  900: '#1a237e',
 };
 
 export const secondary = {
@@ -604,6 +604,7 @@ export default function getFormTheme(mode: PaletteMode): ThemeOptions {
           }),
         },
       },
+
       MuiStepIcon: {
         variants: [
           {
