@@ -13,10 +13,10 @@ const CreateButtonGroup = ({ createPath, cancelPath }) => {
   };
   return (
     <Box sx={{ display: "flex", gap: 2 }}>
-      <Button variant="outlined" color="primary" onClick={handleCancelClick}>
+      <Button variant="outlined" color="primary" type="button">
         Cancel
       </Button>
-      <Button variant="contained" onClick={handleCreateClick}>
+      <Button variant="contained" type="submit">
         Create
       </Button>
     </Box>
