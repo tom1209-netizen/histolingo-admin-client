@@ -11,13 +11,23 @@ import { styled } from '@mui/system';
 import UnfoldMoreRoundedIcon from '@mui/icons-material/UnfoldMoreRounded';
 import { CssTransition } from '@mui/base/Transitions';
 import { PopupContext } from '@mui/base/Unstable_Popup';
+import { useTranslation } from 'react-i18next';
 
 export default function UnstyledSelectIntroduction() {
+  const { i18n } = useTranslation();
+
+  const handleChange = (event: React.SyntheticEvent<Element, Event> | null, value: unknown) => {
+    if (event !== null) {
+      const language = value as string;
+      i18n.changeLanguage(language);
+    }
+  };
+
   return (
-    <Select defaultValue={10}>
-      <Option value={10}>🇺🇸 English</Option>
-      <Option value={20}>🇻🇳 Vietnamese</Option>
-      <Option value={30}>🇨🇳 Chinese</Option>
+    <Select onChange={handleChange} defaultValue="en">
+      <Option value="en">🇺🇸 English</Option>
+      <Option value="vi">🇻🇳 Tiếng Việt</Option>
+      <Option value="ja">🇯🇵 日本語</Option>
     </Select>
   );
 }
@@ -130,7 +140,7 @@ const Listbox = styled('ul')(
   min-width: 150px;
   border-radius: 12px;
   overflow: auto;
-  z-index: 100;  
+  z-index: 1000;  
   outline: 0px; 
   background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
   border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
@@ -142,7 +152,7 @@ const Listbox = styled('ul')(
   .closed & {
     opacity: 0;
     transform: scale(0.95, 0.8);
-    z-index: 100;  
+    z-index: 1000;  
     transition: opacity 200ms ease-in, transform 200ms ease-in;
   }
   
@@ -233,5 +243,5 @@ const Option = styled(BaseOption)(
 );
 
 const Popup = styled('div')`
-  z-index: 1;
+  z-index: 100;
 `;

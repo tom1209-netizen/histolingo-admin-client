@@ -17,7 +17,6 @@ interface MultiSelectInputFieldProps {
   control: Control<any>;
   errors: FieldErrors<any>;
   name: string;
-  label: string;
   options: string[];
 }
 
@@ -49,14 +48,12 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
   control,
   errors,
   name,
-  label,
   options,
 }) => {
   const theme = useTheme();
 
   return (
     <FormControl fullWidth margin="normal" required error={!!errors[name]}>
-      <InputLabel>{label}</InputLabel>
       <Controller
         name={name}
         control={control}
@@ -69,9 +66,10 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
             <Select
               {...field}
               multiple
+              placeholder="Select privileges"
               value={field.value || []}
               onChange={(event) => field.onChange(event.target.value)}
-              input={<OutlinedInput id="select-multiple-chip" label={label} />}
+              input={<OutlinedInput id="select-multiple-chip" />}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value) => (

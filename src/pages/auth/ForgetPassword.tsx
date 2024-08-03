@@ -10,6 +10,9 @@ import { useNavigate } from "react-router-dom";
 import Copyright from "../../components/reusable/Copyright";
 import { useForm } from "react-hook-form";
 import EmailInputField from "../../components/formComponents/EmailInputField";
+import { forgetPassword } from "../../api/auth";
+import LanguageSelect from "../../components/layouts/LanguageSelect";
+import { useTranslation } from "react-i18next";
 
 interface FormValues {
   email: string;
@@ -21,14 +24,27 @@ export default function ForgetPassword() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
+  const navigate = useNavigate();
 
   const onSubmit = async (data: FormValues) => {
-    console.log(data);
+    try {
+      const response = await forgetPassword(data.email);
+      if (response.status === 200) {
+        alert('Password reset instructions sent to your email.');
+      } else {
+        alert('Failed to send password reset instructions. Please try again.');
+      }
+    } catch (error) {
+      console.error("Failed to send password reset instructions", error);
+      alert("Failed to send password reset instructions. Please try again.");
+    }
   };
-  const navigate = useNavigate();
+  
   const handleBackToLogin = () => {
     navigate("/login");
   };
+
+  const { t } = useTranslation();
 
   return (
     <ThemeProvider theme={theme}>
@@ -42,11 +58,14 @@ export default function ForgetPassword() {
             alignItems: "center",
           }}
         >
+           <Box sx={{position: "absolute", top: 16, right: 20}}>
+              <LanguageSelect />
+            </Box>
           <Typography component="h1" variant="h5">
-            Forgot password?
+          {t("forgetPassword.title")}
           </Typography>
           <Typography component="h2">
-            No worries, we will send you reset instructions.
+          {t("forgetPassword.instruction")}
           </Typography>
           <Box
             component="form"
@@ -56,7 +75,7 @@ export default function ForgetPassword() {
           >
             <EmailInputField control={control} errors={errors} />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-              Send link to reset password
+            {t("forgetPassword.sendLink")}
             </Button>
             <Button
               onClick={handleBackToLogin}
@@ -65,7 +84,7 @@ export default function ForgetPassword() {
               variant="outlined"
               sx={{ mt: 1, mb: 2 }}
             >
-              Back to log in
+               {t("forgetPassword.backToLogin")}
             </Button>
           </Box>
         </Box>

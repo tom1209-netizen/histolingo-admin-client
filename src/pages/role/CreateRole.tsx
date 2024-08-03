@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import RoleForm from "./RoleForm";
 
 const CreateRole = () => {
-  return <RoleForm />;
+  return <RoleForm typeOfForm="create"/>;
 };
 
 export default CreateRole;
