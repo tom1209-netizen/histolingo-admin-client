@@ -16,7 +16,6 @@ const Admin = () => {
   return (
     <>
       <h1>Admin Dashboard</h1>
-      <h2>Hello</h2>
       <Box
         sx={{
           display: "flex",
@@ -31,7 +30,7 @@ const Admin = () => {
         </Box>
         <CreateImportButtonGroup createPath="/createadmin" importPath="/" />
       </Box>
-      <DataTable />
+      {/* <DataTable  /> */}
     </>
   );
 };

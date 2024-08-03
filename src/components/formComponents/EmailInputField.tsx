@@ -1,6 +1,7 @@
 import React from 'react'
 import { TextField } from '@mui/material'
 import { Controller } from 'react-hook-form'
+import { useTranslation } from 'react-i18next';
 
 interface EmailInputFieldProps {
     control: any;
@@ -8,17 +9,17 @@ interface EmailInputFieldProps {
 }
 
 const EmailInputField: React.FC<EmailInputFieldProps> = ({ control, errors }) => {
-    
+  const { t } = useTranslation();
   return (
     <Controller
               name="email"
               control={control}
               defaultValue=""
               rules={{
-                required: 'Email is required',
+                required: t("validation.email.required"),
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address',
+                  message: t("validation.email.invalid"),
                 },
               }}
               render={({ field }) => (

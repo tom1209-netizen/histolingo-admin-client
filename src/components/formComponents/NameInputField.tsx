@@ -46,12 +46,13 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
       render={({ field }) => (
         <TextField
           {...field}
-          label={label}
+          placeholder="Enter role name"
           variant="outlined"
           error={!!errors[name]}
           helperText={(errors[name] as any)?.message || ''}
           fullWidth
           margin="normal"
+          inputProps={{ maxLength: 50 }}
         />
       )}
     />

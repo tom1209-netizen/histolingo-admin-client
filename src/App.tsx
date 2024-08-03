@@ -4,12 +4,12 @@ import Dashboard from "./components/layouts/DashboardLayout";
 import Admin from "./pages/admin/Admin";
 import Login from "./pages/auth/Login";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Learner from "./pages/Learner";
-import Country from "./pages/Country";
-import Test from "./pages/Test";
-import Question from "./pages/Question";
-import Feedback from "./pages/Feedback";
-import Topic from "./pages/Topic";
+import Learner from "./pages/learner/Learner";
+import Country from "./pages/country/Country";
+import Test from "./pages/playerTest/Test";
+import Question from "./pages/question/Question";
+import Feedback from "./pages/feedback/Feedback";
+import Topic from "./pages/topic/Topic";
 import NotFound from "./pages/NotFound";
 import MyAccount from "./pages/MyAccount";
 import CreateAdmin from "./pages/admin/CreateAdmin";
@@ -17,6 +17,10 @@ import ForgetPassword from "./pages/auth/ForgetPassword";
 import Role from "./pages/role/Role";
 import CreateRole from "./pages/role/CreateRole";
 import ResetPassword from "./pages/auth/ResetPassword";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import UpdateRole from "./pages/role/UpdateRole";
+
 
 const App: React.FC = () => {
   return (
@@ -33,6 +37,7 @@ const App: React.FC = () => {
           <Route path="/createadmin" element={<CreateAdmin />} />
 
           <Route path="/role" element={<Role />} />
+          <Route path="/role/:roleId" element={<UpdateRole />} />
           <Route path="/createrole" element={<CreateRole />} />
           <Route path="/learner" element={<Learner />} />
           <Route path="/country" element={<Country />} />
@@ -45,6 +50,7 @@ const App: React.FC = () => {
           {/* <Route path="/:type/:id" element={<Detail />} /> */}
         </Route>
       </Routes>
+      <ToastContainer /> 
     </BrowserRouter>
   );
 };

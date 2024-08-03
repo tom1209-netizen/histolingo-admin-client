@@ -9,6 +9,7 @@ import { InputLabel } from "@mui/material";
 interface SelectStatusProps {
   control: Control<any>;
   errors: FieldErrors<any>;
+  activeCompulsory: boolean;
 }
 
 const statusOptions = [
@@ -16,10 +17,9 @@ const statusOptions = [
   { value: "inactive", label: "Inactive" },
 ];
 
-const SelectStatusInputField: React.FC<SelectStatusProps> = ({ control, errors }) => {
+const SelectStatusInputField: React.FC<SelectStatusProps> = ({ control, errors, activeCompulsory}) => {
   return (
     <FormControl fullWidth margin="normal" required error={!!errors.status}>
-      <InputLabel>Status</InputLabel>
       <Controller
         name="status"
         control={control}
@@ -27,9 +27,10 @@ const SelectStatusInputField: React.FC<SelectStatusProps> = ({ control, errors }
         render={({ field }) => (
           <Select
             {...field}
-            label="Honey"
+            placeholder="Select status"
             onChange={(event) => field.onChange(event.target.value)}
             value={field.value || "active"} 
+            disabled={activeCompulsory}
           >
             {statusOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>

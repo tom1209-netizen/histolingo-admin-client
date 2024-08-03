@@ -1,6 +1,7 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface PasswordConfirmationInputFieldProps {
   control: any;
@@ -11,20 +12,21 @@ interface PasswordConfirmationInputFieldProps {
 const PasswordConfirmationInputField: React.FC<
   PasswordConfirmationInputFieldProps
 > = ({ control, errors, passwordValue }) => {
+  const { t } = useTranslation();
   return (
     <Controller
       name="passwordConfirmation"
       control={control}
       defaultValue=""
       rules={{
-        required: "Password confirmation is required",
-        validate: (value) => value === passwordValue || "Passwords must match",
+        required: t("validation.confirmPassword.required"),
+        validate: (value) => value === passwordValue || t("validation.confirmPassword.mustMatch"),
       }}
       render={({ field }) => (
         <TextField
           {...field}
           type="password"
-          label="Confirm Password"
+          label={t("validation.confirmPassword.label")}
           variant="outlined"
           error={!!errors.passwordConfirmation}
           helperText={

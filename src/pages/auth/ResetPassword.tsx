@@ -11,13 +11,16 @@ import Copyright from "../../components/reusable/Copyright";
 import { useForm } from "react-hook-form";
 import PasswordConfirmationInputField from "../../components/formComponents/PasswordConfirmInputField";
 import PasswordInputField from "../../components/formComponents/PasswordInputField";
-
+import { useTranslation } from "react-i18next";
+import LanguageSelect from "../../components/layouts/LanguageSelect";
+import { resetPassword } from "../../api/auth";
 interface FormValues {
   password: string;
-  confirmPassword: string;
+  passwordConfirmation: string;
 }
 
 export default function ResetPassword() {
+  const {t} = useTranslation();
   const {
     control,
     handleSubmit,
@@ -26,7 +29,22 @@ export default function ResetPassword() {
   } = useForm<FormValues>({ mode: "onChange" });
 
   const onSubmit = async (data: FormValues) => {
-    console.log(data);
+    try {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      const token: any = urlParams.get('token')
+      const userId: any = urlParams.get('id')
+      const response = await resetPassword(data.password, data.passwordConfirmation, token, userId);
+      if (response.status === 200) {
+        alert("Password reset successfully.");
+        navigate("/login");
+      } else {
+        alert("An error occurred. Please try again.");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      alert("An error occurred. Please try again.");
+    }
   };
   const navigate = useNavigate();
   const handleBackToLogin = () => {
@@ -45,10 +63,13 @@ export default function ResetPassword() {
             alignItems: "center",
           }}
         >
+          <Box sx={{position: "absolute", top: 16, right: 20}}>
+              <LanguageSelect />
+            </Box>
           <Typography component="h1" variant="h5">
-            Reset password
+            {t("resetPassword.title")}
           </Typography>
-          <Typography component="h2">Type in your new password</Typography>
+          <Typography component="h2">{t("resetPassword.instruction")}</Typography>
           <Box
             component="form"
             onSubmit={handleSubmit(onSubmit)}
@@ -62,7 +83,7 @@ export default function ResetPassword() {
               passwordValue={getValues("password")}
             />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-              Reset password
+            {t("resetPassword.resetPassword")}
             </Button>
             <Button
               onClick={handleBackToLogin}
@@ -71,7 +92,7 @@ export default function ResetPassword() {
               variant="outlined"
               sx={{ mt: 1, mb: 2 }}
             >
-              Back to log in
+              {t("resetPassword.backToLogin")}
             </Button>
           </Box>
         </Box>

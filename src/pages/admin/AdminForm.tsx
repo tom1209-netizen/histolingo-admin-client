@@ -13,7 +13,7 @@ import theme from "../../theme/GlobalCustomTheme";
 import NameInputField from "../../components/formComponents/NameInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import SelectInputField from "../../components/formComponents/SelectInputField";
-import { roleOptions } from "../../data/roleOptions";
+import { roleOptions } from "../../data/inputFieldOptions";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -27,17 +27,18 @@ interface FormValues {
     lastName: string;
     adminName: string;
     selectRole: string;
-    selectStatus: string;
   }
 
-// const formTheme = createTheme(getFormTheme("light"));
+  interface AdminFormProps {
+    typeOfForm: string;
+  }
 
-const AdminForm = () => {
+const AdminForm: React.FC<AdminFormProps> = ({typeOfForm}) => {
     const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({mode: "onChange"});
-
     const onSubmit =  (data: FormValues) => {
         console.log("Hi");
     }
+    const activeCompulsory = typeOfForm === "create";
 
   return (
     <ThemeProvider theme={theme}>
@@ -79,10 +80,10 @@ const AdminForm = () => {
           <FormLabel htmlFor="status" required>
             Status
           </FormLabel>
-          <SelectStatusInputField control={control} errors={errors} />
+          <SelectStatusInputField control={control} errors={errors} activeCompulsory={activeCompulsory} />
         </FormGrid>
         <FormGrid item>
-          <CreateButtonGroup createPath="/admin" cancelPath="/admin" />
+          {/* <CreateButtonGroup buttonName="Create"/> */}
         </FormGrid>
       </Grid>
     </ThemeProvider>

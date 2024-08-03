@@ -11,13 +11,13 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import theme from "../../theme/GlobalCustomTheme";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../api/loginApi"; 
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import en from "../../translations/en";
 import EmailInputField from "../../components/formComponents/EmailInputField";
 import PasswordInputField from "../../components/formComponents/PasswordInputField";
 import Copyright from "../../components/reusable/Copyright";
+import LanguageSelect from "../../components/layouts/LanguageSelect";
+import { login } from "../../api/auth";
 
 interface FormValues {
   email: string;
@@ -25,40 +25,30 @@ interface FormValues {
 }
 
 export default function Login() {
-  const { control, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
   const navigate = useNavigate();
 
-  const {t, i18n} = useTranslation();
+  const { t } = useTranslation();
 
   const onSubmit = async (data: FormValues) => {
     try {
-      console.log(data.email, data.password);
-
-    const response = await fetch("http://localhost:8000/admin/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: data.email,
-        password: data.password,
-      }),
-    });
-
-    const result = await response.json();
-    console.log(response, "in api");
-    console.log(result, "in result");
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    if (result.ok) {
-      navigate("/");
-    } else {
-      alert(`Login failed: ${result.message}`);
-      // change to toastify
-    }
+      const response = await login(data.email, data.password);
+      if (response.status === 200) {
+        console.log(response.data, "in result");
+        if (response.data.success) {
+          document.cookie = `accessToken=${response.data.data.accessToken};path=/`;
+          document.cookie = `refreshToken=${response.data.data.refreshToken};path=/`;
+          navigate("/");
+        } else {
+          alert(`Login failed: ${response.data.message}`);
+        }
+      } else {
+        alert("An error occurred. Please try again.");
+      }
     } catch (error) {
       console.error("An error occurred:", error);
       alert("An error occurred. Please try again.");
@@ -77,11 +67,14 @@ export default function Login() {
             alignItems: "center",
           }}
         >
+          <Box sx={{ position: "absolute", top: 16, right: 20 }}>
+            <LanguageSelect />
+          </Box>
           <Typography component="h2" variant="h6">
-            {t("Welcome")} back to Histolingo Admin!
+            {t("login.Welcome")}
           </Typography>
           <Typography component="h1" variant="h5">
-            Log in
+            {t("login.Log in")}
           </Typography>
           <Box
             component="form"
@@ -91,29 +84,23 @@ export default function Login() {
           >
             <EmailInputField control={control} errors={errors} />
             <PasswordInputField control={control} errors={errors} />
-
+            {/* 
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Log In
+              {t("login.Log in")}
             </Button>
-            <Button fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }} onClick={() => i18n.changeLanguage("en")}>Switch to English</Button>
-            <Button fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }} onClick={() => i18n.changeLanguage("vi")}>Switch to Vietnamese</Button>
             <Grid container>
               <Grid item xs>
-                <Link href="/resetpassword" variant="body2">
-                  Forgot password?
+                <Link href="/forgetpassword" variant="body2">
+                  {t("login.Forgot password")}
                 </Link>
               </Grid>
             </Grid>
