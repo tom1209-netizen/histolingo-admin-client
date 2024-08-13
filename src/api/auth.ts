@@ -1,9 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
 const domain_api = import.meta.env.VITE_DOMAIN_API
 
+interface RoleData {
+  name: string;
+  permissions: number[];
+}
+
 export const login = async (email: string, password: string): Promise<AxiosResponse<any>> => {
   try {
-    const response = await axios.post(`${domain_api}/admin/login`, {
+    const response = await axios.post(`${domain_api}/admins/login`, {
       email,
       password,
     });

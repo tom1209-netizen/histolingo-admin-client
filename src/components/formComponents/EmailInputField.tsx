@@ -25,7 +25,8 @@ const EmailInputField: React.FC<EmailInputFieldProps> = ({ control, errors }) =>
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Email"
+                  // label="Email"
+                  placeholder='Enter email'
                   variant="outlined"
                   error={!!errors.email}
                   helperText={errors.email ? errors.email.message : ''}

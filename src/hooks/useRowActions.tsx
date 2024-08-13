@@ -22,8 +22,8 @@ export const useRowActions = () => {
       }
     };
   
-    const handleEditRow = (id: string) => {
-      navigate(`/role/${id}`);
+    const handleEditRow = (id: string, path: string) => {
+      navigate(`/${path}/${id}`);
     };
   
     return {
