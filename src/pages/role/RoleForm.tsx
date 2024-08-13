@@ -14,11 +14,7 @@ import { createRole, getIndividualRole, getRolePermissions, updateRole } from ".
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-const FormGrid = styled(Grid)(() => ({
-  display: "flex",
-  flexDirection: "column",
-}));
+import { FormGrid } from "../../constant/FormGrid";
 
 interface FormValues {
   roleName: string;
@@ -171,7 +167,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
           <MultiSelectInputField
             control={control}
             errors={errors}
-            name="selectPrivilege"
+            name="privilege"
             options={roles}
           />
         </FormGrid>

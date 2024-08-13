@@ -51,7 +51,6 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
   options,
 }) => {
   const theme = useTheme();
-
   return (
     <FormControl fullWidth margin="normal" required error={!!errors[name]}>
       <Controller
@@ -59,7 +58,7 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
         control={control}
         defaultValue={[]}
         rules={{
-          required: "Please select at least one privilege",
+          required: `Please select at least one ${name}`,
         }}
         render={({ field }) => (
           <>

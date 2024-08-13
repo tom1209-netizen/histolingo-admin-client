@@ -1,17 +1,26 @@
 import * as React from "react";
-import FormatAlignLeftIcon from "@mui/icons-material/FormatAlignLeft";
-import FormatAlignCenterIcon from "@mui/icons-material/FormatAlignCenter";
-import FormatAlignRightIcon from "@mui/icons-material/FormatAlignRight";
-import FormatAlignJustifyIcon from "@mui/icons-material/FormatAlignJustify";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
-export default function NavTabs() {
+interface NavTabsProps {
+  onChange: (value: any) => void;
+  value: string;
+}
+export default function NavTabs({ onChange, value }: NavTabsProps) {
   return (
     <ToggleButtonGroup size="small" exclusive>
-      <ToggleButton value="left">All</ToggleButton>
-      <ToggleButton value="center">Active</ToggleButton>
-      <ToggleButton value="right">Inactive</ToggleButton>
+      <ToggleButton
+        onClick={() => onChange && onChange(undefined)}
+        value="left"
+      >
+        All
+      </ToggleButton>
+      <ToggleButton onClick={() => onChange && onChange("1")} value="center">
+        Active
+      </ToggleButton>
+      <ToggleButton onClick={() => onChange && onChange("0")} value="right">
+        Inactive
+      </ToggleButton>
     </ToggleButtonGroup>
   );
 }

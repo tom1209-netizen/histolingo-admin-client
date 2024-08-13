@@ -1,9 +1,15 @@
 import axios, { AxiosResponse } from "axios";
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 import Cookies from "js-cookie";
+import { SearchQuery } from "../schemas/admin.schema";
 
 interface RoleActions {
   [action: string]: number;
+}
+
+interface RoleData {
+  name: string;
+  permissions: number[];
 }
 
 export const getRolePermissions = async (): Promise<any[]> => {
@@ -31,10 +37,7 @@ export const getRolePermissions = async (): Promise<any[]> => {
   }
 };
 
-interface RoleData {
-  name: string;
-  permissions: number[];
-}
+
 
 export const createRole = async (
   body: RoleData
@@ -56,16 +59,34 @@ export const createRole = async (
   }
 };
 
-export const getRoles = async (): Promise<AxiosResponse<any>> => {
+export const getRoles = async (query: SearchQuery = {}): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
     const response = await axios.get(`${domain_api}/roles`, {
       headers: { Authorization: `Bearer ${accessToken}` },
+      params: query,
     });
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.data.message || "Get roles failed");
+    } else {
+      throw error;
+    }
+  }
+};
+
+
+export const getActiveRoles = async (): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.get(`${domain_api}/roles/?search=&status=1`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "Get active roles failed");
     } else {
       throw error;
     }

@@ -29,7 +29,8 @@ const PasswordInputField: React.FC<PasswordInputFieldProps> = ({
         <TextField
           {...field}
           type="password"
-          label={t("validation.password.label")}
+          // label={t("validation.password.label")}
+          placeholder="Enter password"
           variant="outlined"
           error={!!errors.password}
           helperText={errors.password ? errors.password.message : ""}

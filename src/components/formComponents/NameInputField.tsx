@@ -4,7 +4,7 @@ import { TextField } from "@mui/material";
 interface NameInputFieldProps {
   control: Control<any>;
   errors: FieldErrors<any>;
-  fieldLabel: "firstName" | "lastName" | "adminName" | "roleName";
+  fieldLabel: "firstName" | "lastName" | "adminName" | "roleName" | "countryName";
 }
 
 const NameInputField: React.FC<NameInputFieldProps> = ({
@@ -25,9 +25,12 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
     case "adminName":
       label = "Admin name";
       break;
-      case "roleName":
-        label = "Role name";
-        break;
+    case "roleName":
+      label = "Role name";
+      break;
+    case "countryName":
+      label = "Country name";
+      break;
     default:
       label = "";
   }
@@ -46,7 +49,7 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
       render={({ field }) => (
         <TextField
           {...field}
-          placeholder="Enter role name"
+          placeholder={`Enter ${label}`}
           variant="outlined"
           error={!!errors[name]}
           helperText={(errors[name] as any)?.message || ''}

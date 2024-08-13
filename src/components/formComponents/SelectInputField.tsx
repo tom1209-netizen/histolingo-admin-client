@@ -1,32 +1,50 @@
-import React from 'react';
-import { Control, FieldErrors } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
-import { Select, MenuItem, FormControl, InputLabel, FormHelperText } from '@mui/material';
+import React from "react";
+import { Control, FieldErrors } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import {
+  Select,
+  MenuItem,
+  FormControl,
+  FormHelperText,
+  SelectChangeEvent,
+} from "@mui/material";
 
 interface SelectProps {
   control: Control<any>;
   errors: FieldErrors<any>;
-  name: string; 
-  label: string; 
-  options: { value: string; label: string }[];
+  name: string;
+  label: string;
+  options: { value: string | number; label: string }[];
+  onChange: (event: SelectChangeEvent<string>) => void;
+  disabled?: boolean;
 }
 
-const SelectInputField: React.FC<SelectProps> = ({ control, errors, name, label, options }) => {
+
+const SelectInputField: React.FC<SelectProps> = ({
+  control,
+  errors,
+  name,
+  label,
+  options,
+  onChange
+}) => {
   return (
     <FormControl fullWidth margin="normal" required error={!!errors[name]}>
-      <InputLabel>{label}</InputLabel>
       <Controller
         name={name}
         control={control}
-        defaultValue="" 
+        defaultValue=""
         rules={{
-            required: `${label} is required`
+          required: `${label} is required`,
         }}
         render={({ field }) => (
           <Select
             {...field}
-            label={label}
-            onChange={(event) => field.onChange(event.target.value)}
+            placeholder="Select role"
+            onChange={(e) => {
+              field.onChange(e); // Ensure react-hook-form value is updated
+              onChange(e); // Call the passed onChange handler
+            }}
             value={field.value || ""}
           >
             {options.map((option) => (
@@ -38,7 +56,7 @@ const SelectInputField: React.FC<SelectProps> = ({ control, errors, name, label,
         )}
       />
       {errors[name] && (
-        <FormHelperText>{(errors[name] as any)?.message || ''}</FormHelperText>
+        <FormHelperText>{(errors[name] as any)?.message || ""}</FormHelperText>
       )}
     </FormControl>
   );
