@@ -20,6 +20,7 @@ export const getAdmins = async (query : SearchQuery = {}): Promise<AxiosResponse
         headers: { Authorization: `Bearer ${accessToken}` },
         params: query,
       });
+      console.log(response)
       return response;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -73,6 +74,22 @@ export const getIndividualAdmin = async (id: string): Promise<AxiosResponse<any>
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data.message || "Get individual admin failed");
+      } else {
+        throw error;
+      }
+    }
+}
+
+export const switchAdminStatus = async (id: string, status: string): Promise<AxiosResponse<any>> => {
+    try {
+      const accessToken = Cookies.get("accessToken");
+      const response = await axios.patch(`${domain_api}/admins/${id}`, { status }, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      return response;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data.message || "Update admin status failed");
       } else {
         throw error;
       }

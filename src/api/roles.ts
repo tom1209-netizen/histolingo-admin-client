@@ -22,10 +22,11 @@ export const getRolePermissions = async (): Promise<any[]> => {
     });
 
     const rolePrivileges = response.data.data.rolePrivileges;
-    const flattenedPermissions = Object.entries(rolePrivileges).flatMap(([category, actions]) =>
-      Object.entries(actions as RoleActions).map(([action, code]) => ({
-        [`${category}-${action}`]: code,
-      }))
+    const flattenedPermissions = Object.entries(rolePrivileges).flatMap(
+      ([category, actions]) =>
+        Object.entries(actions as RoleActions).map(([action, code]) => ({
+          [`${category}-${action}`]: code,
+        }))
     );
     return flattenedPermissions;
   } catch (error) {
@@ -36,8 +37,6 @@ export const getRolePermissions = async (): Promise<any[]> => {
     }
   }
 };
-
-
 
 export const createRole = async (
   body: RoleData
@@ -59,7 +58,9 @@ export const createRole = async (
   }
 };
 
-export const getRoles = async (query: SearchQuery = {}): Promise<AxiosResponse<any>> => {
+export const getRoles = async (
+  query: SearchQuery = {}
+): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
     const response = await axios.get(`${domain_api}/roles`, {
@@ -76,24 +77,28 @@ export const getRoles = async (query: SearchQuery = {}): Promise<AxiosResponse<a
   }
 };
 
-
 export const getActiveRoles = async (): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/roles/?search=&status=1`, {
+    const response = await axios.get(`${domain_api}/roles`, {
+      params: { status: 1 },
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data.message || "Get active roles failed");
+      throw new Error(
+        error.response?.data.message || "Get active roles failed"
+      );
     } else {
       throw error;
     }
   }
 };
 
-export const getIndividualRole = async (id: string): Promise<AxiosResponse<any>> => {
+export const getIndividualRole = async (
+  id: string
+): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
     const response = await axios.get(`${domain_api}/roles/${id}`, {
@@ -107,9 +112,12 @@ export const getIndividualRole = async (id: string): Promise<AxiosResponse<any>>
       throw error;
     }
   }
-}
+};
 
-export const updateRole = async (id: string, body: RoleData): Promise<AxiosResponse<any>> => {
+export const updateRole = async (
+  id: string,
+  body: RoleData
+): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
     const response = await axios.put(`${domain_api}/roles/${id}`, body, {
@@ -123,6 +131,29 @@ export const updateRole = async (id: string, body: RoleData): Promise<AxiosRespo
       throw error;
     }
   }
-}
+};
 
-
+export const switchRoleStatus = async (
+  id: string,
+  status: number
+): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.patch(
+      `${domain_api}/roles/${id}`,
+      { status },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data.message || "Switch role status failed"
+      );
+    } else {
+      throw error;
+    }
+  }
+};

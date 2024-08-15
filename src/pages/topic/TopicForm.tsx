@@ -1,46 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Grid, Typography, Button, SelectChangeEvent } from "@mui/material";
-import { styled } from "@mui/system";
-import { useForm, Resolver } from "react-hook-form";
-import { Box } from "@mui/system";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import theme from "../../theme/GlobalCustomTheme";
+import { CssBaseline, Grid, SelectChangeEvent, ThemeProvider } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
-import SelectInputField from "../../components/formComponents/SelectInputField";
 import TextField from "@mui/material/TextField";
-import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
-import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
-import ErrorSummary from "../../components/formComponents/ErrorSummary";
-import UploadFile from "../../components/formComponents/UploadFile";
-import { Controller } from "react-hook-form";
-import { languageOptions } from "../../constant/languageOptions";
+import { Box } from "@mui/system";
+import React, { useEffect, useState } from "react";
+import { Controller, Resolver, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { getCountries } from "../../api/country";
 import { toast } from "react-toastify";
-import { localeData } from "../../../../histolingo-server/localization";
+import { getCountries } from "../../api/country";
 import { createTopic, updateTopic } from "../../api/topic";
+import ErrorSummary from "../../components/formComponents/ErrorSummary";
+import SelectInputField from "../../components/formComponents/SelectInputField";
+import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
+import UploadFile from "../../components/formComponents/UploadFile";
+import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
-
-interface TopicFormProps {
-  typeOfForm: string;
-  topicData?: {
-    title: string;
-    description: string;
-    id: string;
-  };
-}
-
-interface FormValues {
-  name: string;
-  description: string;
-  image: string;
-  country: string;
-  localeData: {
-    "en-US": { name: string; description: string };
-    "ja-JP": { name: string; description: string };
-    "vi-VN": { name: string; description: string };
-  };
-}
+import { languageOptions } from "../../constant/languageOptions";
+import { FormValues, TopicFormProps } from "../../interfaces/topic.interface";
+import theme from "../../theme/GlobalCustomTheme";
 
 const languageLookup = languageOptions.reduce((acc, option) => {
   acc[option.value] = option.label;
@@ -155,6 +131,28 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     const value = event.target.value;
     setValue("country", value);
   };
+
+  useEffect(() => {
+    if (typeOfForm === "update" && topicData) {
+      console.log("Updating form with topicData:", topicData);
+      const status = topicData.status === 1 ? "active" : "inactive";
+      setValue("image", topicData.image);
+      setValue("status", status);
+      setValue("localeData", topicData.localeData);
+      setValue("country", topicData.countryId);
+
+      Object.keys(topicData.localeData).forEach((locale: any) => {
+        setValue(
+          `localeData[${locale}].description`,
+          topicData.localeData[locale].description
+        );
+        setValue(
+          `localeData[${locale}].name`,
+          topicData.localeData[locale].name
+        );
+      });
+    }
+  }, [topicData]);
 
   const onSubmit = async (data: any) => {
     const body = {
