@@ -21,6 +21,7 @@ interface DataTableProps {
   onPageChange: (paginationModel: GridPaginationModel) => void;
   paginationModel: GridPaginationModel;
   getRowId?: (row: any) => string | number;
+  checkboxSelection?: boolean;
 }
 
 export default function DataTable({
@@ -30,13 +31,15 @@ export default function DataTable({
   rowCount,
   onPageChange,
   getRowId,
+  checkboxSelection,
 }: DataTableProps) {
   const [page, setPage] = React.useState<number>(0);
   return (
     <ThemeProvider theme={theme}>
       <div style={{ height: auto, width: "100%" }}>
         <DataGrid
-          getRowHeight={() => "auto"}
+         checkboxSelection={checkboxSelection}
+         getRowHeight={() => 'auto'} getEstimatedRowHeight={() => 200} 
           sx={{
             "& .MuiDataGrid-cell": {
               display: "flex",
@@ -51,7 +54,6 @@ export default function DataTable({
           autoHeight
           rows={rows}
           columns={columns}
-          
           pagination
           paginationModel={paginationModel} // Ensure this is up-to-date
           onPaginationModelChange={(model) => {
@@ -59,13 +61,7 @@ export default function DataTable({
           }}
           paginationMode="server"
           rowCount={rowCount}
-          // initialState={{
-          //   pagination: {
-          //     paginationModel: { page: 0, pageSize: 10 },
-          //   },
-          // }}
           pageSizeOptions={[5, 10]}
-          checkboxSelection
           getRowId={getRowId}
         />
       </div>

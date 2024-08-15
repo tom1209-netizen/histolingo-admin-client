@@ -51,7 +51,7 @@ export const getCountries = async (query : SearchQuery = {}): Promise<AxiosRespo
 export const updateCountry = async (id: string, body: CountryData): Promise<AxiosResponse<any>> => {
     try {
       const accessToken = Cookies.get("accessToken");
-      const response = await axios.put(`${domain_api}/countries/${id}`, body, {
+      const response = await axios.patch(`${domain_api}/countries/${id}`, body, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       return response;
@@ -74,6 +74,22 @@ export const getIndividualCountry = async (id: string): Promise<AxiosResponse<an
     } catch (error) {
         if (axios.isAxiosError(error)) {
             throw new Error(error.response?.data.message || "Get individual country failed");
+        } else {
+            throw error;
+        }
+    }
+}
+
+export const switchCountryStatus = async (id: string, status: number): Promise<AxiosResponse<any>> => {
+    try {
+        const accessToken = Cookies.get("accessToken");
+        const response = await axios.patch(`${domain_api}/countries/${id}`, { status }, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        return response;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(error.response?.data.message || "Switch country status failed");
         } else {
             throw error;
         }

@@ -80,3 +80,25 @@ export const getIndividualQuestion = async (
     }
   }
 };
+
+export const switchQuestionStatus = async (id: string, status: string) => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.patch(
+      `${domain_api}/questions/${id}`,
+      { status },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data.message || "Update question status failed"
+      );
+    } else {
+      throw error;
+    }
+  }
+}

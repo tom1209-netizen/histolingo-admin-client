@@ -60,7 +60,7 @@ export const updateTopic = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.put(`${domain_api}/topics/${id}`, body, {
+    const response = await axios.patch(`${domain_api}/topics/${id}`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -107,6 +107,7 @@ export const getTopicsByCountry = async (
     );
 
     return filteredTopics;
+    console.log(filteredTopics)
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(
@@ -117,3 +118,25 @@ export const getTopicsByCountry = async (
     }
   }
 };
+
+export const switchTopicStatus = async (id: string, status: string) => {
+    try {
+        const accessToken = Cookies.get("accessToken");
+        const response = await axios.patch(
+        `${domain_api}/topics/${id}`,
+        { status },
+        {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        }
+        );
+        return response;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+        throw new Error(
+            error.response?.data.message || "Update topic status failed"
+        );
+        } else {
+        throw error;
+        }
+    }
+    }

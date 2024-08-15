@@ -103,7 +103,7 @@ const Role = () => {
       const rolesResponse = await getRoles({
         ...searchRoleQuery,
         page: paginationModel.page + 1,
-        page_size: paginationModel.pageSize,
+        pageSize: paginationModel.pageSize,
       });
       const rolesWithNames = rolesResponse.data.data.roles.map((role) => ({
         _id: role._id,

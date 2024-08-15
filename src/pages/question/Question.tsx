@@ -97,7 +97,7 @@ const Question = () => {
       const response = await getQuestions({
         ...searchQuestionQuery,
         page: paginationModel.page + 1,
-        page_size: paginationModel.pageSize,
+        pageSize: paginationModel.pageSize,
       });
       const questionsData = response.data.data.questions;
       const formattedQuestions = questionsData.map((question: any) => ({

@@ -45,6 +45,14 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
           value: 50,
           message: `${label} must be less than 50 characters`,
         },
+        validate: {
+          notEmptyOrWhitespace: value => {
+            if (!value.trim()) {
+              return "Cannot be empty or whitespace only";
+            }
+            return true;
+          }
+        }
       }}
       render={({ field }) => (
         <TextField

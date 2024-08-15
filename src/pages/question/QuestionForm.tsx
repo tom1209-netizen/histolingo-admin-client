@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Controller, Resolver, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Grid, CssBaseline, ThemeProvider, TextField } from "@mui/material";
-import { styled } from "@mui/system";
 import theme from "../../theme/GlobalCustomTheme";
 import FormLabel from "@mui/material/FormLabel";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
-import UploadFile from "../../components/formComponents/UploadFile";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import { SelectChangeEvent } from "@mui/material";
 import ErrorSummary from "../../components/formComponents/ErrorSummary";
 import Box from "@mui/material/Box";
 import { toast } from "react-toastify";
-import { createCountry, getCountries, updateCountry } from "../../api/country";
+import { getCountries } from "../../api/country";
 import { useNavigate } from "react-router-dom";
 import { languageOptions } from "../../constant/languageOptions";
 import { FormGrid } from "../../constant/FormGrid";
@@ -21,49 +19,14 @@ import { questionTypes } from "../../constant/questionTypes";
 import TrueFalseInputField from "../../components/questionComponents/TrueFalseInputField";
 import MultipleChoiceText from "../../components/questionComponents/MultipleChoiceText";
 import MultipleChoiceAnswer from "../../components/questionComponents/MultipleChoiceAnswer";
-
-interface BaseFormValues {
-  topicId: string;
-  countryId: string;
-  questionType: 0 | 1 | 2 | 3;
-  ask: string;
-  status: number;
-  localeData: any;
-}
-
-interface TrueFalseFormValues extends BaseFormValues {
-  questionType: 1;
-  answer: boolean;
-}
-
-interface MultipleChoiceFormValues extends BaseFormValues {
-  questionType: 0;
-  options: string[];
-  answer: number;
-}
-
-interface MatchingFormValues extends BaseFormValues {
-  questionType: 2;
-  leftColumn: string[];
-  rightColumn: string[];
-  answer: number[][];
-}
-
-interface FillInTheBlankFormValues extends BaseFormValues {
-  questionType: 3;
-  answer: string[];
-}
-
-type FormValues =
-  | TrueFalseFormValues
-  | MultipleChoiceFormValues
-  | MatchingFormValues
-  | FillInTheBlankFormValues;
-
-interface QuestionFormProps {
-  typeOfForm: string;
-  questionData?: any;
-}
+import {
+  QuestionFormProps,
+  FormValues,
+  TrueFalseFormValues,
+  FillInTheBlankFormValues,
+  MatchingFormValues,
+  MultipleChoiceFormValues,
+} from "../../interfaces/question.interface";
 
 const QuestionForm: React.FC<QuestionFormProps> = ({
   typeOfForm,
@@ -77,7 +40,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     watch,
   } = useForm<any>({
     mode: "onChange",
-    // resolver,
     defaultValues: {
       language: "en-US",
       localeData: {
@@ -137,20 +99,32 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     }
   };
 
-  const handleTopicChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setValue("topic", value);
-  };
-
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setValue("language", value);
     setSelectedLanguage(value);
   };
 
-  const handleSelectAnswerChange = (event: SelectChangeEvent<string>) => {
+  const handleTopicChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    setValue("topic", value);
+  };
+
+  const handleQuestionTypeChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    setValue("question-type", value);
+  };
+
+  const handleTrueFalseChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setValue("answer", value === "true");
+  };
+
+  const handleMultipleChoiceAnswerChange = (
+    event: SelectChangeEvent<string>
+  ) => {
+    const value = event.target.value;
+    setValue("answer", value);
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -160,7 +134,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       localeData: data.localeData,
     };
     console.log("Question form submitted with data:", body);
-    
   };
 
   if (loading) {
@@ -208,7 +181,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="type-select" required>
+          <FormLabel htmlFor="question-select" required>
             Question type
           </FormLabel>
           <SelectInputField
@@ -217,7 +190,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             name="question-type"
             label="Question type"
             options={questionTypes}
-            onChange={handleLanguageChange}
+            onChange={handleQuestionTypeChange}
           />
         </FormGrid>
 
@@ -277,7 +250,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           />
         </FormGrid>
 
-        {questionType === 1 && (
+        {questionType === "1" && (
           <FormGrid item xs={12} md={6}>
             <FormLabel htmlFor="answer" required>
               True/False answer
@@ -285,12 +258,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             <TrueFalseInputField
               control={control}
               errors={errors}
-              onChange={handleSelectAnswerChange}
+              onChange={handleTrueFalseChange}
             />
           </FormGrid>
         )}
 
-        {questionType === 0 && (
+        {questionType === "0" && (
           <>
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="answer-text-A" required>
@@ -343,7 +316,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
               <MultipleChoiceAnswer
                 control={control}
                 errors={errors}
-                onChange={handleSelectAnswerChange}
+                onChange={handleMultipleChoiceAnswerChange}
               />
             </FormGrid>
             <FormGrid item xs={12} md={6}></FormGrid>

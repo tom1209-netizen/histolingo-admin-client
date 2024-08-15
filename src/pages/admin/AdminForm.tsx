@@ -3,7 +3,6 @@ import { ThemeProvider } from "@mui/system";
 import { CssBaseline } from "@mui/material";
 import { Grid } from "@mui/material";
 import { FormLabel } from "@mui/material";
-import { styled } from "@mui/system";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import EmailInputField from "../../components/formComponents/EmailInputField";
 import { useForm } from "react-hook-form";
@@ -17,30 +16,7 @@ import { createAdmin } from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FormGrid } from "../../constant/FormGrid";
-
-
-interface FormValues {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  adminName: string;
-  roles: string[];
-  status: string;
-}
-
-interface AdminFormProps {
-  typeOfForm: string;
-  adminData?: {
-    email: string;
-    firstName: string;
-    lastName: string;
-    adminName: string;
-    roles: string[];
-    status: number;
-    id: string;
-  };
-}
+import { AdminFormProps, FormValues } from "../../interfaces/admin.interface";
 
 const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   const {
@@ -102,11 +78,11 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
     const status = data.status === "active" ? 1 : 0;
 
     const body = {
-      email: data.email,
+      email: data.email.trim(),
       password: data.password,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      adminName: data.adminName,
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      adminName: data.adminName.trim(),
       roles: roleIds,
       status,
     };

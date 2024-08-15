@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import { EditOutlined } from "@mui/icons-material";
 import DataTable from "../../components/reusable/Table";
 import { useRowActions } from "../../hooks/useRowActions";
-import { getCountries } from "../../api/country";
+import { getCountries, switchCountryStatus } from "../../api/country";
 import { formatTimestamp } from "../../utils/formatTime";
 
 const Country = () => {
@@ -26,23 +26,35 @@ const Country = () => {
     pageSize: 10,
   });
 
+  const handleStatusChange = async (id: any, status: any) => {
+      const response = await switchCountryStatus(id, status);
+      console.log(response)
+  };
+  
+
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Country name", width: 200 },
-    { field: "description", headerName: "Description", width: 450 },
-    { field: "createdAt", headerName: "Created At", width: 130 },
-    { field: "updatedAt", headerName: "Updated At", width: 130 },
+    { field: "name", headerName: "Country name", flex: 1 },
+    { field: "description", headerName: "Description",  flex: 3},
+    { field: "createdAt", headerName: "Created At",  flex: 1 },
+    { field: "updatedAt", headerName: "Updated At", flex: 1 },
     {
       field: "status",
+      flex: 0,
       headerName: "Status",
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
-      renderCell: (params) => <Switch />,
+      renderCell: (params) => {
+        console.log(params);
+        return <Switch defaultChecked={params.row.status == 1} onChange={() => handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)} />;
+      },
     },
     {
       field: "edit",
       headerName: "Edit country",
       width: 100,
+      flex: 0,
+      align:"right",
       sortable: false,
       renderCell: (params) => (
         <IconButton
@@ -61,7 +73,7 @@ const Country = () => {
       const response = await getCountries({
         ...searchCountryQuery,
         page: paginationModel.page + 1,
-        page_size: paginationModel.pageSize,
+        pageSize: paginationModel.pageSize,
       });
       const countriesData = response.data.data.countries;
       const formattedCountries = countriesData.map((country: any) => ({
@@ -79,6 +91,7 @@ const Country = () => {
       setLoading(false);
     }
   };
+  
   useEffect(() => {
     fetchCountries(paginationModel.page, paginationModel.pageSize);
   }, [paginationModel, searchParams]);

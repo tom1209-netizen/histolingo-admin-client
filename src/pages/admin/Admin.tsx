@@ -9,7 +9,7 @@ import { Switch } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import { EditOutlined } from "@mui/icons-material";
 import DataTable from "../../components/reusable/Table";
-import { getAdmins } from "../../api/admin";
+import { getAdmins, switchAdminStatus } from "../../api/admin";
 import { useSearchParams } from "react-router-dom";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
@@ -26,25 +26,36 @@ const Admin = () => {
     pageSize: 10,
   });
 
+  const handleStatusChange = async (id: any, status: any) => {
+    const response = await switchAdminStatus(id, status);
+    console.log(response);
+  }
+
   const columns: GridColDef[] = [
-    { field: "adminName", headerName: "Admin name", width: 200 },
-    { field: "roles", headerName: "Roles", width: 200 },
-    { field: "supervisorId", headerName: "Supervisor", width: 200 },
-    { field: "createdAt", headerName: "Created At", width: 130 },
-    { field: "updatedAt", headerName: "Updated At", width: 130 },
+    { field: "adminName", headerName: "Admin name", flex: 1 },
+    { field: "roles", headerName: "Roles", flex: 1, valueGetter: (value, row) => row.roles.map((role: any) => role.name).join(", ") },
+    { field: "supervisorId", headerName: "Supervisor", flex: 1 },
+    { field: "createdAt", headerName: "Created At", flex: 1},
+    { field: "updatedAt", headerName: "Updated At", flex: 1 },
     {
       field: "status",
+      flex: 0,
       headerName: "Status",
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
-      renderCell: (params) => <Switch />,
+      renderCell: (params) => {
+        console.log(params);
+        return <Switch defaultChecked={params.row.status == 1} onChange={() => handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)} />;
+      },
     },
     {
       field: "edit",
       headerName: "Edit admin",
       width: 100,
       sortable: false,
+      flex: 0,
+      align:"right",
       renderCell: (params) => (
         <IconButton
           onClick={() => handleEditRow(params.id.toString(), "admin")}
@@ -62,9 +73,10 @@ const Admin = () => {
       const response = await getAdmins({
         ...searchAdminQuery,
         page: paginationModel.page + 1,
-        page_size: paginationModel.pageSize,
+        pageSize: paginationModel.pageSize,
       });
       const adminsData = response.data.data.admins;
+      console.log(adminsData)
       const formattedAdminsData = adminsData.map((admin: any) => ({
         ...admin,
         createdAt: admin.createdAt ? formatTimestamp(admin.createdAt) : "N/A",

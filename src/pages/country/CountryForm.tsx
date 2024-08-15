@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Controller, Resolver, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Grid, CssBaseline, ThemeProvider, TextField } from "@mui/material";
-import { styled } from "@mui/system";
 import theme from "../../theme/GlobalCustomTheme";
 import FormLabel from "@mui/material/FormLabel";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
@@ -16,83 +15,7 @@ import { createCountry, updateCountry } from "../../api/country";
 import { useNavigate } from "react-router-dom";
 import { languageOptions } from "../../constant/languageOptions";
 import { FormGrid } from "../../constant/FormGrid";
-
-interface FormValues {
-  name: string;
-  description: string;
-  image: string;
-  localeData: {
-    "en-US": { name: string; description: string };
-    "ja-JP": { name: string; description: string };
-    "vi-VN": { name: string; description: string };
-  };
-}
-
-interface CountryFormProps {
-  typeOfForm: string;
-  countryData?: {
-    name: string;
-    description: string;
-    image: string;
-    localeData: {
-      "en-US": { name: string; description: string };
-      "ja-JP": { name: string; description: string };
-      "vi-VN": { name: string; description: string };
-    };
-    status: number;
-    id: string;
-  };
-}
-
-const languageLookup = languageOptions.reduce((acc, option) => {
-  acc[option.value] = option.label;
-  return acc;
-}, {} as { [key: string]: string });
-
-const resolver: Resolver<FormValues> = async (values) => {
-  const { localeData, image } = values;
-  const errors: any = {};
-
-  if (!image) {
-    errors.image = {
-      type: "required",
-      message: "Image is required.",
-    };
-  }
-
-  Object.keys(localeData).forEach((key) => {
-    if (!localeData[key].description.trim()) {
-      errors.localeData = {
-        ...errors.localeData,
-        [key]: {
-          description: {
-            type: "required",
-            message: `Description of ${languageLookup[key]} is required.`,
-          },
-        },
-      };
-    }
-  });
-
-  Object.keys(localeData).forEach((key) => {
-    if (!localeData[key].name.trim()) {
-      errors.localeData = {
-        ...errors.localeData,
-        [key]: {
-          name: {
-            type: "required",
-            message: `Name of ${languageLookup[key]} is required.`,
-          },
-        },
-      };
-    }
-  });
-
-  return {
-    values: Object.keys(errors).length === 0 ? values : {},
-    errors,
-  };
-};
+import { CountryFormProps, FormValues } from "../../interfaces/country.interface";
 
 const CountryForm: React.FC<CountryFormProps> = ({
   typeOfForm,
@@ -106,45 +29,65 @@ const CountryForm: React.FC<CountryFormProps> = ({
     watch,
   } = useForm<any>({
     mode: "onChange",
-    resolver,
     defaultValues: {
       language: "en-US",
       localeData: {
         "en-US": { name: "", description: "" },
-        "ja-JP": { name: "", description: "" },
-        "vi-VN": { name: "", description: "" },
-        "ru-RU": { name: "", description: "" },
+        // "ja-JP": { name: "", description: "" },
+        // "vi-VN": { name: "", description: "" },
       },
     },
-    
   });
 
   const navigate = useNavigate();
   const language = watch("language");
+  const localeData = watch("localeData");
   const activeCompulsory = typeOfForm === "create";
-
   const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
+    useState<boolean>(true);
+
+  useEffect(() => {
+    const { name, description } = localeData["en-US"] || {};
+    setIsEnglishFieldsFilled(name.trim() !== "" && description.trim() !== "");
+  }, [localeData["en-US"].name, localeData["en-US"].description]);
 
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value; // Extract value from the event
-    setValue("language", value);
-    setSelectedLanguage(value); // Set the new selected language
+    const value = event.target.value;
+    setSelectedLanguage(value);
   };
 
-  // useEffect(() => {
-  //   if (typeOfForm === "update" && countryData) {
-  //     console.log("Updating form with countryData:", countryData);
-  //     const status = countryData.status === 1 ? "active" : "inactive";
-  //     setValue("image", countryData.image);
-  //     setValue("status", status);
-  //     // setValue("localeData", countryData.localeData);
+  useEffect(() => {
+    if (typeOfForm === "update" && countryData) {
+      console.log("Updating form with countryData:", countryData);
+      const status = countryData.status === 1 ? "active" : "inactive";
+      setValue("image", countryData.image);
+      setValue("status", status);
+      setValue("localeData", countryData.localeData);
 
-  //     // setValue(`localeData[${language}].description`, countryData.localeData[language].description);
-  //     // setValue(`localeData[${language}].name`, countryData.localeData[language].name);
-  //   }
-  // }, []);
+      Object.keys(countryData.localeData).forEach((locale: any) => {
+        setValue(
+          `localeData[${locale}].description`,
+          countryData.localeData[locale].description
+        );
+        setValue(
+          `localeData[${locale}].name`,
+          countryData.localeData[locale].name
+        );
+      });
+    }
+  }, [countryData]);
 
   const onSubmit = async (data: FormValues) => {
+    if (
+      !localeData["en-US"].name.trim() ||
+      !localeData["en-US"].description.trim()
+    ) {
+      toast.error(
+        "Please fill in the name and description for English language."
+      );
+      return;
+    }
     const body = {
       image: data.image[0],
       name: data.localeData["en-US"].name,
@@ -160,6 +103,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
           toast.success("Country created successfully.");
           navigate("/country");
         } else {
+          console.log(response);
           toast.error("An error occurred. Please try again.");
         }
       } else if (typeOfForm === "update" && countryData) {
@@ -220,7 +164,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
             render={({ field }) => (
               <TextField
                 {...field}
-                placeholder={`Enter `}
+                placeholder={`Enter name`}
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -251,7 +195,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
               <TextField
                 {...field}
                 multiline
-                placeholder={`Enter `}
+                placeholder={`Enter description`}
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -281,7 +225,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
           <UploadFile control={control} errors={errors} />
         </FormGrid>
 
-        <FormGrid item xs={12} md={6}></FormGrid>
+        {/* <FormGrid item xs={12} md={6}></FormGrid> */}
         <FormGrid item xs={12} md={6}>
           <Box>
             <ErrorSummary errors={errors} />
