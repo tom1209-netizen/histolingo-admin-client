@@ -1,9 +1,8 @@
 export interface BaseFormValues {
-  topicId: string;
-  countryId: string;
+  topic: string;
+  country: string;
   questionType: 0 | 1 | 2 | 3;
-  ask: string;
-  status: number;
+  status: string;
   localeData: any;
 }
 

@@ -1,4 +1,3 @@
-// src/components/formComponents/MultiSelectInputField.tsx
 import React from "react";
 import { Control, FieldErrors } from "react-hook-form";
 import { Controller } from "react-hook-form";
@@ -51,6 +50,7 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
   options,
 }) => {
   const theme = useTheme();
+  console.log(options);
   return (
     <FormControl fullWidth margin="normal" required error={!!errors[name]}>
       <Controller
@@ -71,16 +71,16 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
               input={<OutlinedInput id="select-multiple-chip" />}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((value) => (
-                    <Chip key={value} label={value} />
+                  {selected.map((value, index) => (
+                    <Chip key={index} label={value} />
                   ))}
                 </Box>
               )}
               MenuProps={MenuProps}
             >
-              {options.map((option) => (
+              {options.map((option, index) => (
                 <MenuItem
-                  key={option}
+                  key={index}
                   value={option}
                   style={getStyles(option, field.value, theme)}
                 >

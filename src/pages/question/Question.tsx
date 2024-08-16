@@ -13,9 +13,10 @@ import DataTable from "../../components/reusable/Table";
 import { useRowActions } from "../../hooks/useRowActions";
 import { formatTimestamp } from "../../utils/formatTime";
 import { getQuestions } from "../../api/question";
+import { LoadingTable } from "../../components/reusable/Loading";
 
 const Question = () => {
-  const { handleSwitchChange, handleEditRow } = useRowActions();
+  const { handleEditRow } = useRowActions();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuestionQuery = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,6 +26,7 @@ const Question = () => {
     page: 0,
     pageSize: 10,
   });
+  const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
 
   const columns: GridColDef[] = [
     { field: "ask", headerName: "Question", width: 250 },
@@ -93,6 +95,7 @@ const Question = () => {
   ];
 
   const fetchQuestions = async (page: number, pageSize: number) => {
+    setIsTableLoading(true);
     try {
       const response = await getQuestions({
         ...searchQuestionQuery,
@@ -113,6 +116,7 @@ const Question = () => {
       console.log(error);
     } finally {
       setLoading(false);
+      setIsTableLoading(false);
     }
   };
   useEffect(() => {
@@ -125,7 +129,7 @@ const Question = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingTable />;
   }
   return (
     <>
@@ -156,6 +160,7 @@ const Question = () => {
         <CreateImportButtonGroup createPath="/createquestion" importPath="/" />
       </Box>
       <DataTable
+        isLoading={isTableLoading}
         columns={columns}
         rows={questions}
         getRowId={(row) => row._id}

@@ -26,28 +26,30 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
     formState: { errors },
   } = useForm<FormValues>({ mode: "onChange" });
 
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const activeCompulsory = typeOfForm === "create";
+
   const [roles, setRoles] = useState<string[]>([]);
   const [roleOptions, setRoleOptions] = useState<
     { value: string; label: string }[]
   >([]);
 
+  // INITIALLY FETCH ROLES
   useEffect(() => {
     const fetchRoles = async () => {
       try {
         const response = await getActiveRoles();
         const rolesData = response.data.data.roles;
         setRoles(rolesData.map((role: any) => role.name));
-
+        console.log(roles, "roles")
         setRoleOptions(
           rolesData.map((role) => ({
             value: role._id.toString(),
             label: role.name,
           }))
         );
-
+        console.log(roleOptions, "roleOptions")
         if (typeOfForm === "update" && adminData) {
           const status = adminData.status === 1 ? "active" : "inactive";
           setValue("email", adminData.email);
@@ -57,7 +59,6 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           setValue("roles", adminData.roles);
           setValue("status", status);
         }
-
         setLoading(false);
       } catch (error) {
         console.error("An error occurred:", error);
@@ -67,7 +68,9 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
     fetchRoles();
   }, [typeOfForm, adminData, setValue]);
 
+  // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
+    console.log(roleOptions, "roleOptions")
     const roleIds = data.roles
       .map((name) => {
         const role = roleOptions.find((option) => option.label === name);
@@ -76,7 +79,6 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
       .filter((id) => id !== null);
 
     const status = data.status === "active" ? 1 : 0;
-
     const body = {
       email: data.email.trim(),
       password: data.password,

@@ -1,6 +1,8 @@
 import { PaginationQuery } from './common.schema';
 
-export interface SearchQuery extends PaginationQuery {
+export interface SearchQuery {
+    page?: number;
+    pageSize?: number;
     search?: string;
     status?: any;
 }

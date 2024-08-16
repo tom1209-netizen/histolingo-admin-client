@@ -1,7 +1,7 @@
 import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
-import { SearchQuery } from "../schemas/admin.schema";
+import { SearchQuery } from "../schemas/schema";
 
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 
@@ -105,9 +105,8 @@ export const getTopicsByCountry = async (
     const filteredTopics = allTopics.filter(
       (topic: any) => topic.countryId === countryId
     );
-
+    console.log(filteredTopics);
     return filteredTopics;
-    console.log(filteredTopics)
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(
@@ -120,23 +119,23 @@ export const getTopicsByCountry = async (
 };
 
 export const switchTopicStatus = async (id: string, status: string) => {
-    try {
-        const accessToken = Cookies.get("accessToken");
-        const response = await axios.patch(
-        `${domain_api}/topics/${id}`,
-        { status },
-        {
-            headers: { Authorization: `Bearer ${accessToken}` },
-        }
-        );
-        return response;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-        throw new Error(
-            error.response?.data.message || "Update topic status failed"
-        );
-        } else {
-        throw error;
-        }
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.patch(
+      `${domain_api}/topics/${id}`,
+      { status },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data.message || "Update topic status failed"
+      );
+    } else {
+      throw error;
     }
-    }
+  }
+};

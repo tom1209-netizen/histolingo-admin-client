@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 import Cookies from "js-cookie";
-import { SearchQuery } from "../schemas/admin.schema";
+import { SearchQuery } from "../schemas/schema";
 
 interface AdminData {
     adminName: string;
@@ -38,6 +38,7 @@ export const createAdmin = async (body: any): Promise<AxiosResponse<any>> => {
       const response = await axios.post(`${domain_api}/admins`, body, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
+      console.log(response)
       return response;
     } catch (error) {
       if (axios.isAxiosError(error)) {

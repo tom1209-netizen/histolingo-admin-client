@@ -1,38 +1,33 @@
 import {
-  CssBaseline,
-  Grid,
-  SelectChangeEvent,
-  ThemeProvider,
+    CssBaseline,
+    Grid,
+    SelectChangeEvent,
+    ThemeProvider,
 } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
+import { auto } from "@popperjs/core";
 import React, { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
 import { getTopicsByCountry } from "../../api/topic";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
-import MultipleChoiceAnswer from "../../components/questionComponents/MCQSelectAnswer";
-import TrueFalseInputField from "../../components/questionComponents/TrueFalseInputField";
+import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
-import { questionTypes } from "../../constant/questionTypes";
-import Button from "@mui/material/Button";
+import { DocumentationFormProps } from "../../interfaces/documentaion.interface";
 import {
-  FormValues,
-  QuestionFormProps,
+    FormValues
 } from "../../interfaces/question.interface";
 import theme from "../../theme/GlobalCustomTheme";
-import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
-import MCQQuestionText from "../../components/questionComponents/MCQQuestionText";
-import { auto } from "@popperjs/core";
-import MatchingPair from "../../components/questionComponents/MatchingPair";
+import NameInputField from "../../components/formComponents/NameInputField";
 
-const QuestionForm: React.FC<QuestionFormProps> = ({
+const DocumentationForm: React.FC<DocumentationFormProps> = ({
   typeOfForm,
-  questionData,
+  documentationData,
 }) => {
   // USE FORM
   const {
@@ -46,20 +41,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     defaultValues: {
       language: "en-US",
       localeData: {
-        "en-US": { ask: "", options: [] },
+        "en-US": { name: "", content: "" },
       },
     },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "answer",
   });
 
   const navigate = useNavigate();
   const language = watch("language");
   const country = watch("country");
-  const questionType = watch("questionType");
   const activeCompulsory = typeOfForm === "create";
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -118,31 +107,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     setValue("topic", value);
   };
 
-  // QUESTION DATA HANDLING
-
-  // HANDLE QUESTION TYPE CHANGE
-  const handleQuestionTypeChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setValue("questionType", value);
-    if (value === "2" && fields.length === 0) {
-      append({ leftColumn: "", rightColumn: "" });
-    }
-  };
-
-  // HANDLE TRUE/FALSE CHANGE
-  const handleTrueFalseChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setValue("answer", value === "true");
-  };
-
-  // HANDLE MULTIPLE CHOICE CHANGE
-  const handleMultipleChoiceAnswerChange = (
-    event: SelectChangeEvent<string>
-  ) => {
-    const value = event.target.value;
-    setValue("answer", value);
-  };
-
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
     console.log(data);
@@ -164,7 +128,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? "Create a" : "Update"} question</h1>
+      <h1>{typeOfForm === "create" ? "Create a" : "Update"} document</h1>
       <Grid
         container
         spacing={3}
@@ -202,20 +166,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="question-select" required>
-            Question type
-          </FormLabel>
-          <SelectInputField
-            control={control}
-            errors={errors}
-            name="questionType"
-            label="Question type"
-            options={questionTypes}
-            onChange={handleQuestionTypeChange}
-          />
-        </FormGrid>
-
-        <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="language-select" required>
             Language
           </FormLabel>
@@ -230,22 +180,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="ask" required>
-            Question
-          </FormLabel>
-          <LocaleTextInputField
-            property={"ask"}
-            language={language}
-            name="ask"
-            control={control}
-            errors={errors}
-            length={500}
-            rowHeight={auto}
-            multiline={true}
-          />
-        </FormGrid>
-
-        <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
             Status
           </FormLabel>
@@ -256,100 +190,28 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           />
         </FormGrid>
 
-        {questionType === "1" && (
-          <FormGrid item xs={12} md={6}>
-            <FormLabel htmlFor="answer" required>
-              True/False answer
-            </FormLabel>
-            <TrueFalseInputField
-              control={control}
-              errors={errors}
-              onChange={handleTrueFalseChange}
-            />
-          </FormGrid>
-        )}
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="status" required>
+            Source
+          </FormLabel>
+          <NameInputField control={control} errors={errors} fieldLabel="source" />
+        </FormGrid>
 
-        {questionType === "0" && (
-          <>
-            <MCQQuestionText
-              language={language}
-              control={control}
-              errors={errors}
-            />
-            <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="answer" required>
-                Multiple Choice Answer
-              </FormLabel>
-              <MultipleChoiceAnswer
-                control={control}
-                errors={errors}
-                onChange={handleMultipleChoiceAnswerChange}
-              />
-            </FormGrid>
-            <FormGrid item xs={12} md={6}>
-              {" "}
-            </FormGrid>
-          </>
-        )}
-
-        {questionType === "2" && (
-          <>
-            {fields.map((item, index) => (
-              <>
-                <FormGrid item xs={12} md={12} key={item.id}>
-                  <MatchingPair
-                    index={index}
-                    language={language}
-                    control={control}
-                    errors={errors}
-                  />
-                </FormGrid>
-                <FormGrid item>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    type="button"
-                    onClick={() => remove(index)}
-                  >
-                    Delete
-                  </Button>
-                </FormGrid>
-              </>
-            ))}
-            <FormGrid item>
-              <Button
-                variant="contained"
-                color="primary"
-                type="button"
-                onClick={() => append({ leftColumn: "", rightColumn: "" })}
-              >
-                Add Pair
-              </Button>
-            </FormGrid>
-            <FormGrid item xs={12} md={12}></FormGrid>
-          </>
-        )}
-
-        {questionType === "3" && (
-          <>
-            <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="answer" required>
-                Answer
-              </FormLabel>
-              <LocaleTextInputField
-                property={"answer"}
-                language={language}
-                name="answer"
-                control={control}
-                errors={errors}
-                length={500}
-                rowHeight={auto}
-                multiline={true}
-              />
-            </FormGrid>
-            <FormGrid item xs={12} md={6}></FormGrid>
-          </>
-        )}
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="content" required>
+            Content
+          </FormLabel>
+          <LocaleTextInputField
+            property={"content"}
+            language={language}
+            name="content"
+            control={control}
+            errors={errors}
+            length={500}
+            rowHeight={auto}
+            multiline={true}
+          />
+        </FormGrid>
 
         <FormGrid item>
           <CreateButtonGroup
@@ -361,4 +223,4 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   );
 };
 
-export default QuestionForm;
+export default DocumentationForm;
