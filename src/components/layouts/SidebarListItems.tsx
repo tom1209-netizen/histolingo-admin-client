@@ -8,6 +8,7 @@ import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
 import MilitaryTechOutlinedIcon from '@mui/icons-material/MilitaryTechOutlined';
 import { Link } from 'react-router-dom';
@@ -51,11 +52,17 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Question" />
     </ListItemButton>
-    <ListItemButton component={Link} to="/test">
+    <ListItemButton component={Link} to="/playertest">
       <ListItemIcon>
         <EmojiEventsOutlinedIcon />
       </ListItemIcon>
       <ListItemText primary="Test" />
+    </ListItemButton>
+    <ListItemButton component={Link} to="/documentation">
+      <ListItemIcon>
+        <ArticleOutlinedIcon />
+      </ListItemIcon>
+      <ListItemText primary="Document" />
     </ListItemButton>
     <ListItemButton component={Link} to="/feedback">
       <ListItemIcon>

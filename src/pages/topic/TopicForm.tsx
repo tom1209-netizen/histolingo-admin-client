@@ -1,9 +1,14 @@
-import { CssBaseline, Grid, SelectChangeEvent, ThemeProvider } from "@mui/material";
+import {
+  CssBaseline,
+  Grid,
+  SelectChangeEvent,
+  ThemeProvider,
+} from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
-import TextField from "@mui/material/TextField";
 import { Box } from "@mui/system";
+import { auto } from "@popperjs/core";
 import React, { useEffect, useState } from "react";
-import { Controller, Resolver, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
@@ -12,69 +17,16 @@ import ErrorSummary from "../../components/formComponents/ErrorSummary";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import UploadFile from "../../components/formComponents/UploadFile";
+import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
-import { FormValues, TopicFormProps } from "../../interfaces/topic.interface";
+import { TopicFormProps } from "../../interfaces/topic.interface";
 import theme from "../../theme/GlobalCustomTheme";
 
-const languageLookup = languageOptions.reduce((acc, option) => {
-  acc[option.value] = option.label;
-  return acc;
-}, {} as { [key: string]: string });
-
-const resolver: Resolver<FormValues> = async (values) => {
-  console.log(values);
-  const { localeData, image, country } = values;
-  const errors: any = {};
-
-  if (!image) {
-    errors.image = {
-      type: "required",
-      message: "Image is required.",
-    };
-  }
-  if (!country) {
-    errors.countryId = {
-      type: "required",
-      message: "Country is required.",
-    };
-  }
-  Object.keys(localeData).forEach((key) => {
-    if (!localeData[key].description.trim()) {
-      errors.localeData = {
-        ...errors.localeData,
-        [key]: {
-          description: {
-            type: "required",
-            message: `Description of ${languageLookup[key]} is required.`,
-          },
-        },
-      };
-    }
-  });
-
-  Object.keys(localeData).forEach((key) => {
-    if (!localeData[key].name.trim()) {
-      errors.localeData = {
-        ...errors.localeData,
-        [key]: {
-          name: {
-            type: "required",
-            message: `Name of ${languageLookup[key]} is required.`,
-          },
-        },
-      };
-    }
-  });
-
-  return {
-    values: Object.keys(errors).length === 0 ? values : {},
-    errors,
-  };
-};
-
 const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
+  
+  // USE FORM
   const {
     control,
     handleSubmit,
@@ -83,19 +35,30 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     watch,
   } = useForm<any>({
     mode: "onChange",
-    resolver,
     defaultValues: {
       language: "en-US",
       localeData: {
         "en-US": { name: "", description: "" },
-        "ja-JP": { name: "", description: "" },
-        "vi-VN": { name: "", description: "" },
       },
     },
   });
-  const [loading, setLoading] = useState<boolean>(true);
 
+  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+  const activeCompulsory = typeOfForm === "create" ? true : false;
   const [countryNames, setCountryNames] = useState<any[]>([]);
+  const language = watch("language");
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
+    useState<boolean>(true);
+
+  // HANDLE SWITCH LANGUAGE
+  const handleLanguageChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    setSelectedLanguage(value);
+  };
+
+  //   FETCH COUNTRIES
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -116,22 +79,13 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     fetchCountries();
   }, []);
 
-  const navigate = useNavigate();
-  const language = watch("language");
-  const activeCompulsory = typeOfForm === "create" ? true : false;
-
-  const [selectedLanguage, setSelectedLanguage] = useState("");
-  const handleLanguageChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setValue("language", value);
-    setSelectedLanguage(value);
-  };
-
+  // HANDLE SWITCH COUNTRY
   const handleCountryChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setValue("country", value);
   };
 
+  // HANDLE FETCH DATA FOR UPDATE FORM
   useEffect(() => {
     if (typeOfForm === "update" && topicData) {
       console.log("Updating form with topicData:", topicData);
@@ -154,6 +108,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     }
   }, [topicData]);
 
+  // HANDLE FORM SUBMISSION
   const onSubmit = async (data: any) => {
     const body = {
       image: data.image[0],
@@ -234,29 +189,15 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
           <FormLabel htmlFor="name" required>
             Topic name
           </FormLabel>
-          <Controller
-            name={`localeData[${language}].name`}
-            key={`localeData[${language}].name`}
+          <LocaleTextInputField
+            property={"name"}
+            errors={errors}
             control={control}
-            rules={{
-              required: `Topic name is required`,
-              maxLength: {
-                value: 50,
-                message: `Topic name must be less than 50 characters`,
-              },
-            }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                placeholder={`Enter `}
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                inputProps={{ maxLength: 50 }}
-                error={!!errors.localeData?.[language]?.name}
-                helperText={errors.localeData?.[language]?.description?.name}
-              />
-            )}
+            language={language}
+            name={"Topic name"}
+            length={50}
+            multiline={false}
+            minRows={1}
           />
         </FormGrid>
 
@@ -282,30 +223,15 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
           <FormLabel htmlFor="description" required>
             Description (max 1500 characters)
           </FormLabel>
-          <Controller
-            name={`localeData[${language}].description`}
-            key={`localeData[${language}].description`}
+          <LocaleTextInputField
+            property={"description"}
+            errors={errors}
             control={control}
-            rules={{
-              required: `Description is required`,
-              maxLength: {
-                value: 1500,
-                message: `Description must be less than 1500 characters`,
-              },
-            }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                placeholder={`Enter `}
-                variant="outlined"
-                fullWidth
-                multiline
-                margin="normal"
-                inputProps={{ maxLength: 1500 }}
-                error={!!errors.localeData?.[language]?.description}
-                helperText={errors.localeData?.[language]?.description?.message}
-              />
-            )}
+            language={language}
+            name={"Description"}
+            length={1500}
+            multiline={true}
+            minRows={14}
           />
         </FormGrid>
 

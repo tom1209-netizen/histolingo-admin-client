@@ -1,42 +1,57 @@
-import React, { useEffect, useState } from "react";
-import NavTabs from "../../components/reusable/NavTabs";
-import { Box } from "@mui/material";
-import SearchField from "../../components/reusable/SearchField";
-import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
-import { useRowActions } from "../../hooks/useRowActions";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { Switch } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
 import { EditOutlined } from "@mui/icons-material";
-import DataTable from "../../components/reusable/Table";
-import { getAdmins, switchAdminStatus } from "../../api/admin";
+import { Box, Switch } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { getAdmins, switchAdminStatus } from "../../api/admin";
+import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
+import NavTabs from "../../components/reusable/NavTabs";
+import SearchField from "../../components/reusable/SearchField";
+import DataTable from "../../components/reusable/Table";
+import { useRowActions } from "../../hooks/useRowActions";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
+import { LoadingTable } from "../../components/reusable/Loading";
 
 const Admin = () => {
-  const { handleSwitchChange, handleEditRow } = useRowActions();
+  const { handleEditRow } = useRowActions();
   const [loading, setLoading] = useState<boolean>(true);
   const [admins, setAdmins] = useState<any[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchAdminQuery = convertSearchParamsToObj(searchParams);
+
+  const searchAdminQuery: any = convertSearchParamsToObj(searchParams);
   const [rowCount, setRowCount] = useState<number>(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 10,
   });
+  const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchAdminStatus(id, status);
     console.log(response);
-  }
+  };
 
   const columns: GridColDef[] = [
-    { field: "adminName", headerName: "Admin name", flex: 1 },
-    { field: "roles", headerName: "Roles", flex: 1, valueGetter: (value, row) => row.roles.map((role: any) => role.name).join(", ") },
-    { field: "supervisorId", headerName: "Supervisor", flex: 1 },
-    { field: "createdAt", headerName: "Created At", flex: 1},
-    { field: "updatedAt", headerName: "Updated At", flex: 1 },
+    { field: "adminName", headerName: "Admin name", flex: 1, sortable: false },
+    {
+      field: "roles",
+      headerName: "Roles",
+      flex: 1,
+      sortable: false,
+      valueGetter: (value, row) => row.role.name.join(", "),
+    },
+    { field: "email", headerName: "Email", flex: 1, sortable: false },
+    {
+      field: "supervisorId",
+      headerName: "Supervisor",
+      flex: 1,
+      valueGetter: (value, row) => row.adminName,
+      sortable: false,
+    },
+    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
+    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
     {
       field: "status",
       flex: 0,
@@ -44,9 +59,16 @@ const Admin = () => {
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
+      sortable: false,
       renderCell: (params) => {
-        console.log(params);
-        return <Switch defaultChecked={params.row.status == 1} onChange={() => handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)} />;
+        return (
+          <Switch
+            defaultChecked={params.row.status == 1}
+            onChange={() =>
+              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+            }
+          />
+        );
       },
     },
     {
@@ -55,7 +77,7 @@ const Admin = () => {
       width: 100,
       sortable: false,
       flex: 0,
-      align:"right",
+      align: "center",
       renderCell: (params) => (
         <IconButton
           onClick={() => handleEditRow(params.id.toString(), "admin")}
@@ -69,6 +91,7 @@ const Admin = () => {
   ];
 
   const fetchAdmins = async (page: number, pageSize: number) => {
+    setIsTableLoading(true);
     try {
       const response = await getAdmins({
         ...searchAdminQuery,
@@ -76,7 +99,7 @@ const Admin = () => {
         pageSize: paginationModel.pageSize,
       });
       const adminsData = response.data.data.admins;
-      console.log(adminsData)
+      console.log(adminsData);
       const formattedAdminsData = adminsData.map((admin: any) => ({
         ...admin,
         createdAt: admin.createdAt ? formatTimestamp(admin.createdAt) : "N/A",
@@ -84,11 +107,13 @@ const Admin = () => {
       }));
       const totalRows = response.data.data.totalCount;
       setAdmins(formattedAdminsData);
+      console.log(formattedAdminsData);
       setRowCount(totalRows);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
+      setIsTableLoading(false);
     }
   };
 
@@ -98,11 +123,10 @@ const Admin = () => {
 
   const handlePageChange = (model: GridPaginationModel) => {
     setPaginationModel(model);
-    fetchAdmins(model.page, model.pageSize);
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingTable />;
   }
 
   return (
@@ -121,7 +145,7 @@ const Admin = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchAdminQuery, status: value })
             }
-            value=""
+            value={searchAdminQuery.status || ""}
           />
           <SearchField
             label="Search admin"
@@ -134,6 +158,7 @@ const Admin = () => {
         <CreateImportButtonGroup createPath="/createadmin" importPath="/" />
       </Box>
       <DataTable
+        isLoading={isTableLoading}
         columns={columns}
         rows={admins}
         getRowId={(row) => row._id}

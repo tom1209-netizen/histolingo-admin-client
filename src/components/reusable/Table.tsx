@@ -1,18 +1,9 @@
-import * as React from "react";
-import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { auto } from "@popperjs/core";
-import { createTheme, Switch } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
 import { ThemeProvider } from "@mui/system";
-import { EditOutlined } from "@mui/icons-material";
+import { DataGrid, GridColDef, GridPaginationModel, GridRowSelectionModel } from "@mui/x-data-grid";
+import { auto } from "@popperjs/core";
+import * as React from "react";
 import theme from "../../theme/GlobalCustomTheme";
 
-const handleSwitchChange = (id, checked) => {
-  console.log(`Row with id ${id} status changed to ${checked}`);
-};
-const handleDeleteRow = (id) => {
-  console.log(`Row with id ${id} deleted`);
-};
 
 interface DataTableProps {
   columns: GridColDef[];
@@ -22,6 +13,8 @@ interface DataTableProps {
   paginationModel: GridPaginationModel;
   getRowId?: (row: any) => string | number;
   checkboxSelection?: boolean;
+  isLoading?: boolean;
+  onSelectionModelChange?: (selectionModel: GridRowSelectionModel) => void;
 }
 
 export default function DataTable({
@@ -32,13 +25,16 @@ export default function DataTable({
   onPageChange,
   getRowId,
   checkboxSelection,
+  isLoading,
+  onSelectionModelChange,
 }: DataTableProps) {
   const [page, setPage] = React.useState<number>(0);
   return (
     <ThemeProvider theme={theme}>
       <div style={{ height: auto, width: "100%" }}>
         <DataGrid
-         checkboxSelection={checkboxSelection}
+        loading={isLoading}
+         checkboxSelection={checkboxSelection? true : false}
          getRowHeight={() => 'auto'} getEstimatedRowHeight={() => 200} 
           sx={{
             "& .MuiDataGrid-cell": {
@@ -55,14 +51,21 @@ export default function DataTable({
           rows={rows}
           columns={columns}
           pagination
-          paginationModel={paginationModel} // Ensure this is up-to-date
+          paginationModel={paginationModel} 
           onPaginationModelChange={(model) => {
-            onPageChange(model); // Ensure this updates page correctly
+            onPageChange(model); 
           }}
           paginationMode="server"
           rowCount={rowCount}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[10]}
           getRowId={getRowId}
+          disableColumnMenu={true}
+          keepNonExistentRowsSelected
+          onRowSelectionModelChange={(model) => {
+            if (onSelectionModelChange) {
+              onSelectionModelChange(model); 
+            }
+          }}
         />
       </div>
     </ThemeProvider>

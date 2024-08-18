@@ -1,7 +1,7 @@
 export interface TopicFormProps {
   typeOfForm: string;
   topicData?: {
-    title: string;
+    name: string;
     description: string;
     id: string;
     status: number;

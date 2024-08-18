@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import NavTabs from "../../components/reusable/NavTabs";
-import { Box } from "@mui/material";
-import SearchField from "../../components/reusable/SearchField";
-import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { convertSearchParamsToObj } from "../../utils/common";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { Switch } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
 import { PreviewOutlined } from "@mui/icons-material";
-import DataTable from "../../components/reusable/Table";
-import { formatTimestamp } from "../../utils/formatTime";
+import { Box, Switch } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getFeedbacks, switchFeedbackStatus } from "../../api/feedback";
+import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
+import NavTabs from "../../components/reusable/NavTabs";
+import SearchField from "../../components/reusable/SearchField";
+import DataTable from "../../components/reusable/Table";
+import { convertSearchParamsToObj } from "../../utils/common";
+import { formatTimestamp } from "../../utils/formatTime";
+import { LoadingTable } from "../../components/reusable/Loading";
 
 const Feedback = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,22 +23,22 @@ const Feedback = () => {
     page: 0,
     pageSize: 10,
   });
+  const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
   const handleStatusChange = async (id: any, status: any) => {
-      const response = await switchFeedbackStatus(id, status);
-      console.log(response)
+    const response = await switchFeedbackStatus(id, status);
+    console.log(response);
   };
 
   const handleViewDetail = (id: string) => {
     navigate(`/feedbackdetail/${id}`);
-  }
-  
+  };
 
   const columns: GridColDef[] = [
     { field: "createdBy", headerName: "Name", flex: 1 },
-    { field: "content", headerName: "Content", flex: 3,  },
+    { field: "content", headerName: "Content", flex: 3 },
     { field: "testId", headerName: "Test", flex: 1 },
     { field: "createdAt", headerName: "Created At", flex: 1 },
     {
@@ -50,7 +50,14 @@ const Feedback = () => {
       width: 90,
       renderCell: (params) => {
         console.log(params);
-        return <Switch defaultChecked={params.row.status == 1} onChange={() => handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)} />;
+        return (
+          <Switch
+            defaultChecked={params.row.status == 1}
+            onChange={() =>
+              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+            }
+          />
+        );
       },
     },
     {
@@ -58,7 +65,7 @@ const Feedback = () => {
       headerName: "See detail",
       width: 100,
       flex: 0,
-      align:"right",
+      align: "right",
       sortable: false,
       renderCell: (params) => (
         <IconButton
@@ -73,6 +80,7 @@ const Feedback = () => {
   ];
 
   const fetchFeedbacks = async (page: number, pageSize: number) => {
+    setIsTableLoading(true);
     try {
       const response = await getFeedbacks({
         ...searchFeedbackQuery,
@@ -93,20 +101,22 @@ const Feedback = () => {
       console.log(error);
     } finally {
       setLoading(false);
+      setIsTableLoading(false);
     }
   };
+
   useEffect(() => {
     fetchFeedbacks(paginationModel.page, paginationModel.pageSize);
   }, [paginationModel, searchParams]);
 
   const handlePageChange = (model: GridPaginationModel) => {
     setPaginationModel(model);
-    fetchFeedbacks(model.page, model.pageSize);
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingTable />;
   }
+  
   return (
     <>
       <h1>Feedback Dashboard</h1>
@@ -136,6 +146,7 @@ const Feedback = () => {
         <CreateImportButtonGroup createPath="/feedbackdetail" importPath="/" />
       </Box>
       <DataTable
+        isLoading={isTableLoading}
         columns={columns}
         rows={feedbacks}
         getRowId={(row) => row._id}

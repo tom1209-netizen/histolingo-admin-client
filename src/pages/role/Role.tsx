@@ -13,6 +13,7 @@ import { getRolePermissions, getRoles } from "../../api/roles";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { convertSearchParamsToObj } from "../../utils/common";
+import { LoadingTable } from "../../components/reusable/Loading";
 
 const Role = () => {
   const { handleSwitchChange, handleEditRow } = useRowActions();
@@ -33,14 +34,16 @@ const Role = () => {
   });
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Role name", width: 130 },
-    { field: "permissions", headerName: "Permissions", width: 800 },
+    { field: "name", headerName: "Role name", flex: 1, sortable: false},
+    { field: "permissions", headerName: "Permissions", flex: 4, sortable: false },
     {
       field: "status",
       headerName: "Status",
+      flex: 0,
+      sortable: false,
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
-      width: 90,
+      width: 100,
       renderCell: (params) => (
         <Switch
           checked={params.value}
@@ -61,7 +64,9 @@ const Role = () => {
     {
       field: "edit",
       headerName: "Edit role",
-      width: 70,
+      width: 90,
+      align: "center",
+      flex: 0,
       sortable: false,
       renderCell: (params) => (
         <IconButton
@@ -133,7 +138,7 @@ const Role = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingTable />;
   }
 
   return (

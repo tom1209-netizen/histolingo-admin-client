@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 import Cookies from "js-cookie";
-import { SearchQuery } from "../schemas/admin.schema";
+import { SearchQuery } from "../schemas/schema";
 
 interface RoleActions {
   [action: string]: number;

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
-import { SearchQuery } from "../schemas/admin.schema";
+import { SearchQuery } from "../schemas/schema";
 
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 

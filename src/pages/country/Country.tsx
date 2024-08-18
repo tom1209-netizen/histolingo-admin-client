@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
-import NavTabs from "../../components/reusable/NavTabs";
-import { Box } from "@mui/material";
-import SearchField from "../../components/reusable/SearchField";
-import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
-import { useSearchParams } from "react-router-dom";
-import { convertSearchParamsToObj } from "../../utils/common";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { Switch } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
 import { EditOutlined } from "@mui/icons-material";
+import { Box, Switch } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { getCountries, switchCountryStatus } from "../../api/country";
+import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
+import NavTabs from "../../components/reusable/NavTabs";
+import SearchField from "../../components/reusable/SearchField";
 import DataTable from "../../components/reusable/Table";
 import { useRowActions } from "../../hooks/useRowActions";
-import { getCountries, switchCountryStatus } from "../../api/country";
+import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
+import { LoadingTable } from "../../components/reusable/Loading";
 
 const Country = () => {
-  const { handleSwitchChange, handleEditRow } = useRowActions();
+  const { handleEditRow } = useRowActions();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchCountryQuery = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,28 +25,36 @@ const Country = () => {
     page: 0,
     pageSize: 10,
   });
+  const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
-      const response = await switchCountryStatus(id, status);
-      console.log(response)
+    const response = await switchCountryStatus(id, status);
+    console.log(response);
   };
-  
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Country name", flex: 1 },
-    { field: "description", headerName: "Description",  flex: 3},
-    { field: "createdAt", headerName: "Created At",  flex: 1 },
-    { field: "updatedAt", headerName: "Updated At", flex: 1 },
+    { field: "name", headerName: "Country name", flex: 1, sortable: false },
+    { field: "description", headerName: "Description", flex: 3, sortable: false },
+    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
+    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
     {
       field: "status",
       flex: 0,
+      sortable: false,
       headerName: "Status",
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
       renderCell: (params) => {
         console.log(params);
-        return <Switch defaultChecked={params.row.status == 1} onChange={() => handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)} />;
+        return (
+          <Switch
+            defaultChecked={params.row.status == 1}
+            onChange={() =>
+              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+            }
+          />
+        );
       },
     },
     {
@@ -54,7 +62,7 @@ const Country = () => {
       headerName: "Edit country",
       width: 100,
       flex: 0,
-      align:"right",
+      align: "center",
       sortable: false,
       renderCell: (params) => (
         <IconButton
@@ -69,6 +77,7 @@ const Country = () => {
   ];
 
   const fetchCountries = async (page: number, pageSize: number) => {
+    setIsTableLoading(true);
     try {
       const response = await getCountries({
         ...searchCountryQuery,
@@ -81,7 +90,7 @@ const Country = () => {
         createdAt: formatTimestamp(country.createdAt),
         updatedAt: formatTimestamp(country.updatedAt),
       }));
-      const totalRows = response.data.data.totalCount;
+      const totalRows = response.data.data.totalCountries;
       console.log(countriesData);
       setCountries(formattedCountries);
       setRowCount(totalRows);
@@ -89,20 +98,20 @@ const Country = () => {
       console.log(error);
     } finally {
       setLoading(false);
+      setIsTableLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchCountries(paginationModel.page, paginationModel.pageSize);
   }, [paginationModel, searchParams]);
 
   const handlePageChange = (model: GridPaginationModel) => {
     setPaginationModel(model);
-    fetchCountries(model.page, model.pageSize);
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingTable />;
   }
   return (
     <>
@@ -133,6 +142,7 @@ const Country = () => {
         <CreateImportButtonGroup createPath="/createcountry" importPath="/" />
       </Box>
       <DataTable
+        isLoading={isTableLoading}
         columns={columns}
         rows={countries}
         getRowId={(row) => row._id}

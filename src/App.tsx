@@ -24,9 +24,14 @@ import CreateCountry from "./pages/country/CreateCountry";
 import UpdateCountry from "./pages/country/UpdateCountry";
 import CreateTopic from "./pages/topic/CreateTopic";
 import UpdateTopic from "./pages/topic/UpdateTopic";
-// import PlayerTest from "./pages/playerTest/PlayerTest";
 import UpdateQuestion from "./pages/question/UpdateQuestion";
 import CreateQuestion from "./pages/question/CreateQuestion";
+import PlayerTest from "./pages/playerTest/playerTest";
+import UpdatePlayerTest from "./pages/playerTest/UpdatePlayerTest";
+import CreatePlayerTest from "./pages/playerTest/CreatePlayerTest";
+import Documentation from "./pages/documentation/Documentation";
+import UpdateDocumentation from "./pages/documentation/UpdateDocumentation";
+import CreateDocumentation from "./pages/documentation/CreateDocumentation";
 
 const App: React.FC = () => {
   return (
@@ -55,19 +60,21 @@ const App: React.FC = () => {
           <Route path="/topic/:topicId" element={<UpdateTopic />} />
           <Route path="/createtopic" element={<CreateTopic />} />
 
-          {/* <Route path="/test" element={<PlayerTest />} /> */}
-
-          <Route path="/learner" element={<Learner />} />
-
           <Route path="/question" element={<Question />} />
           <Route path="/question/:questionId" element={<UpdateQuestion />} />
           <Route path="/createQuestion" element={<CreateQuestion />} />
 
+          <Route path="/playertest" element={<PlayerTest />} />
+          <Route path="/playertest/:testId" element={<UpdatePlayerTest />} />
+          <Route path="/createtest" element={<CreatePlayerTest />} />
+
+          <Route path="/documentation" element={<Documentation />} />
+          <Route path="/documentation/:documentationId" element={<UpdateDocumentation />} />
+          <Route path="/createdocumentation" element={<CreateDocumentation />} />
+
+          <Route path="/learner" element={<Learner />} />
           <Route path="/feedback" element={<Feedback />} />
-
           <Route path="/account" element={<MyAccount />} />
-
-          {/* <Route path="/:type/:id" element={<Detail />} /> */}
         </Route>
       </Routes>
       <ToastContainer />

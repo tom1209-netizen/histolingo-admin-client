@@ -12,10 +12,11 @@ import { EditOutlined } from "@mui/icons-material";
 import DataTable from "../../components/reusable/Table";
 import { useRowActions } from "../../hooks/useRowActions";
 import { formatTimestamp } from "../../utils/formatTime";
-import { getTopics } from "../../api/topic";
+import { getTopics, switchTopicStatus } from "../../api/topic";
+import { LoadingTable } from "../../components/reusable/Loading";
 
 const Topic = () => {
-  const { handleSwitchChange, handleEditRow } = useRowActions();
+  const { handleEditRow } = useRowActions();
   const [loading, setLoading] = useState<boolean>(true);
   const [topics, setTopics] = useState<any[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,23 +27,43 @@ const Topic = () => {
     pageSize: 10,
   });
 
+  const handleStatusChange = async (id: any, status: any) => {
+    const response = await switchTopicStatus(id, status);
+    console.log(response);
+  };
+
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Topic name", width: 200 },
-    { field: "description", headerName: "Description", width: 250 },
-    { field: "countryId", headerName: "Country", width: 200 },
-    { field: "createdAt", headerName: "Created At", width: 130 },
-    { field: "updatedAt", headerName: "Updated At", width: 130 },
+    { field: "name", headerName: "Topic name", flex: 1, sortable: false },
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 2,
+      sortable: false,
+    },
+    { field: "countryId", headerName: "Country", flex: 1, sortable: false },
+    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
+    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
     {
       field: "status",
       headerName: "Status",
+      flex: 0,
+      sortable: false,
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
-      renderCell: (params) => <Switch />,
+      renderCell: (params) => (
+        <Switch
+          defaultChecked={params.row.status == 1}
+          onChange={() =>
+            handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+          }
+        />
+      ),
     },
     {
       field: "edit",
       headerName: "Edit topic",
+      flex: 0,
       width: 100,
       sortable: false,
       renderCell: (params) => (
@@ -87,7 +108,7 @@ const Topic = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingTable />;
   }
 
   return (

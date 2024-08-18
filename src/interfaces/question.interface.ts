@@ -1,15 +1,9 @@
 export interface BaseFormValues {
-  topicId: string;
-  countryId: string;
+  topic: string;
+  country: string;
   questionType: 0 | 1 | 2 | 3;
-  ask: string;
-  status: number;
+  status: string;
   localeData: any;
-}
-
-export interface TrueFalseFormValues extends BaseFormValues {
-  questionType: 1;
-  answer: boolean;
 }
 
 export interface MultipleChoiceFormValues extends BaseFormValues {
@@ -18,11 +12,16 @@ export interface MultipleChoiceFormValues extends BaseFormValues {
   answer: number;
 }
 
+export interface TrueFalseFormValues extends BaseFormValues {
+  questionType: 1;
+  answer: boolean;
+}
+
 export interface MatchingFormValues extends BaseFormValues {
   questionType: 2;
   leftColumn: string[];
   rightColumn: string[];
-  answer: number[][];
+  answer: { leftColumn: string; rightColumn: string }[];
 }
 
 export interface FillInTheBlankFormValues extends BaseFormValues {

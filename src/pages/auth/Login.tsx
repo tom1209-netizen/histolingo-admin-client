@@ -84,11 +84,6 @@ export default function Login() {
           >
             <EmailInputField control={control} errors={errors} />
             <PasswordInputField control={control} errors={errors} />
-            {/* 
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
             <Button
               type="submit"
               fullWidth

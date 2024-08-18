@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import NavTabs from "../../components/reusable/NavTabs";
-import { Box } from "@mui/material";
-import SearchField from "../../components/reusable/SearchField";
-import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { convertSearchParamsToObj } from "../../utils/common";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { Switch } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
 import { PreviewOutlined } from "@mui/icons-material";
-import DataTable from "../../components/reusable/Table";
-import { formatTimestamp } from "../../utils/formatTime";
+import { Box, Switch } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getLearners, switchLearnerStatus } from "../../api/learners";
+import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
+import NavTabs from "../../components/reusable/NavTabs";
+import SearchField from "../../components/reusable/SearchField";
+import DataTable from "../../components/reusable/Table";
+import { convertSearchParamsToObj } from "../../utils/common";
+import { formatTimestamp } from "../../utils/formatTime";
+import { LoadingTable } from "../../components/reusable/Loading";
 
 const Learner = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,22 +23,22 @@ const Learner = () => {
     page: 0,
     pageSize: 10,
   });
+  const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
   const handleStatusChange = async (id: any, status: any) => {
-      const response = await switchLearnerStatus(id, status);
-      console.log(response)
+    const response = await switchLearnerStatus(id, status);
+    console.log(response);
   };
 
   const handleViewDetail = (id: string) => {
     navigate(`/learnerdetail/${id}`);
-  }
-  
+  };
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", width: 200, flex: 1 },
-    { field: "description", headerName: "Description", width: 450,  flex: 1 },
+    { field: "description", headerName: "Description", width: 450, flex: 1 },
     { field: "createdAt", headerName: "Created At", width: 130, flex: 1 },
     { field: "updatedAt", headerName: "Updated At", width: 130, flex: 1 },
     {
@@ -50,7 +50,14 @@ const Learner = () => {
       width: 90,
       renderCell: (params) => {
         console.log(params);
-        return <Switch defaultChecked={params.row.status == 1} onChange={() => handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)} />;
+        return (
+          <Switch
+            defaultChecked={params.row.status == 1}
+            onChange={() =>
+              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+            }
+          />
+        );
       },
     },
     {
@@ -58,7 +65,7 @@ const Learner = () => {
       headerName: "See detail",
       width: 100,
       flex: 0,
-      align:"right",
+      align: "right",
       sortable: false,
       renderCell: (params) => (
         <IconButton
@@ -73,13 +80,14 @@ const Learner = () => {
   ];
 
   const fetchLearners = async (page: number, pageSize: number) => {
+    setIsTableLoading(true);
     try {
       const response = await getLearners({
         ...searchLearnerQuery,
         page: paginationModel.page + 1,
         pageSize: paginationModel.pageSize,
       });
-      const learnersData = response.data.data.learners;
+      const learnersData = response.data.data.players;
       const formattedLearners = learnersData.map((learner: any) => ({
         ...learner,
         createdAt: formatTimestamp(learner.createdAt),
@@ -93,6 +101,7 @@ const Learner = () => {
       console.log(error);
     } finally {
       setLoading(false);
+      setIsTableLoading(false);
     }
   };
   useEffect(() => {
@@ -101,11 +110,10 @@ const Learner = () => {
 
   const handlePageChange = (model: GridPaginationModel) => {
     setPaginationModel(model);
-    fetchLearners(model.page, model.pageSize);
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingTable />;
   }
   return (
     <>
@@ -136,6 +144,7 @@ const Learner = () => {
         <CreateImportButtonGroup createPath="/learnerdetail" importPath="/" />
       </Box>
       <DataTable
+        isLoading={isTableLoading}
         columns={columns}
         rows={learners}
         getRowId={(row) => row._id}

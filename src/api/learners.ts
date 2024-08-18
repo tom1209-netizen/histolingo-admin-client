@@ -1,14 +1,14 @@
 import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
-import { SearchQuery } from "../schemas/admin.schema";
+import { SearchQuery } from "../schemas/schema";
 
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 
 export const getLearners = async (query : SearchQuery = {}): Promise<AxiosResponse<any>> => {
     try {
       const accessToken = Cookies.get("accessToken");
-      const response = await axios.get(`${domain_api}/learners`, {
+      const response = await axios.get(`${domain_api}/players`, {
         headers: { Authorization: `Bearer ${accessToken}` },
         params: query,
       });

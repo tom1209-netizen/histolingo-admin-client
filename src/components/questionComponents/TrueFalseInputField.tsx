@@ -21,9 +21,9 @@ const TrueFalseInputField: React.FC<SelectProps> = ({
   onChange,
 }) => {
   return (
-    <FormControl fullWidth margin="normal" required error={!!errors["answer"]}>
+    <FormControl fullWidth margin="normal" required error={!!errors["answer-type-0"]}>
       <Controller
-        name="answer"
+        name="answer-type-0"
         control={control}
         defaultValue=""
         rules={{
@@ -37,16 +37,16 @@ const TrueFalseInputField: React.FC<SelectProps> = ({
               field.onChange(e);
               onChange(e);
             }}
-            value={field.value || undefined}
+            value={field.value || ""}
           >
             <MenuItem value="true">True</MenuItem>
             <MenuItem value="false">False</MenuItem>
           </Select>
         )}
       />
-      {errors["answer"] && (
+      {errors["answer-type-0"] && (
         <FormHelperText>
-          {(errors["answer"] as any)?.message || ""}
+          {(errors["answer-type-0"] as any)?.message || ""}
         </FormHelperText>
       )}
     </FormControl>
