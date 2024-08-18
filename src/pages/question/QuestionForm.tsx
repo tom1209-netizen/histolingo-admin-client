@@ -4,6 +4,7 @@ import {
   SelectChangeEvent,
   ThemeProvider,
 } from "@mui/material";
+import Button from "@mui/material/Button";
 import FormLabel from "@mui/material/FormLabel";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -13,22 +14,21 @@ import { getCountries } from "../../api/country";
 import { getTopicsByCountry } from "../../api/topic";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
-import MultipleChoiceAnswer from "../../components/questionComponents/MCQSelectAnswer";
+import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
+import MatchingPair from "../../components/questionComponents/matchingType/MatchingPair";
+import MCQQuestionText from "../../components/questionComponents/mcqType/MCQQuestionText";
+import MultipleChoiceAnswer from "../../components/questionComponents/mcqType/MCQSelectAnswer";
 import TrueFalseInputField from "../../components/questionComponents/TrueFalseInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
 import { questionTypes } from "../../constant/questionTypes";
-import Button from "@mui/material/Button";
 import {
   FormValues,
   QuestionFormProps,
 } from "../../interfaces/question.interface";
 import theme from "../../theme/GlobalCustomTheme";
-import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
-import MCQQuestionText from "../../components/questionComponents/MCQQuestionText";
-import { auto } from "@popperjs/core";
-import MatchingPair from "../../components/questionComponents/MatchingPair";
+import { createQuestion } from "../../api/question";
 
 const QuestionForm: React.FC<QuestionFormProps> = ({
   typeOfForm,
@@ -40,16 +40,19 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
     watch,
   } = useForm<any>({
     mode: "onChange",
     defaultValues: {
       language: "en-US",
       localeData: {
-        "en-US": { ask: "", options: [] },
+        "en-US": { ask: "" },
       },
     },
   });
+
+  // USE FIELD ARRAY
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -71,7 +74,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     const fetchCountries = async () => {
       try {
         const query = { status: 1 };
-        const response = await getCountries();
+        const response = await getCountries(query);
         const countries = response.data.data.countries;
         console.log(countries);
         const countryNames = countries.map((country: any) => ({
@@ -106,6 +109,52 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     }
   };
 
+  // FETCH QUESTION DATA IF UPDATE FORM
+  //   useEffect(() => {
+  //     const updateForm = () => {
+  //       try {
+  //         if (typeOfForm === "update" && questionData) {
+  //           console.log("Updating form with questionData:", questionData);
+  //           const status = questionData.status === 1 ? "active" : "inactive";
+
+  //           // Set basic values
+  //           setValue("language", questionData.language);
+  //           setValue("country", questionData.countryId);
+  //           setValue("topic", questionData.topicId);
+  //           setValue("status", status);
+  //           setValue("localeData", questionData.localeData);
+  //           setValue("questionType", questionData.questionType);
+
+  //           // Handle questionType specific logic
+  //           if (questionData.questionType === 2) {
+  //             const matchingPairs = questionData.localeData["en-US"].answer;
+  //             console.log("matchingPairs", matchingPairs);
+  //             reset({ answer: matchingPairs });
+  //           } else if (questionData.questionType === 3) {
+  //             const answers = questionData.localeData["en-US"].answer;
+  //             console.log("answers", answers);
+  //             reset({ answer: answers });
+  //           }
+
+  //           // Set localized data for each locale
+  //           Object.keys(questionData.localeData).forEach((locale) => {
+  //             setValue(`localeData[${locale}].ask`, questionData.localeData[locale].ask);
+  //             setValue(`localeData[${locale}].answer`, questionData.localeData[locale].answer);
+  //           });
+  //         } else {
+  //           reset({ language: "en-US", localeData: { "en-US": { ask: "" } } });
+  //         }
+  //       } catch (error) {
+  //         console.error(error);
+  //         toast.error("Failed to fetch question data");
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     };
+
+  //     updateForm();
+  //   }, [questionData, typeOfForm, setValue, reset]);
+
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
@@ -125,8 +174,22 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     const value = event.target.value;
     setValue("questionType", value);
     if (value === "2" && fields.length === 0) {
+      reset({
+        language: "en-US",
+        localeData: {
+          "en-US": { ask: "" },
+        },
+        questionType: "2",
+      });
       append({ leftColumn: "", rightColumn: "" });
     }
+    reset({
+      language: "en-US",
+      localeData: {
+        "en-US": { ask: "" },
+      },
+      questionType: value,
+    });
   };
 
   // HANDLE TRUE/FALSE CHANGE
@@ -147,14 +210,37 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   const onSubmit = async (data: FormValues) => {
     console.log(data);
     const status = data.status === "active" ? 1 : 0;
-    const body = {
+    let baseBody = {
       countryId: data.country,
       topicId: data.topic,
       ask: data.localeData["en-US"].ask,
       questionType: Number(data.questionType),
+    //   status: status,
+      answer: data.answer,
       localeData: data.localeData,
     };
-    console.log("Question form submitted with data:", body);
+
+    if (Number(data.questionType) === 3) {
+      baseBody.answer = data.localeData["en-US"].answer.split("\n");
+      for (const [locale, localeEntry] of Object.entries(baseBody.localeData)) {
+        const typedLocaleEntry = localeEntry as { answer: string | string[] };
+        if (typeof typedLocaleEntry.answer === "string") {
+          typedLocaleEntry.answer = typedLocaleEntry.answer.split("\n");
+        }
+      }
+    }
+
+    if (Number(data.questionType) === 2) {
+      baseBody.answer = data.localeData["en-US"].answer;
+    }
+
+    try {
+      const response = await createQuestion(baseBody);
+      console.log(response);
+    } catch (error) {
+      console.error("An error occurred:", error);
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   if (loading) {
@@ -172,6 +258,34 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="question-select" required>
+            Question type (choose one only)
+          </FormLabel>
+          <SelectInputField
+            control={control}
+            errors={errors}
+            name="questionType"
+            label="Question type"
+            options={questionTypes}
+            onChange={handleQuestionTypeChange}
+          />
+        </FormGrid>
+
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="language-select" required>
+            Language
+          </FormLabel>
+          <SelectInputField
+            control={control}
+            errors={errors}
+            name="language"
+            label="Language"
+            options={languageOptions}
+            onChange={handleLanguageChange}
+          />
+        </FormGrid>
+
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="country-select" required>
             Country
@@ -202,45 +316,17 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="question-select" required>
-            Question type
-          </FormLabel>
-          <SelectInputField
-            control={control}
-            errors={errors}
-            name="questionType"
-            label="Question type"
-            options={questionTypes}
-            onChange={handleQuestionTypeChange}
-          />
-        </FormGrid>
-
-        <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="language-select" required>
-            Language
-          </FormLabel>
-          <SelectInputField
-            control={control}
-            errors={errors}
-            name="language"
-            label="Language"
-            options={languageOptions}
-            onChange={handleLanguageChange}
-          />
-        </FormGrid>
-
-        <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="ask" required>
             Question
           </FormLabel>
           <LocaleTextInputField
             property={"ask"}
             language={language}
-            name="ask"
+            name="Question ask"
             control={control}
             errors={errors}
             length={500}
-            rowHeight={auto}
+            minRows={1}
             multiline={true}
           />
         </FormGrid>
@@ -256,19 +342,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           />
         </FormGrid>
 
-        {questionType === "1" && (
-          <FormGrid item xs={12} md={6}>
-            <FormLabel htmlFor="answer" required>
-              True/False answer
-            </FormLabel>
-            <TrueFalseInputField
-              control={control}
-              errors={errors}
-              onChange={handleTrueFalseChange}
-            />
-          </FormGrid>
-        )}
-
         {questionType === "0" && (
           <>
             <MCQQuestionText
@@ -277,7 +350,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
               errors={errors}
             />
             <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="answer" required>
+              <FormLabel htmlFor="answer-type-0" required>
                 Multiple Choice Answer
               </FormLabel>
               <MultipleChoiceAnswer
@@ -292,11 +365,27 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           </>
         )}
 
+        {questionType === "1" && (
+          <>
+            <FormGrid item xs={12} md={6}>
+              <FormLabel htmlFor="answer-type-1" required>
+                True/False answer
+              </FormLabel>
+              <TrueFalseInputField
+                control={control}
+                errors={errors}
+                onChange={handleTrueFalseChange}
+              />
+            </FormGrid>
+            <FormGrid item xs={12} md={6}></FormGrid>
+          </>
+        )}
+
         {questionType === "2" && (
           <>
             {fields.map((item, index) => (
-              <>
-                <FormGrid item xs={12} md={12} key={item.id}>
+              <React.Fragment key={item.id}>
+                <FormGrid item xs={12} md={12}>
                   <MatchingPair
                     index={index}
                     language={language}
@@ -314,7 +403,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                     Delete
                   </Button>
                 </FormGrid>
-              </>
+              </React.Fragment>
             ))}
             <FormGrid item>
               <Button
@@ -333,17 +422,17 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         {questionType === "3" && (
           <>
             <FormGrid item xs={12} md={6}>
-              <FormLabel htmlFor="answer" required>
+              <FormLabel htmlFor="answer-type-3" required>
                 Answer
               </FormLabel>
               <LocaleTextInputField
                 property={"answer"}
                 language={language}
-                name="answer"
+                name="Answer"
                 control={control}
                 errors={errors}
                 length={500}
-                rowHeight={auto}
+                minRows={5}
                 multiline={true}
               />
             </FormGrid>

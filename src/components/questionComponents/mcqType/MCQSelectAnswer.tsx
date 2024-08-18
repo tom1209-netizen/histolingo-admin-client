@@ -21,9 +21,9 @@ const MultipleChoiceAnswer: React.FC<SelectProps> = ({
   onChange,
 }) => {
   return (
-    <FormControl fullWidth margin="normal" required error={!!errors["answer"]}>
+    <FormControl fullWidth margin="normal" required error={!!errors["answer-type-1"]}>
       <Controller
-        name="answer"
+        name="answer-type-1"
         control={control}
         defaultValue=""
         rules={{
@@ -47,9 +47,9 @@ const MultipleChoiceAnswer: React.FC<SelectProps> = ({
           </Select>
         )}
       />
-      {errors["answer"] && (
+      {errors["answer-type-1"] && (
         <FormHelperText>
-          {(errors["answer"] as any)?.message || ""}
+          {(errors["answer-type-1"] as any)?.message || ""}
         </FormHelperText>
       )}
     </FormControl>

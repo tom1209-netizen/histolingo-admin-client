@@ -6,22 +6,22 @@ export interface BaseFormValues {
   localeData: any;
 }
 
-export interface TrueFalseFormValues extends BaseFormValues {
-  questionType: 1;
-  answer: boolean;
-}
-
 export interface MultipleChoiceFormValues extends BaseFormValues {
   questionType: 0;
   options: string[];
   answer: number;
 }
 
+export interface TrueFalseFormValues extends BaseFormValues {
+  questionType: 1;
+  answer: boolean;
+}
+
 export interface MatchingFormValues extends BaseFormValues {
   questionType: 2;
   leftColumn: string[];
   rightColumn: string[];
-  answer: number[][];
+  answer: { leftColumn: string; rightColumn: string }[];
 }
 
 export interface FillInTheBlankFormValues extends BaseFormValues {

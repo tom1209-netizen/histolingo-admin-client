@@ -6,22 +6,25 @@ import { useDebounce } from "../../hooks/useDebounce";
 
 interface SearchFieldProps {
   label: string;
-  onChange?: (value : any) => void;
+  onChange?: (value: any) => void;
   delay?: number;
 }
 const SearchField = ({ label, onChange, delay }: SearchFieldProps) => {
   const debounce = useDebounce(delay || 500);
-  const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextFieldChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (onChange) {
       debounce(() => onChange(event.target.value));
     }
-  }
+  };
   return (
     <TextField
       size="small"
       id="outlined-search"
-      label={label}
+      // label={label}
       type="search"
+      placeholder={`${label}`}
       onChange={handleTextFieldChange}
       InputProps={{
         startAdornment: (

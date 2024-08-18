@@ -2,7 +2,7 @@ import React from "react";
 import { TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 
-const LocaleTextInputField = ({
+const FillTheBlanksAnswer = ({
   language,
   control,
   errors,
@@ -52,4 +52,4 @@ const LocaleTextInputField = ({
   );
 };
 
-export default LocaleTextInputField;
+export default FillTheBlanksAnswer;

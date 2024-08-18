@@ -90,7 +90,7 @@ const Country = () => {
         createdAt: formatTimestamp(country.createdAt),
         updatedAt: formatTimestamp(country.updatedAt),
       }));
-      const totalRows = response.data.data.totalCount;
+      const totalRows = response.data.data.totalCountries;
       console.log(countriesData);
       setCountries(formattedCountries);
       setRowCount(totalRows);

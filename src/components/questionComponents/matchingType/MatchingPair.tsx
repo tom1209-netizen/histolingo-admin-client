@@ -2,8 +2,8 @@ import { FormLabel } from "@mui/material";
 import React from "react";
 import { Control, FieldErrors } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
-import { FormGrid } from "../../constant/FormGrid";
-import MultipleChoiceText from "./MCQText";
+import { FormGrid } from "../../../constant/FormGrid";
+import MultipleChoiceText from "../mcqType/MCQText";
 import PairText from "./PairText";
 
 interface InputFieldProps {
@@ -27,6 +27,7 @@ const MatchingPair: React.FC<InputFieldProps> = ({
         </FormLabel>
         <PairText
           position="leftColumn"
+          property="answer"
           index={index}
           language={language}
           name="Left Column"
@@ -43,6 +44,7 @@ const MatchingPair: React.FC<InputFieldProps> = ({
         <PairText
           index={index}
           position="rightColumn"
+          property="answer"
           language={language}
           length={500}
           name="Right column"

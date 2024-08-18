@@ -251,7 +251,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
             language={language}
             name={"Country name"}
             length={50}
-            rowHeight={auto}
+            minRows={1}
           />
         </FormGrid>
 

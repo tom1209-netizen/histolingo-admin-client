@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 import React, { useState } from 'react';
@@ -7,6 +8,7 @@ import { Control, FieldErrors, useController } from 'react-hook-form';
 interface UploadFileProps {
   control: Control<any>;
   errors: FieldErrors<any>;
+  initialImageUrl?: string;
 }
 
 const DropzoneWrapper = styled('div')({
@@ -39,7 +41,7 @@ const ErrorMessage = styled('div')({
   marginTop: '0.5rem',
 });
 
-const UploadFile: React.FC<UploadFileProps> = ({ control, errors }) => {
+const UploadFile: React.FC<UploadFileProps> = ({ control, errors, initialImageUrl }) => {
     const theme = useTheme();
   const [image, setImage] = useState<string | null>(null);
   const {
@@ -67,6 +69,12 @@ const UploadFile: React.FC<UploadFileProps> = ({ control, errors }) => {
       onChange(file); 
     },
   });
+
+  useEffect(() => {
+    if (initialImageUrl) {
+      setImage(initialImageUrl); // Set initial image from URL
+    }
+  }, [initialImageUrl]);
 
   return (
     <DropzoneWrapper {...getRootProps()}>

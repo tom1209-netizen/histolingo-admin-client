@@ -11,7 +11,7 @@ const UpdateCountry = () => {
       const fetchCountry = async () => {
         try {
           const response = await getIndividualCountry(countryId);
-          const data = response.data.data;
+          const data = response.data.data.country;
           console.log(data);
           setCountry(data);
         } catch (error) {
@@ -30,6 +30,8 @@ const UpdateCountry = () => {
     id: countryId || "",
     status: country?.status,
   };
+
+  console.log(countryData, "data passed in")
 
   return <CountryForm typeOfForm="update" countryData={countryData} />;
 };

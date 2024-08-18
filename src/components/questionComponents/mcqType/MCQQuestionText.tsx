@@ -1,5 +1,5 @@
 import React from "react";
-import { FormGrid } from "../../constant/FormGrid";
+import { FormGrid } from "../../../constant/FormGrid";
 import { FormLabel } from "@mui/material";
 import MultipleChoiceText from "./MCQText";
 

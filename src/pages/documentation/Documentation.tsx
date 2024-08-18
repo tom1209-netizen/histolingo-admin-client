@@ -50,8 +50,8 @@ const Documentation = () => {
       valueGetter: (value, row) => row.topic.name,
     },
     {
-      field: "createdBy",
-      headerName: "Created by",
+      field: "source",
+      headerName: "Source",
       flex: 1,
       sortable: false,
       renderCell: (params) => {

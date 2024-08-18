@@ -60,7 +60,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
     const fetchCountries = async () => {
       try {
         const query = { status: 1 };
-        const response = await getCountries();
+        const response = await getCountries(query);
         const countries = response.data.data.countries;
         console.log(countries);
         const countryNames = countries.map((country: any) => ({
@@ -208,7 +208,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
             control={control}
             errors={errors}
             length={500}
-            rowHeight={auto}
+            minRows={14}
             multiline={true}
           />
         </FormGrid>

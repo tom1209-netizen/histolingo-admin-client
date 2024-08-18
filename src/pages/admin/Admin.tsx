@@ -19,7 +19,8 @@ const Admin = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [admins, setAdmins] = useState<any[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchAdminQuery = convertSearchParamsToObj(searchParams);
+
+  const searchAdminQuery: any = convertSearchParamsToObj(searchParams);
   const [rowCount, setRowCount] = useState<number>(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -39,8 +40,7 @@ const Admin = () => {
       headerName: "Roles",
       flex: 1,
       sortable: false,
-      valueGetter: (value, row) =>
-        row.roles.map((role: any) => role.id).join(", "),
+      valueGetter: (value, row) => row.role.name.join(", "),
     },
     { field: "email", headerName: "Email", flex: 1, sortable: false },
     {
@@ -107,6 +107,7 @@ const Admin = () => {
       }));
       const totalRows = response.data.data.totalCount;
       setAdmins(formattedAdminsData);
+      console.log(formattedAdminsData);
       setRowCount(totalRows);
     } catch (error) {
       console.log(error);
@@ -144,7 +145,7 @@ const Admin = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchAdminQuery, status: value })
             }
-            value=""
+            value={searchAdminQuery.status || ""}
           />
           <SearchField
             label="Search admin"

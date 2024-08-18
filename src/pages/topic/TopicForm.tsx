@@ -197,7 +197,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
             name={"Topic name"}
             length={50}
             multiline={false}
-            rowHeight={auto}
+            minRows={1}
           />
         </FormGrid>
 
@@ -231,7 +231,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
             name={"Description"}
             length={1500}
             multiline={true}
-            rowHeight={14}
+            minRows={14}
           />
         </FormGrid>
 

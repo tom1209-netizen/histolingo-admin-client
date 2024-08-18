@@ -5,7 +5,6 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
-import { auto } from "@popperjs/core";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +33,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
     formState: { errors },
     setValue,
     watch,
+    reset,
   } = useForm<any>({
     mode: "onChange",
     defaultValues: {
@@ -51,6 +51,8 @@ const CountryForm: React.FC<CountryFormProps> = ({
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
     useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  
 
   // CHECK IF ENGLISH FIELDS ARE FILLED
   useEffect(() => {
@@ -70,20 +72,23 @@ const CountryForm: React.FC<CountryFormProps> = ({
     if (typeOfForm === "update" && countryData) {
       console.log("Updating form with countryData:", countryData);
       const status = countryData.status === 1 ? "active" : "inactive";
-      setValue("image", countryData.image);
-      setValue("status", status);
-      setValue("localeData", countryData.localeData);
+      reset(countryData)
+      // setValue("image", countryData.image);
+      // setValue("status", status);
+      // setValue("localeData", countryData.localeData);
+      console.log(language)
+      // handleLanguageChange({ target: { value: language } });
 
-      Object.keys(countryData.localeData).forEach((locale: any) => {
-        setValue(
-          `localeData[${locale}].description`,
-          countryData.localeData[locale].description
-        );
-        setValue(
-          `localeData[${locale}].name`,
-          countryData.localeData[locale].name
-        );
-      });
+      // Object.keys(countryData.localeData).forEach((locale: any) => {
+      //   setValue(
+      //     `localeData[${locale}].description`,
+      //     countryData.localeData[locale].description
+      //   );
+      //   setValue(
+      //     `localeData[${locale}].name`,
+      //     countryData.localeData[locale].name
+      //   );
+      // });
     }
   }, [countryData]);
 
@@ -168,7 +173,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
             language={language}
             name={"Country name"}
             length={50}
-            rowHeight={auto}
+            minRows={1}
           />
         </FormGrid>
 
@@ -176,7 +181,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
           <FormLabel htmlFor="image" required>
             Upload Image
           </FormLabel>
-          <UploadFile control={control} errors={errors} />
+          <UploadFile control={control} errors={errors} initialImageUrl={countryData?.image}  />
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
@@ -191,7 +196,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
             name={"Description"}
             length={1500}
             multiline={true}
-            rowHeight={14}
+            minRows={14}
           />
         </FormGrid>
 
