@@ -6,6 +6,7 @@ import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
+import QuizIcon from '@mui/icons-material/Quiz';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
@@ -70,5 +71,12 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Feedback" />
     </ListItemButton>
+    <ListItemButton component={Link} to="/testplay">
+        <ListItemIcon>
+            <QuizIcon />
+        </ListItemIcon>
+        <ListItemText primary="Test Play" />
+    </ListItemButton>
+
   </React.Fragment>
 );
