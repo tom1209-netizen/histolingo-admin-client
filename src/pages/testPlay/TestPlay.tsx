@@ -17,7 +17,17 @@ import {
 } from '@mui/material';
 import { getIndividualTest } from "../../api/test"
 
-const colors = ['lightgreen', 'lightblue', 'lightcoral', 'lightpink', 'lightgoldenrodyellow'];
+const colors = [
+    '#f48fb1',
+    '#e1bee7',
+    '#b39ddb',
+    '#9fa8da',
+    '#90caf9',
+    '#80cbc4',
+    '#81d4fa',
+    '#80deea',
+    '#c5e1a5'
+];
 
 function TrueFalseQuestion({ questionsData }) {
     return (
