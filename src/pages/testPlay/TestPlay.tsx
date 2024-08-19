@@ -2,7 +2,6 @@ import React, {
     useEffect,
     useState
 } from 'react';
-import axios, { AxiosPromise } from 'axios';
 import {
     Container,
     Typography,
@@ -16,24 +15,14 @@ import {
     RadioGroup,
     TextField
 } from '@mui/material';
-
-const initialTerms = [
-    { id: 1, term: "Apple" },
-    { id: 2, term: "Banana" },
-    { id: 3, term: "Orange" },
-];
-
-const initialDefinitions = [
-    { id: 1, definition: "A sweet red fruit" },
-    { id: 2, definition: "A long yellow fruit" },
-    { id: 3, definition: "A citrus fruit" },
-];
+import { getIndividualTest } from "../../api/test"
 
 const colors = ['lightgreen', 'lightblue', 'lightcoral', 'lightpink', 'lightgoldenrodyellow'];
 
-function TrueFalseQuestion(props: any) {
+function TrueFalseQuestion({ questionsData }) {
     return (
         <Paper sx={{ padding: 2, marginBottom: 2 }}>
+            <Typography variant="h5">{questionsData.ask}</Typography>
             <Typography variant="h5">True/False Question</Typography>
             <RadioGroup>
                 <FormControlLabel value="true" control={<Radio />} label="True" />
@@ -43,23 +32,26 @@ function TrueFalseQuestion(props: any) {
     );
 }
 
-function MultipleChoiceQuestion(props: any) {
+function MultipleChoiceQuestion({ questionsData }) {
     return (
         <Paper sx={{ padding: 2, marginBottom: 2 }}>
+            <Typography variant="h5">{questionsData.ask}</Typography>
             <Typography variant="h5">Multiple Choice Question</Typography>
             <RadioGroup>
-                <FormControlLabel value="A" control={<Radio />} label="A" />
-                <FormControlLabel value="B" control={<Radio />} label="B" />
-                <FormControlLabel value="C" control={<Radio />} label="C" />
-                <FormControlLabel value="D" control={<Radio />} label="D" />
+                {
+                    questionsData.options.map((option, index) => (
+                        <FormControlLabel key={index} value={option} control={<Radio />} label={option} />
+                    ))
+                }
             </RadioGroup>
         </Paper>
     );
 }
 
-function FillInTheBlankQuestion(props: any) {
+function FillInTheBlankQuestion({ questionsData }) {
     return (
         <Paper sx={{ padding: 2, marginBottom: 2 }}>
+            <Typography variant="h5">{questionsData.ask}</Typography>
             <Typography variant="h5">Fill In The Blank Question</Typography>
             <TextField
                 fullWidth
@@ -71,10 +63,13 @@ function FillInTheBlankQuestion(props: any) {
     );
 }
 
-function MatchingQuestion(props: any) {
+function MatchingQuestion({ questionsData }) {
     const [selectedTerm, setSelectedTerm] = useState(null);
     const [selectedDefinition, setSelectedDefinition] = useState(null);
     const [matches, setMatches] = useState([]);
+
+    const rightColumn = questionsData['answer'].map(item => item['rightColumn']);
+    const leftColumn = questionsData['answer'].map(item => item['leftColumn']);
 
     const handleSelectTerm = (term) => {
         setSelectedTerm(term);
@@ -87,58 +82,59 @@ function MatchingQuestion(props: any) {
     const handleMatch = () => {
         if (selectedTerm && selectedDefinition) {
             const color = colors[matches.length % colors.length]; // Rotate through colors
-            setMatches([...matches, { termId: selectedTerm.id, definitionId: selectedDefinition.id, color}]);
+            setMatches([...matches, { term: selectedTerm, definition: selectedDefinition, color }]);
             setSelectedTerm(null);
             setSelectedDefinition(null);
         }
     };
 
-    const getTermColor = (termId) => {
-        const match = matches.find(match => match.termId === termId);
+    const getTermColor = (term) => {
+        const match = matches.find(match => match.term === term);
         return match ? match.color : null;
     };
 
-    const getDefinitionColor = (definitionId) => {
-        const match = matches.find(match => match.definitionId === definitionId);
+    const getDefinitionColor = (definition) => {
+        const match = matches.find(match => match.definition === definition);
         return match ? match.color : null;
     };
 
     return (
         <Paper sx={{ padding: 2, marginBottom: 2 }}>
             <Container sx={{ marginTop: 4 }}>
-                <Typography variant="h4" gutterBottom>Matching Question</Typography>
+                <Typography variant="h5">{questionsData.ask}</Typography>
+                <Typography variant="h5" gutterBottom>Matching Question</Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
-                        <Typography variant="h6">Terms</Typography>
-                        {initialTerms.map((term) => (
+                        <Typography variant="h6">Left Column</Typography>
+                        {leftColumn.map((item, index) => (
                             <Paper
-                                key={term.id}
+                                key={index}
                                 sx={{
                                     padding: 2,
                                     marginBottom: 2,
                                     cursor: 'pointer',
-                                    backgroundColor: getTermColor(term.id) || (selectedTerm?.id === term.id ? 'lightgray' : 'white')
+                                    backgroundColor: getTermColor(item) || (selectedTerm === item ? 'lightgray' : 'white')
                                 }}
-                                onClick={() => handleSelectTerm(term)}
+                                onClick={() => handleSelectTerm(item)}
                             >
-                                {term.term}
+                                {item}
                             </Paper>
                         ))}
                     </Grid>
                     <Grid item xs={6}>
-                        <Typography variant="h6">Definitions</Typography>
-                        {initialDefinitions.map((definition) => (
+                        <Typography variant="h6">Right Column</Typography>
+                        {rightColumn.map((item, index) => (
                             <Paper
-                                key={definition.id}
+                                key={index}
                                 sx={{
                                     padding: 2,
                                     marginBottom: 2,
                                     cursor: 'pointer',
-                                    backgroundColor: getDefinitionColor(definition.id) || (selectedDefinition?.id === definition.id ? 'lightgray' : 'white')
+                                    backgroundColor: getDefinitionColor(item) || (selectedDefinition === item ? 'lightgray' : 'white')
                                 }}
-                                onClick={() => handleSelectDefinition(definition)}
+                                onClick={() => handleSelectDefinition(item)}
                             >
-                                {definition.definition}
+                                {item}
                             </Paper>
                         ))}
                     </Grid>
@@ -148,18 +144,6 @@ function MatchingQuestion(props: any) {
                         Match
                     </Button>
                 </Box>
-                <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h6">Matches</Typography>
-                    {matches.map((match, index) => {
-                        const term = initialTerms.find(t => t.id === match.termId);
-                        const definition = initialDefinitions.find(d => d.id === match.definitionId);
-                        return (
-                            <Typography key={index}>
-                                {term.term} - {definition.definition}
-                            </Typography>
-                        );
-                    })}
-                </Box>
             </Container>
         </Paper>
     );
@@ -168,26 +152,13 @@ function MatchingQuestion(props: any) {
 function TestPlay(props: any) {
     const [test, setTest] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const questionsList = test['questionsId'];
     const dummyId = '66c09a692c5f7b45260f8006';
 
-    const getTest = async (): Promise<AxiosPromise<any>> => {
-        try {
-            const response = await axios.get(`http://localhost:5000/tests/${dummyId}`);
-            console.log(response);
-            setTest(response.data);
-            setLoading(false);
-        } catch (error) {
-            setLoading(false);
-            if (axios.isAxiosError(error)) {
-                throw new Error(error.response?.data.message || "Get test failed");
-            } else {
-                throw error;
-            }
-        }
-    };
-
-    useEffect(() => {
-        getTest();
+    useEffect(async () => {
+        const data = await getIndividualTest(dummyId);
+        setTest(data['data']['data']['test']);
+        setLoading(false)
     }, [dummyId]);
 
     if (loading) {
@@ -202,18 +173,16 @@ function TestPlay(props: any) {
         <Container sx={{ marginTop: 4 }}>
             <Typography variant="h4" gutterBottom>Test Play Page</Typography>
             <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <TrueFalseQuestion />
-                </Grid>
-                <Grid item xs={12}>
-                    <MultipleChoiceQuestion />
-                </Grid>
-                <Grid item xs={12}>
-                    <FillInTheBlankQuestion />
-                </Grid>
-                <Grid item xs={12}>
-                    <MatchingQuestion />
-                </Grid>
+                {
+                    questionsList.map((question, index) => (
+                        <Grid item xs={12} key={index}>
+                            {question.questionType === 1 && <TrueFalseQuestion questionsData={question}/>}
+                            {question.questionType === 0 && <MultipleChoiceQuestion questionsData={question}/>}
+                            {question.questionType === 3 && <FillInTheBlankQuestion questionsData={question}/>}
+                            {question.questionType === 2 && <MatchingQuestion questionsData={question}/>}
+                        </Grid>
+                    ))
+                }
             </Grid>
             <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
                 <Button variant="contained" color="primary">Previous</Button>

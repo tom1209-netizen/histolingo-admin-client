@@ -11,6 +11,7 @@ export const getIndividualTest = async (id: string) : Promise<AxiosResponse<any>
         const response = await axios.get(`${domain_api}/tests/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
+
         return response;
     } catch (error) {
         if (axios.isAxiosError(error)) {
