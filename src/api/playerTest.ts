@@ -2,6 +2,7 @@ import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
+import { TestData } from "../interfaces/test.interface";
 
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 
@@ -26,12 +27,12 @@ export const getPlayerTests = async (
   }
 };
 
-export const createPlayerTest = async (): Promise<AxiosResponse<any>> => {
+export const createPlayerTest = async (body: TestData ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
     const response = await axios.post(
       `${domain_api}/tests`,
-      {},
+      {body},
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -54,7 +55,7 @@ export const updatePlayerTest = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.put(
+    const response = await axios.patch(
       `${domain_api}/tests/${id}`,
       { body },
       {

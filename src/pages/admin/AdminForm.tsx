@@ -9,10 +9,9 @@ import { useForm } from "react-hook-form";
 import theme from "../../theme/GlobalCustomTheme";
 import NameInputField from "../../components/formComponents/NameInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
-import { getActiveRoles } from "../../api/roles";
 import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
 import PasswordInputField from "../../components/formComponents/PasswordInputField";
-import { createAdmin } from "../../api/admin";
+import { createAdmin, getRolesBypassAuthorization, updateAdmin } from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FormGrid } from "../../constant/FormGrid";
@@ -23,6 +22,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
     control,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({ mode: "onChange" });
 
@@ -39,24 +39,27 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await getActiveRoles();
+        const response = await getRolesBypassAuthorization();
         const rolesData = response.data.data.roles;
         setRoles(rolesData.map((role: any) => role.name));
-        console.log(roles, "roles")
+        console.log(roles, "roles");
         setRoleOptions(
           rolesData.map((role) => ({
             value: role._id.toString(),
             label: role.name,
           }))
         );
-        console.log(roleOptions, "roleOptions")
+        console.log(roleOptions, "roleOptions");
         if (typeOfForm === "update" && adminData) {
           const status = adminData.status === 1 ? "active" : "inactive";
           setValue("email", adminData.email);
           setValue("firstName", adminData.firstName);
           setValue("lastName", adminData.lastName);
           setValue("adminName", adminData.adminName);
-          setValue("roles", adminData.roles);
+          setValue(
+            "roles",
+            adminData.roles.map((role: any) => role.name)
+          );
           setValue("status", status);
         }
         setLoading(false);
@@ -70,7 +73,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
-    console.log(roleOptions, "roleOptions")
+    console.log(roleOptions, "roleOptions");
     const roleIds = data.roles
       .map((name) => {
         const role = roleOptions.find((option) => option.label === name);
@@ -88,6 +91,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
       roles: roleIds,
       status,
     };
+    console.log(body, "body");
 
     try {
       if (typeOfForm === "create") {
@@ -99,11 +103,13 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           toast.error("An error occurred. Please try again.");
         }
       } else if (typeOfForm === "update" && adminData) {
-        // const response = await updateRole(roleId, body);
-        // if (response.data.success) {
-        //   toast.success("Role updated successfully.");
-        // } else {
-        //   toast.error("An error occurred. Please try again.");
+        const response = await updateAdmin(adminData.id, body);
+        if (response.data.success) {
+          toast.success("Role updated successfully.");
+          navigate("/admin");
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
       }
     } catch (error) {
       console.error("An error occurred:", error);
@@ -175,12 +181,6 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="password" required>
-            Password
-          </FormLabel>
-          <PasswordInputField control={control} errors={errors} />
-        </FormGrid>
-        <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
             Status
           </FormLabel>
@@ -190,9 +190,22 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
             activeCompulsory={activeCompulsory}
           />
         </FormGrid>
-        <FormGrid item xs={12} md={6}></FormGrid>
+
+        {typeOfForm === "create" && (
+          <>
+            <FormGrid item xs={12} md={6}>
+              <FormLabel htmlFor="password" required>
+                Password (at least 8 characters)
+              </FormLabel>
+              <PasswordInputField control={control} errors={errors} />
+            </FormGrid>
+            <FormGrid item xs={12} md={6}></FormGrid>
+          </>
+        )}
+
         <FormGrid item>
           <CreateButtonGroup
+          nagivateTo={"/admin"}
             buttonName={typeOfForm === "create" ? "Create" : "Update"}
           />
         </FormGrid>

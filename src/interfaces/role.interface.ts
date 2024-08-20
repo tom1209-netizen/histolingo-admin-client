@@ -1,7 +1,7 @@
 export interface FormValues {
   roleName: string;
   status: string;
-  selectPrivilege: string[];
+  privilege: string[];
 }
 
 export interface RoleFormProps {

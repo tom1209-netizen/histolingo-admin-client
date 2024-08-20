@@ -4,7 +4,7 @@ export interface TopicFormProps {
     name: string;
     description: string;
     id: string;
-    status: number;
+    status: string;
     image: string;
     localeData: {
       "en-US": { name: string; description: string };

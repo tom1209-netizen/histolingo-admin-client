@@ -11,7 +11,7 @@ interface InputFieldProps {
   language: string;
   length: number;
   property: string;
-  index?: number
+  index?: number;
 }
 
 const MultipleChoiceText: React.FC<InputFieldProps> = ({
@@ -21,18 +21,15 @@ const MultipleChoiceText: React.FC<InputFieldProps> = ({
   property,
   length,
   language,
-  index
+  index,
 }) => {
-
   const fieldName = `localeData[${language}][${property}][${index}]`;
-
-  useEffect(() => {
-    console.log("Errors:", errors);
-    const fieldError = errors?.localeData?.[language]?.[property]?.[index];
-    console.log(`Error for field ${fieldName}:`, fieldError);
-  }, [errors, language, property, index]);
-
   const fieldError = errors?.localeData?.[language]?.[property]?.[index];
+  // useEffect(() => {
+  //   console.log("Errors:", errors);
+  //   const fieldError = errors?.localeData?.[language]?.[property]?.[index];
+  //   console.log(`Error for field ${fieldName}:`, fieldError);
+  // }, [errors, language, property, index]);
 
   return (
     <Controller
@@ -48,7 +45,7 @@ const MultipleChoiceText: React.FC<InputFieldProps> = ({
         },
         validate: {
           notEmptyOrWhitespace: (value) => {
-            const textContent = value.replace(/<[^>]*>/g, '').trim();
+            const textContent = value.replace(/<[^>]*>/g, "").trim();
             if (!textContent) {
               return "Cannot be empty or whitespace only";
             }
@@ -82,7 +79,7 @@ const MultipleChoiceText: React.FC<InputFieldProps> = ({
                 marginLeft: "10px",
               }}
             >
-              {fieldError.message? fieldError.message : ""}
+              {fieldError.message ? fieldError.message : ""}
             </div>
           )}
         </div>
@@ -92,7 +89,6 @@ const MultipleChoiceText: React.FC<InputFieldProps> = ({
 };
 
 export default MultipleChoiceText;
-
 
 // import React, { useEffect } from "react";
 // import { Control, Controller, FieldErrors } from "react-hook-form";
@@ -164,4 +160,3 @@ export default MultipleChoiceText;
 // };
 
 // export default MultipleChoiceText;
-

@@ -8,6 +8,16 @@ export interface FormValues {
   status: string;
 }
 
+export interface AdminData {
+  adminName: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  roles: string[];
+  status: number;
+}
+
 export interface AdminFormProps {
   typeOfForm: string;
   adminData?: {
@@ -20,3 +30,5 @@ export interface AdminFormProps {
     id: string;
   };
 }
+
+

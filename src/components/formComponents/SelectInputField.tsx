@@ -15,7 +15,7 @@ interface SelectProps {
   name: string;
   label: string;
   options: { value: string; label: string }[];
-  onChange: (event: SelectChangeEvent<string>) => void;
+  onChange?: (event: SelectChangeEvent<string>) => void;
   disabled?: boolean;
 }
 
@@ -26,12 +26,14 @@ const SelectInputField: React.FC<SelectProps> = ({
   name,
   label,
   options,
+  disabled,
   onChange
 }) => {
   return (
     <FormControl fullWidth margin="normal" required error={!!errors[name]}>
       <Controller
         name={name}
+        disabled={disabled}
         control={control}
         defaultValue=""
         rules={{
@@ -42,8 +44,8 @@ const SelectInputField: React.FC<SelectProps> = ({
             {...field}
             placeholder="Select role"
             onChange={(e) => {
-              field.onChange(e); // Ensure react-hook-form value is updated
-              onChange(e); // Call the passed onChange handler
+              field.onChange(e); 
+              onChange && onChange(e); 
             }}
             value={field.value || ""}
           >

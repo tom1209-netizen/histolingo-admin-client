@@ -77,24 +77,6 @@ export const getRoles = async (
   }
 };
 
-export const getActiveRoles = async (): Promise<AxiosResponse<any>> => {
-  try {
-    const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/roles`, {
-      params: { status: 1 },
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    return response;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(
-        error.response?.data.message || "Get active roles failed"
-      );
-    } else {
-      throw error;
-    }
-  }
-};
 
 export const getIndividualRole = async (
   id: string
@@ -120,7 +102,7 @@ export const updateRole = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.put(`${domain_api}/roles/${id}`, body, {
+    const response = await axios.patch(`${domain_api}/roles/${id}`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;

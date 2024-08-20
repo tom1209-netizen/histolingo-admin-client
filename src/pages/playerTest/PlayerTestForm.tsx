@@ -5,29 +5,37 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { getCountries } from "../../api/country";
-import { getTopicsByCountry } from "../../api/topic";
-import SelectInputField from "../../components/formComponents/SelectInputField";
-import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
-import { FormGrid } from "../../constant/FormGrid";
-import { FormValues } from "../../interfaces/question.interface";
-import { TestFormProps } from "../../interfaces/test.interface";
-import theme from "../../theme/GlobalCustomTheme";
-import DataTable from "../../components/reusable/Table";
 import {
   GridColDef,
   GridPaginationModel,
   GridRowSelectionModel,
 } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { getCountries } from "../../api/country";
+import { getDocuments } from "../../api/documentation";
+import { createPlayerTest } from "../../api/playerTest";
 import { getQuestions } from "../../api/question";
-import { formatTimestamp } from "../../utils/formatTime";
+import { getTopicsByCountry } from "../../api/topic";
+import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
+import SelectInputField from "../../components/formComponents/SelectInputField";
+import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
+import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
+import SearchField from "../../components/reusable/SearchField";
+import DataTable from "../../components/reusable/Table";
+import {
+  maximumQuestionsOnTest,
+  minimumQuestionsOnTest,
+} from "../../constant/common";
+import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
-import { auto } from "@popperjs/core";
+import { FormValues, TestFormProps } from "../../interfaces/test.interface";
+import theme from "../../theme/GlobalCustomTheme";
+import { convertSearchParamsToObj } from "../../utils/common";
+import { formatTimestamp } from "../../utils/formatTime";
 
 const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   // USE FORM
@@ -36,10 +44,12 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
     watch,
   } = useForm<any>({
     mode: "onChange",
     defaultValues: {
+      language: "en-US",
       localeData: {
         "en-US": { name: "" },
       },
@@ -48,22 +58,97 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
 
   const navigate = useNavigate();
   const country = watch("country");
+  const localeData = watch("localeData");
   const activeCompulsory = typeOfForm === "create";
   const [loading, setLoading] = useState<boolean>(true);
   const [countryNames, setCountryNames] = useState<any[]>([]);
   const [topicNames, setTopicNames] = useState<any[]>([]);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
   const language = watch("language");
-
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [documentationNames, setDocumentationNames] = useState<any[]>([]);
+  const [documentationArray, setDocumentationArray] = useState<any[]>([]);
+  // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
-    setValue("language", value);
+    setSelectedLanguage(value);
   };
 
+  // HANDLE FILL DATA FOR UPDATE FORM
+  useEffect(() => {
+    const fetchData = async () => {
+      if (typeOfForm === "update" && testData) {
+        console.log("Updating form with testData:", testData);
+        setValue("countryId", testData.countryId._id);
+        const documentNames = testData.documentationsId.map(
+          (doc: any) => doc.name
+        );
+        setValue("documentationsId", documentNames);
+        const selectedRowIds: GridRowSelectionModel = testData.questionsId.map(
+          (content: any) => content._id
+        );
+        console.log(selectedRowIds, "selectedRowIds");
+        setSelectedRows(selectedRowIds);
+
+        console.log(testData.localeData["en-US"].name, "name");
+
+        Object.keys(testData.localeData).forEach((locale) => {
+          setValue(
+            `localeData[${locale}].name`,
+            testData.localeData[locale].name
+          );
+        });
+        try {
+          const topics = await getTopicsByCountry(testData.countryId._id);
+          console.log(topics, "filtered topics");
+          const topicNames = topics.map((topic: any) => ({
+            value: topic._id,
+            label: topic.name,
+          }));
+          setTopicNames(topicNames);
+          setValue("topicId", testData.topicId._id);
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to fetch topics");
+        }
+      }
+    };
+
+    fetchData();
+  }, [testData, typeOfForm]);
+
+  // HANDLE SELECTION CHANGE
   const handleSelectionChange = (rowSelectionModel: GridRowSelectionModel) => {
     console.log(rowSelectionModel, "rowSelectionModel");
     setSelectedRows(rowSelectionModel);
   };
+
+  // FETCH DOCUMENTATIONS
+
+  useEffect(() => {
+    const fetchDocumentations = async () => {
+      try {
+        const query = { status: 1 };
+        const response = await getDocuments(query);
+        const documentations = response.data.data.documentations;
+        console.log(documentations, "documentations");
+        const documentationNames = documentations.map(
+          (documentation: any) => documentation.name
+        );
+        const documentationArray = documentations.map((doc: any) => ({
+          value: doc._id,
+          label: doc.name,
+        }));
+        setDocumentationArray(documentationArray);
+        setDocumentationNames(documentationNames);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to fetch documentations");
+      }
+    };
+    fetchDocumentations();
+  }, []);
 
   // FETCH COUNTRIES
   useEffect(() => {
@@ -112,6 +197,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
 
   // TABLE DATA
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuestionQuery = convertSearchParamsToObj(searchParams);
   const [questions, setQuestions] = useState<any[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -167,7 +253,8 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     setIsTableLoading(true);
     try {
       const response = await getQuestions({
-        // ...searchQuestionQuery,
+        ...searchQuestionQuery,
+        status: 1,
         page: paginationModel.page + 1,
         pageSize: paginationModel.pageSize,
       });
@@ -187,6 +274,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
       setIsTableLoading(false);
     }
   };
+
   useEffect(() => {
     fetchQuestions(paginationModel.page, paginationModel.pageSize);
   }, [paginationModel, searchParams]);
@@ -197,17 +285,65 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
-    // console.log(data);
-    // console.log(selectedRows, "selectedRows");
     const status = data.status === "active" ? 1 : 0;
+
+    const selectedQuestionCount = selectedRows.length;
+
+    if (selectedQuestionCount < minimumQuestionsOnTest) {
+      toast.error(
+        `You must select at least ${minimumQuestionsOnTest} questions.`
+      );
+      return;
+    } else if (selectedQuestionCount > maximumQuestionsOnTest) {
+      toast.error(
+        `You must select at most ${maximumQuestionsOnTest} questions.`
+      );
+      return;
+    }
+
+    const selectedDocumentationNames = data.documentationsId;
+    console.log(selectedDocumentationNames, "document names");
+
+    // Map documentation names with their ids
+    const selectedDocumentationIds = selectedDocumentationNames.map(
+      (name: string) => {
+        const documentation = documentationArray.find(
+          (doc) => doc.label === name
+        );
+        return documentation ? documentation.value : null;
+      }
+    );
+    const selectedQuestions = selectedRows.map((rowId) => rowId.toString());
+
     const body = {
-      topicId: data.topic,
-      countryId: data.country,
-      questionNumber: selectedRows.length,
-      status: status,
-      questions: selectedRows,
+      topicId: data.topicId,
+      countryId: data.countryId,
+      questionsId: selectedQuestions,
+      name: data.localeData["en-US"].name,
+      localeData: data.localeData,
+      documentationsId: selectedDocumentationIds,
     };
     console.log(body, "body");
+
+    try {
+      if (typeOfForm === "create") {
+        const response = await createPlayerTest(body);
+        console.log(response, "response");
+        if (response.data.success) {
+          toast.success("Test created successfully");
+          navigate("/playertest");
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
+      } else {
+        // UPDATE TEST
+        // const response = await updateTest(testData._id, body);
+        // toast.success("Test updated successfully");
+      }
+    } catch (error) {
+      console.error("Failed to submit test:", error);
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   if (loading) {
@@ -262,7 +398,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           <SelectInputField
             control={control}
             errors={errors}
-            name="country"
+            name="countryId"
             label="Country"
             options={countryNames}
             onChange={handleCountryChange}
@@ -276,7 +412,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           <SelectInputField
             control={control}
             errors={errors}
-            name="topic"
+            name="topicId"
             label="Topic"
             options={topicNames}
             onChange={handleTopicChange}
@@ -284,11 +420,50 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           />
         </FormGrid>
 
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="status" required>
+            Status
+          </FormLabel>
+          <SelectStatusInputField
+            control={control}
+            errors={errors}
+            activeCompulsory={activeCompulsory}
+          />
+        </FormGrid>
+
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="documentation" required>
+            Documentation
+          </FormLabel>
+          <MultiSelectInputField
+            control={control}
+            errors={errors}
+            required={false}
+            name="documentationsId"
+            options={documentationNames}
+          />
+        </FormGrid>
+
+        <FormGrid item xs={12} md={6}>
+          <SearchField
+            label="Search question"
+            delay={1500}
+            onChange={(value: any) =>
+              setSearchParams({ ...searchQuestionQuery, search: value })
+            }
+          />
+        </FormGrid>
+
         <FormGrid item xs={12} md={12}>
-          <FormLabel htmlFor="question-select" required style={{marginBottom: '1rem'}}>
+          <FormLabel
+            htmlFor="question-select"
+            required
+            style={{ marginBottom: "1rem" }}
+          >
             Select questions
           </FormLabel>
           <DataTable
+            selectedRows={selectedRows}
             checkboxSelection={true}
             isLoading={isTableLoading}
             columns={columns}
@@ -303,6 +478,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
 
         <FormGrid item>
           <CreateButtonGroup
+            nagivateTo={"/playertest"}
             buttonName={typeOfForm === "create" ? "Create" : "Update"}
           />
         </FormGrid>

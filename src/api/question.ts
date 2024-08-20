@@ -48,7 +48,7 @@ export const updateQuestion = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.put(`${domain_api}/questions/${id}`, body, {
+    const response = await axios.patch(`${domain_api}/questions/${id}`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;

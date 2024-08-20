@@ -11,8 +11,8 @@ const UpdateQuestion = () => {
       const fetchQuestion = async () => {
         try {
           const response = await getIndividualQuestion(questionId);
-          const data = response.data.data;
-          console.log(data);
+          const data = response.data.data.question;
+          console.log(response, "response");
           setQuestion(data);
         } catch (error) {
           console.error("Failed to get individual question:", error);
@@ -22,15 +22,20 @@ const UpdateQuestion = () => {
     }
   }, [questionId]);
 
+  console.log(question, "question");
+
   const questionData = {
     ask: question?.ask || "",
-    topicId: question?.topicId || "",
-    countryId: question?.countryId || "",
-    questionType: question?.questionType || "",
+    topicId: question?.topicId || {},
+    countryId: question?.countryId || {},
+    answer: question?.answer,
+    questionType: question?.questionType || null,
     localeData: question?.localeData || {},
     id: questionId || "",
-    status: question?.status,
+    status: question?.status === 1 ? "active" : "inactive",
   };
+
+  console.log(questionData, "data passed in");
 
   return <QuestionForm typeOfForm="update" questionData={questionData} />;
 };

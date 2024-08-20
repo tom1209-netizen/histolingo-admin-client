@@ -6,13 +6,13 @@ import {
 } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
 import { Box } from "@mui/system";
-import { auto } from "@popperjs/core";
 import React, { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
 import { createTopic, updateTopic } from "../../api/topic";
+import { uploadFile } from "../../api/upload";
 import ErrorSummary from "../../components/formComponents/ErrorSummary";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
@@ -24,39 +24,67 @@ import { languageOptions } from "../../constant/languageOptions";
 import { TopicFormProps } from "../../interfaces/topic.interface";
 import theme from "../../theme/GlobalCustomTheme";
 
+const defaultFormValues = {
+  language: "en-US",
+  localeData: {
+    "en-US": { name: "", description: "" },
+  },
+};
 const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
-  
   // USE FORM
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
     watch,
   } = useForm<any>({
     mode: "onChange",
-    defaultValues: {
-      language: "en-US",
-      localeData: {
-        "en-US": { name: "", description: "" },
-      },
-    },
+    defaultValues: defaultFormValues,
   });
 
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const localeData = watch("localeData");
+  const language = watch("language");
   const activeCompulsory = typeOfForm === "create" ? true : false;
   const [countryNames, setCountryNames] = useState<any[]>([]);
-  const language = watch("language");
   const [selectedLanguage, setSelectedLanguage] = useState("");
+  
   const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
     useState<boolean>(true);
 
-  // HANDLE SWITCH LANGUAGE
+  // CHECK IF ENGLISH FIELDS ARE FILLED
+  useEffect(() => {
+    const locale = localeData["en-US"] || { name: "", description: "" };
+    const { name = "", description = "" } = locale;
+    setIsEnglishFieldsFilled(name.trim() !== "" && description.trim() !== "");
+  }, [localeData]);
+
+  // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setSelectedLanguage(value);
   };
+
+  // HANDLE FETCH DATA FOR UPDATE FORM
+  useEffect(() => {
+    if (typeOfForm === "update" && topicData) {
+      console.log("Updating form with topicData:", topicData);
+      // reset(topicData);
+      reset({...defaultFormValues, ...topicData});
+
+      // setValue("country", topicData.countryId);
+      // Object.keys(topicData.localeData).forEach((key) => {
+      //   setValue(`localeData.${key}.name`, topicData.localeData[key].name);
+      //   setValue(
+      //     `localeData.${key}.description`,
+      //     topicData.localeData[key].description
+      //   );
+      // });
+    }
+  }, [topicData]);
 
   //   FETCH COUNTRIES
   useEffect(() => {
@@ -85,33 +113,31 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     setValue("country", value);
   };
 
-  // HANDLE FETCH DATA FOR UPDATE FORM
-  useEffect(() => {
-    if (typeOfForm === "update" && topicData) {
-      console.log("Updating form with topicData:", topicData);
-      const status = topicData.status === 1 ? "active" : "inactive";
-      setValue("image", topicData.image);
-      setValue("status", status);
-      setValue("localeData", topicData.localeData);
-      setValue("country", topicData.countryId);
-
-      Object.keys(topicData.localeData).forEach((locale: any) => {
-        setValue(
-          `localeData[${locale}].description`,
-          topicData.localeData[locale].description
-        );
-        setValue(
-          `localeData[${locale}].name`,
-          topicData.localeData[locale].name
-        );
-      });
-    }
-  }, [topicData]);
-
   // HANDLE FORM SUBMISSION
   const onSubmit = async (data: any) => {
+    if (
+      !localeData["en-US"].name.trim() ||
+      !localeData["en-US"].description.trim()
+    ) {
+      toast.error(
+        "Please fill in the name and description for English language."
+      );
+      return;
+    }
+
+    let image;
+    try {
+      if (data.image) {
+        console.log("data.image:", data.image);
+        const response = await uploadFile(data.image);
+        image = response.data.data.fileUrl;
+        console.log(image);
+      }
+    } catch (error) {
+      toast.error("Cannot upload image. Please try again.");
+    }
     const body = {
-      image: data.image[0],
+      image: image,
       name: data.localeData["en-US"].name,
       description: data.localeData["en-US"].description,
       localeData: data.localeData,
@@ -178,7 +204,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
           <SelectInputField
             control={control}
             errors={errors}
-            name="country"
+            name="countryId"
             label="country"
             options={countryNames}
             onChange={handleCountryChange}
@@ -216,7 +242,11 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
           <FormLabel htmlFor="image" required>
             Upload Image
           </FormLabel>
-          <UploadFile control={control} errors={errors} />
+          <UploadFile
+            control={control}
+            errors={errors}
+            initialImageUrl={topicData?.image}
+          />
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
@@ -244,6 +274,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
 
         <FormGrid item>
           <CreateButtonGroup
+            nagivateTo={"/topic"}
             buttonName={typeOfForm === "create" ? "Create" : "Update"}
           />
         </FormGrid>

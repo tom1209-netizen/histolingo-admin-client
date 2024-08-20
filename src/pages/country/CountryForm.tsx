@@ -22,6 +22,7 @@ import {
   FormValues,
 } from "../../interfaces/country.interface";
 import theme from "../../theme/GlobalCustomTheme";
+import { uploadFile } from "../../api/upload";
 
 const CountryForm: React.FC<CountryFormProps> = ({
   typeOfForm,
@@ -49,17 +50,16 @@ const CountryForm: React.FC<CountryFormProps> = ({
   const localeData = watch("localeData");
   const activeCompulsory = typeOfForm === "create";
   const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
   const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
     useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(true);
-  
 
   // CHECK IF ENGLISH FIELDS ARE FILLED
   useEffect(() => {
     const locale = localeData["en-US"] || { name: "", description: "" };
     const { name = "", description = "" } = locale;
     setIsEnglishFieldsFilled(name.trim() !== "" && description.trim() !== "");
-  }, [localeData["en-US"]]);
+  }, [localeData]);
 
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
@@ -71,24 +71,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
   useEffect(() => {
     if (typeOfForm === "update" && countryData) {
       console.log("Updating form with countryData:", countryData);
-      const status = countryData.status === 1 ? "active" : "inactive";
-      reset(countryData)
-      // setValue("image", countryData.image);
-      // setValue("status", status);
-      // setValue("localeData", countryData.localeData);
-      console.log(language)
-      // handleLanguageChange({ target: { value: language } });
-
-      // Object.keys(countryData.localeData).forEach((locale: any) => {
-      //   setValue(
-      //     `localeData[${locale}].description`,
-      //     countryData.localeData[locale].description
-      //   );
-      //   setValue(
-      //     `localeData[${locale}].name`,
-      //     countryData.localeData[locale].name
-      //   );
-      // });
+      reset(countryData);
     }
   }, [countryData]);
 
@@ -103,8 +86,21 @@ const CountryForm: React.FC<CountryFormProps> = ({
       );
       return;
     }
+
+    let image;
+    try {
+      if (data.image) {
+        console.log("data.image:", data.image);
+        const response = await uploadFile(data.image);
+        image = response.data.data.fileUrl;
+        console.log(image);
+      }
+    } catch (error) {
+      toast.error("Cannot upload image. Please try again.");
+    }
+
     const body = {
-      image: data.image[0],
+      image: image,
       name: data.localeData["en-US"].name,
       description: data.localeData["en-US"].description,
       localeData: data.localeData,
@@ -181,7 +177,11 @@ const CountryForm: React.FC<CountryFormProps> = ({
           <FormLabel htmlFor="image" required>
             Upload Image
           </FormLabel>
-          <UploadFile control={control} errors={errors} initialImageUrl={countryData?.image}  />
+          <UploadFile
+            control={control}
+            errors={errors}
+            initialImageUrl={countryData?.image}
+          />
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
@@ -215,6 +215,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
 
         <FormGrid item>
           <CreateButtonGroup
+            nagivateTo={"/country"}
             buttonName={typeOfForm === "create" ? "Create" : "Update"}
           />
         </FormGrid>

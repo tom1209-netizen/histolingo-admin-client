@@ -25,15 +25,15 @@ const PairText: React.FC<InputFieldProps> = ({
   position,
 }) => {
   const fieldName = `localeData[${language}][${property}][${index}][${position}]`;
-  useEffect(() => {
-    console.log("Errors:", errors);
-    const fieldError =
-      errors?.localeData?.[language]?.[property]?.[index]?.[position];
-    console.log(`Error for field ${fieldName}:`, fieldError);
-  }, [errors, language, position, index]);
-
   const fieldError =
     errors?.localeData?.[language]?.[property]?.[index]?.[position];
+  // useEffect(() => {
+  //   console.log("Errors:", errors);
+  //   const fieldError =
+  //     errors?.localeData?.[language]?.[property]?.[index]?.[position];
+  //   console.log(`Error for field ${fieldName}:`, fieldError);
+  // }, [errors, language, position, index]);
+
   return (
     <Controller
       name={fieldName}
@@ -47,15 +47,14 @@ const PairText: React.FC<InputFieldProps> = ({
           message: `${name} must be less than 500 characters`,
         },
         validate: {
-            notEmptyOrWhitespace: (value) => {
-              const textContent = value.replace(/<[^>]*>/g, '').trim();
-              if (!textContent) {
-                return "Cannot be empty or whitespace only";
-              }
-              return true;
-            },
+          notEmptyOrWhitespace: (value) => {
+            const textContent = value.replace(/<[^>]*>/g, "").trim();
+            if (!textContent) {
+              return "Cannot be empty or whitespace only";
+            }
+            return true;
           },
-          
+        },
       }}
       render={({ field }) => (
         <div style={{ margin: "16px 0" }}>
@@ -118,7 +117,6 @@ export default PairText;
 //   position,
 // }) => {
 //     const fieldName = `localeData[${language}][${index}][${position}]`;
-
 
 //   useEffect(() => {
 //     console.log("Errors:", errors);

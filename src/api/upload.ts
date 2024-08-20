@@ -1,5 +1,4 @@
-import axios from "axios";
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 
 const domain_api = import.meta.env.VITE_DOMAIN_API;

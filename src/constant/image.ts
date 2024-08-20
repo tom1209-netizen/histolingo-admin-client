@@ -1,0 +1,1 @@
+export const no_img = "https://www.thermaxglobal.com/wp-content/uploads/2020/05/image-not-found.jpg";
