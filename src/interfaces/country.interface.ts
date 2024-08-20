@@ -1,7 +1,7 @@
 export interface FormValues {
   name: string;
   description: string;
-  image: string;
+  image: File | null;
   localeData: {
     "en-US": { name: string; description: string };
     "ja-JP": { name: string; description: string };
@@ -20,7 +20,7 @@ export interface CountryFormProps {
       "ja-JP": { name: string; description: string };
       "vi-VN": { name: string; description: string };
     };
-    status: number;
+    status: string;
     id: string;
   };
 }

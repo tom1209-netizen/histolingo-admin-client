@@ -12,10 +12,12 @@ import DataTable from "../../components/reusable/Table";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import { LoadingTable } from "../../components/reusable/Loading";
+import { toast } from "react-toastify";
+import { no_img } from "../../constant/image";
 
 const Learner = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchLearnerQuery = convertSearchParamsToObj(searchParams);
+  const searchLearnerQuery: any = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
   const [learners, setLearners] = useState<any[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -29,7 +31,11 @@ const Learner = () => {
 
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchLearnerStatus(id, status);
-    console.log(response);
+    if (response.status === 200) {
+      toast.success("Status changed successfully");
+    } else {
+      toast.error("Failed to change status. Please try again.");
+    }
   };
 
   const handleViewDetail = (id: string) => {
@@ -37,10 +43,32 @@ const Learner = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Name", width: 200, flex: 1 },
-    { field: "description", headerName: "Description", width: 450, flex: 1 },
-    { field: "createdAt", headerName: "Created At", width: 130, flex: 1 },
-    { field: "updatedAt", headerName: "Updated At", width: 130, flex: 1 },
+    { field: "userName", headerName: "Username", flex: 1, sortable: false },
+    { field: "rank", headerName: "Ranking", flex: 1, sortable: false },
+    {
+      field: "email",
+      headerName: "Email",
+      flex: 2,
+      sortable: false,
+    },
+    {
+      field: "registrationDate",
+      headerName: "Registration Date",
+      flex: 1,
+      sortable: false,
+    },
+    {
+      field: "totalScore",
+      headerName: "Total Score",
+      flex: 1,
+      sortable: false,
+    },
+    {
+      field: "totalTime",
+      headerName: "Total time",
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "status",
       flex: 0,
@@ -49,7 +77,6 @@ const Learner = () => {
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
       renderCell: (params) => {
-        console.log(params);
         return (
           <Switch
             defaultChecked={params.row.status == 1}
@@ -65,7 +92,7 @@ const Learner = () => {
       headerName: "See detail",
       width: 100,
       flex: 0,
-      align: "right",
+      align: "center",
       sortable: false,
       renderCell: (params) => (
         <IconButton
@@ -88,14 +115,10 @@ const Learner = () => {
         pageSize: paginationModel.pageSize,
       });
       const learnersData = response.data.data.players;
-      const formattedLearners = learnersData.map((learner: any) => ({
-        ...learner,
-        createdAt: formatTimestamp(learner.createdAt),
-        updatedAt: formatTimestamp(learner.updatedAt),
-      }));
+      console.log(learnersData);
       const totalRows = response.data.data.totalCount;
       console.log(learnersData);
-      setLearners(formattedLearners);
+      setLearners(learnersData);
       setRowCount(totalRows);
     } catch (error) {
       console.log(error);
@@ -131,7 +154,7 @@ const Learner = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchLearnerQuery, status: value })
             }
-            value=""
+            value={searchLearnerQuery.status || ""} 
           />
           <SearchField
             label="Search learner"
@@ -141,7 +164,6 @@ const Learner = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/learnerdetail" importPath="/" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

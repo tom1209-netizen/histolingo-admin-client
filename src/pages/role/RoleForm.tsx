@@ -19,8 +19,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FormGrid } from "../../constant/FormGrid";
-import { RoleFormProps, FormValues, FlattenedPermission } from "../../interfaces/role.interface";
-
+import {
+  RoleFormProps,
+  FormValues,
+  FlattenedPermission,
+} from "../../interfaces/role.interface";
 
 const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   const {
@@ -35,11 +38,8 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
     new Map()
   );
   const [loading, setLoading] = useState(true);
-
   const { roleId } = useParams<{ roleId?: string }>();
-
   const activeCompulsory = typeOfForm === "create";
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
           setValue("roleName", roleData.name);
           setValue("status", status);
           setValue(
-            "selectPrivilege",
+            "privilege",
             roleData.permissions.map((code) => {
               const name = Array.from(privilegesMap.entries()).find(
                 ([_, val]) => val === code
@@ -85,7 +85,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   }, []);
 
   const onSubmit = async (data: FormValues) => {
-    const permissions: number[] = data.selectPrivilege.map((privilege) => {
+    const permissions: number[] = data.privilege.map((privilege) => {
       const code = privilegesMap.get(privilege);
       if (code === undefined) {
         throw new Error(`Privilege code not found for ${privilege}`);
@@ -100,7 +100,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
       name: data.roleName,
       status,
     };
-
+    console.log(body, "body");
     try {
       if (typeOfForm === "create") {
         const response = await createRole(body);
@@ -173,6 +173,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
         <FormGrid item xs={12} md={6}></FormGrid>
         <FormGrid item>
           <CreateButtonGroup
+            nagivateTo={"/role"}
             buttonName={typeOfForm === "create" ? "Create" : "Update"}
           />
         </FormGrid>

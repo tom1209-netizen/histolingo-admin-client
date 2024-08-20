@@ -12,10 +12,11 @@ import DataTable from "../../components/reusable/Table";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import { LoadingTable } from "../../components/reusable/Loading";
+import { toast } from "react-toastify";
 
 const Feedback = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchFeedbackQuery = convertSearchParamsToObj(searchParams);
+  const searchFeedbackQuery: any = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -29,7 +30,11 @@ const Feedback = () => {
 
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchFeedbackStatus(id, status);
-    console.log(response);
+    if (response.status === 200) {
+      toast.success("Status changed successfully");
+    } else {
+      toast.error("Failed to change status. Please try again.");
+    }
   };
 
   const handleViewDetail = (id: string) => {
@@ -37,19 +42,19 @@ const Feedback = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "createdBy", headerName: "Name", flex: 1 },
-    { field: "content", headerName: "Content", flex: 3 },
-    { field: "testId", headerName: "Test", flex: 1 },
-    { field: "createdAt", headerName: "Created At", flex: 1 },
+    { field: "createdBy", headerName: "Name", flex: 1, sortable: false },
+    { field: "content", headerName: "Content", flex: 3, sortable: false },
+    { field: "testId", headerName: "Test", flex: 1, sortable: false },
+    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
     {
       field: "status",
       flex: 0,
+      sortable: false,
       headerName: "Status",
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
       renderCell: (params) => {
-        console.log(params);
         return (
           <Switch
             defaultChecked={params.row.status == 1}
@@ -65,7 +70,7 @@ const Feedback = () => {
       headerName: "See detail",
       width: 100,
       flex: 0,
-      align: "right",
+      align: "center",
       sortable: false,
       renderCell: (params) => (
         <IconButton
@@ -116,7 +121,7 @@ const Feedback = () => {
   if (loading) {
     return <LoadingTable />;
   }
-  
+
   return (
     <>
       <h1>Feedback Dashboard</h1>
@@ -133,7 +138,7 @@ const Feedback = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchFeedbackQuery, status: value })
             }
-            value=""
+            value={searchFeedbackQuery.status || ""}
           />
           <SearchField
             label="Search feedback"
@@ -143,7 +148,6 @@ const Feedback = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/feedbackdetail" importPath="/" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

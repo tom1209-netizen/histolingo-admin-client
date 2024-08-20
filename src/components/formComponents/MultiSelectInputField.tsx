@@ -1,22 +1,22 @@
-import React from "react";
-import { Control, FieldErrors } from "react-hook-form";
-import { Controller } from "react-hook-form";
 import {
-  Select,
-  MenuItem,
-  OutlinedInput,
   Box,
   Chip,
+  FormControl,
   FormHelperText,
+  MenuItem,
+  OutlinedInput,
+  Select,
 } from "@mui/material";
 import { Theme, useTheme } from "@mui/material/styles";
-import { FormControl, InputLabel } from "@mui/material";
+import React from "react";
+import { Control, Controller, FieldErrors } from "react-hook-form";
 
 interface MultiSelectInputFieldProps {
   control: Control<any>;
   errors: FieldErrors<any>;
   name: string;
   options: string[];
+  required?: boolean;
 }
 
 const ITEM_HEIGHT = 48;
@@ -47,6 +47,7 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
   control,
   errors,
   name,
+  required = true,
   options,
 }) => {
   const theme = useTheme();
@@ -57,9 +58,7 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
         name={name}
         control={control}
         defaultValue={[]}
-        rules={{
-          required: `Please select at least one ${name}`,
-        }}
+        rules={required ? { required: `Please select at least one ${name}` } : undefined}
         render={({ field }) => (
           <>
             <Select

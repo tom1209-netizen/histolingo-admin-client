@@ -21,7 +21,7 @@ const PasswordInputField: React.FC<PasswordInputFieldProps> = ({
       rules={{
         required: t("validation.password.required"),
         minLength: {
-          value: 6,
+          value: 8,
           message: t("validation.password.minLength"),
         },
       }}
@@ -29,7 +29,6 @@ const PasswordInputField: React.FC<PasswordInputFieldProps> = ({
         <TextField
           {...field}
           type="password"
-          // label={t("validation.password.label")}
           placeholder="Enter password"
           variant="outlined"
           error={!!errors.password}

@@ -12,13 +12,14 @@ import { EditOutlined } from "@mui/icons-material";
 import DataTable from "../../components/reusable/Table";
 import { useRowActions } from "../../hooks/useRowActions";
 import { formatTimestamp } from "../../utils/formatTime";
-import { getQuestions } from "../../api/question";
+import { getQuestions, switchQuestionStatus } from "../../api/question";
 import { LoadingTable } from "../../components/reusable/Loading";
+import { toast } from "react-toastify";
 
 const Question = () => {
   const { handleEditRow } = useRowActions();
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchQuestionQuery = convertSearchParamsToObj(searchParams);
+  const searchQuestionQuery: any = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
   const [questions, setQuestions] = useState<any[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -28,25 +29,30 @@ const Question = () => {
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
 
+  const handleStatusChange = async (id: any, status: any) => {
+    const response = await switchQuestionStatus(id, status);
+    console.log(response);
+    if (response.status === 200) {
+      console.log("hello?");
+      toast.success("Status changed successfully");
+    } else {
+      toast.error("Failed to change status. Please try again.");
+    }
+  }
+
   const columns: GridColDef[] = [
     { field: "ask", headerName: "Question", width: 250 },
     {
-      field: "topicName",
+      field: "topic",
       headerName: "Topic",
       width: 180,
-      valueGetter: (value, row) => {
-        if (row.topicId) return row.topicId.name;
-        return "No topic";
-      },
+      valueGetter: (value, row) => (row.topic ? row.topic.name : "N/A"),
     },
     {
-      field: "countryName",
+      field: "country",
       headerName: "Country",
       width: 130,
-      valueGetter: (value, row) => {
-        if (row.countryId) return row.countryId.name;
-        return "No country";
-      },
+      valueGetter: (value, row) => (row.country ? row.country.name : "N/A"),
     },
     {
       field: "questionType",
@@ -75,7 +81,10 @@ const Question = () => {
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
-      renderCell: (params) => <Switch />,
+      renderCell: (params) => <Switch 
+      defaultChecked={params.row.status == 1} 
+      onChange={() => handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)}
+       />,
     },
     {
       field: "edit",
@@ -147,7 +156,7 @@ const Question = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchQuestionQuery, status: value })
             }
-            value=""
+            value={searchQuestionQuery.status || ""}
           />
           <SearchField
             label="Search question"

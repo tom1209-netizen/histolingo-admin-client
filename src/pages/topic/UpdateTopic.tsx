@@ -29,7 +29,7 @@ const UpdateTopic = () => {
     localeData: topic?.localeData || {},
     id: topicId || "",
     countryId: topic?.countryId,
-    status: topic?.status,
+    status: topic?.status === 1 ? "active" : "inactive",
   };
 
   return <TopicForm typeOfForm="update" topicData={topicData} />;

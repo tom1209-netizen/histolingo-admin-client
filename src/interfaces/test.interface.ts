@@ -1,19 +1,41 @@
 export interface FormValues {
   name: string;
-  countryId: string;
-  topicId: string;
   status: string;
   questions: string[];
+  countryId: string;
+  topicId: string;
+  documentationsId: string[];
+  localeData: {
+    name: string;
+  };
 }
 
 export interface TestFormProps {
   typeOfForm: string;
   testData?: {
     name: string;
-    countryId: string;
-    topicId: string;
-    questions: string[];
+    countryId: { _id: string; name: string };
+    topicId: { _id: string; name: string };
+    questionsId: {
+      _id: string;
+    }[];
     status: number;
-    id: string;
+    documentationsId: {
+      _id: string;
+    }[];
+    localeData: {
+      name: string;
+    };
+  };
+}
+
+export interface TestData {
+  name: string;
+  countryId: string;
+  topicId: string;
+  questionsId: string[];
+  documentationsId: string[];
+  localeData: {
+    name: string;
   };
 }

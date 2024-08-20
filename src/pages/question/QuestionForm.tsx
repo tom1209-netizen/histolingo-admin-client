@@ -29,6 +29,14 @@ import {
 } from "../../interfaces/question.interface";
 import theme from "../../theme/GlobalCustomTheme";
 import { createQuestion } from "../../api/question";
+import { set } from "mongoose";
+
+const defaultFormValues = {
+  language: "en-US",
+  localeData: {
+    "en-US": { ask: "" },
+  },
+};
 
 const QuestionForm: React.FC<QuestionFormProps> = ({
   typeOfForm,
@@ -44,16 +52,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     watch,
   } = useForm<any>({
     mode: "onChange",
-    defaultValues: {
-      language: "en-US",
-      localeData: {
-        "en-US": { ask: "" },
-      },
-    },
+    defaultValues: defaultFormValues,
   });
 
   // USE FIELD ARRAY
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: "answer",
@@ -61,7 +63,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
   const navigate = useNavigate();
   const language = watch("language");
-  const country = watch("country");
+  const countryId = watch("countryId");
   const questionType = watch("questionType");
   const activeCompulsory = typeOfForm === "create";
   const [selectedLanguage, setSelectedLanguage] = useState("");
@@ -76,7 +78,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         const query = { status: 1 };
         const response = await getCountries(query);
         const countries = response.data.data.countries;
-        console.log(countries);
         const countryNames = countries.map((country: any) => ({
           value: country._id,
           label: country.name,
@@ -92,68 +93,150 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   }, []);
 
   // HANDLE COUNTRY CHANGE & FETCH TOPICS
-  const handleCountryChange = async (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setValue("country", value);
-    try {
-      const topics = await getTopicsByCountry(value);
-      console.log(topics, "filtered topics");
-      const topicNames = topics.map((topic: any) => ({
-        value: topic._id,
-        label: topic.name,
-      }));
-      setTopicNames(topicNames);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to fetch topics");
+  // const handleCountryChange = async (event: SelectChangeEvent<string>) => {
+  //   const value = event.target.value;
+  //   setValue("country", value);
+  //   try {
+  //     const topics = await getTopicsByCountry(value);
+  //     console.log(topics, "filtered topics");
+  //     const topicNames = topics.map((topic: any) => ({
+  //       value: topic._id,
+  //       label: topic.name,
+  //     }));
+  //     setTopicNames(topicNames);
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error("Failed to fetch topics");
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const topics = await getTopicsByCountry(countryId);
+        console.log(topics, "filtered topics");
+        const topicNames = topics.map((topic: any) => ({
+          value: topic._id,
+          label: topic.name,
+        }));
+        setTopicNames(topicNames);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to fetch topics");
+      }
+    };
+
+    if (countryId) {
+      fetchTopics();
     }
-  };
+  }, [countryId]);
 
   // FETCH QUESTION DATA IF UPDATE FORM
-  //   useEffect(() => {
-  //     const updateForm = () => {
-  //       try {
-  //         if (typeOfForm === "update" && questionData) {
-  //           console.log("Updating form with questionData:", questionData);
-  //           const status = questionData.status === 1 ? "active" : "inactive";
+  useEffect(() => {
+    const updateForm = async () => {
+      try {
+        if (typeOfForm === "update" && questionData) {
+          console.log("Updating form with questionData:", questionData);
+          // map data
 
-  //           // Set basic values
-  //           setValue("language", questionData.language);
-  //           setValue("country", questionData.countryId);
-  //           setValue("topic", questionData.topicId);
-  //           setValue("status", status);
-  //           setValue("localeData", questionData.localeData);
-  //           setValue("questionType", questionData.questionType);
+          questionData.countryId = questionData.countryId._id;
+          questionData.topicId = questionData.topicId._id;
+          questionData.questionType = questionData.questionType.toString();
+          console.log('question type', questionData.questionType);
+          
 
-  //           // Handle questionType specific logic
-  //           if (questionData.questionType === 2) {
-  //             const matchingPairs = questionData.localeData["en-US"].answer;
-  //             console.log("matchingPairs", matchingPairs);
-  //             reset({ answer: matchingPairs });
-  //           } else if (questionData.questionType === 3) {
-  //             const answers = questionData.localeData["en-US"].answer;
-  //             console.log("answers", answers);
-  //             reset({ answer: answers });
-  //           }
+          // if (questionData.questionType === 0) {
+          //   questionData["answer-type-0"] = questionData.answer;
+          // }
 
-  //           // Set localized data for each locale
-  //           Object.keys(questionData.localeData).forEach((locale) => {
-  //             setValue(`localeData[${locale}].ask`, questionData.localeData[locale].ask);
-  //             setValue(`localeData[${locale}].answer`, questionData.localeData[locale].answer);
-  //           });
-  //         } else {
-  //           reset({ language: "en-US", localeData: { "en-US": { ask: "" } } });
-  //         }
-  //       } catch (error) {
-  //         console.error(error);
-  //         toast.error("Failed to fetch question data");
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     };
+          // if (questionData.questionType === 1) {
+          //   questionData["answer-type-1"] = questionData.answer;
+          // }
 
-  //     updateForm();
-  //   }, [questionData, typeOfForm, setValue, reset]);
+          if (questionData.questionType === "3") {
+            console.log("abcxyz", language)
+            for(const locale in questionData.localeData){
+              
+                questionData.localeData[locale].answer = questionData.localeData[locale].answer.join("\n");
+              
+            }
+            // questionData.answer = "abcxyz";
+            // questionData[`localeData[${language}].answer`] = questionData.answer.join("\n");
+          } else {
+            questionData[`answer-type-${questionData.questionType}`] =
+              questionData.answer;
+          }
+
+          reset({ ...defaultFormValues, ...questionData });
+          //   const questionType = questionData.questionType.toString();
+          //   setValue("questionType", questionType);
+          //   setValue("country", questionData.countryId._id);
+          //   setValue("status", questionData.status);
+          //   Object.keys(questionData.localeData).forEach((locale) => {
+          //     setValue(
+          //       `localeData[${locale}].ask`,
+          //       questionData.localeData[locale].ask
+          //     );
+          //   });
+
+          //   // fetch topics and setValue of topic
+          //   try {
+          //     const topics = await getTopicsByCountry(questionData.countryId._id);
+          //     const topicNames = topics.map((topic: any) => ({
+          //       value: topic._id,
+          //       label: topic.name,
+          //     }));
+          //     setTopicNames(topicNames);
+          //     setValue("topic", questionData.topicId._id);
+          //   } catch (error) {
+          //     console.error(error);
+          //     toast.error("Failed to fetch topics");
+          //   }
+
+          //   if (questionData.questionType === 0) {
+          //     setValue("answer", questionData.answer);
+          //   }
+
+          //   if (questionData.questionType === 1) {
+          //     const answer = questionData.answer === true ? "true" : "false";
+          //     setValue("answer-type-1", answer);
+          //   }
+
+          //   if (questionData.questionType === 2) {
+          //     Object.keys(questionData.localeData).forEach((locale) => {
+          //       setValue(
+          //         `localeData[${locale}].ask`,
+          //         questionData.localeData[locale].ask
+          //       );
+          //       setValue(
+          //         `localeData[${locale}].answer`,
+          //         questionData.localeData[locale].answer
+          //       );
+          //     });
+          //   }
+
+          //   if (questionData.questionType === 3) {
+          //     console.log("are you innnn");
+          //     Object.keys(questionData.localeData).forEach((locale) => {
+          //       const answersArray = questionData.localeData[locale].answer;
+          //       const answersString = Array.isArray(answersArray)
+          //         ? answersArray.join("\n")
+          //         : "";
+          //       console.log(answersString, "answersString");
+          //       setValue(`localeData[${locale}].answer`, answersString);
+          //     });
+          //   }
+        }
+      } catch (error) {
+        console.error(error);
+        toast("Fetching data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    updateForm();
+  }, [questionData]);
 
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
@@ -168,11 +251,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   };
 
   // QUESTION DATA HANDLING
-
   // HANDLE QUESTION TYPE CHANGE
   const handleQuestionTypeChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setValue("questionType", value);
+
     if (value === "2" && fields.length === 0) {
       reset({
         language: "en-US",
@@ -183,6 +266,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       });
       append({ leftColumn: "", rightColumn: "" });
     }
+
     reset({
       language: "en-US",
       localeData: {
@@ -215,7 +299,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       topicId: data.topic,
       ask: data.localeData["en-US"].ask,
       questionType: Number(data.questionType),
-    //   status: status,
+      //   status: status,
       answer: data.answer,
       localeData: data.localeData,
     };
@@ -234,9 +318,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       baseBody.answer = data.localeData["en-US"].answer;
     }
 
+    console.log(baseBody, "baseBody updated");
     try {
       const response = await createQuestion(baseBody);
       console.log(response);
+      if (response.data.success) {
+        toast.success("Question created successfully.");
+        navigate("/question");
+      }
     } catch (error) {
       console.error("An error occurred:", error);
       toast.error("An error occurred. Please try again.");
@@ -246,6 +335,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   if (loading) {
     return <div>Loading...</div>;
   }
+
+  console.log('abc', questionType)
 
   return (
     <ThemeProvider theme={theme}>
@@ -268,6 +359,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             name="questionType"
             label="Question type"
             options={questionTypes}
+            disabled={typeOfForm === "update"}
             onChange={handleQuestionTypeChange}
           />
         </FormGrid>
@@ -293,10 +385,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           <SelectInputField
             control={control}
             errors={errors}
-            name="country"
+            name="countryId"
             label="Country"
             options={countryNames}
-            onChange={handleCountryChange}
+            // onChange={handleCountryChange}
           />
         </FormGrid>
 
@@ -307,11 +399,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           <SelectInputField
             control={control}
             errors={errors}
-            name="topic"
+            name="topicId"
             label="Topic"
             options={topicNames}
             onChange={handleTopicChange}
-            disabled={!country}
+            disabled={!countryId}
           />
         </FormGrid>
 
@@ -442,6 +534,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
         <FormGrid item>
           <CreateButtonGroup
+            nagivateTo={"/question"}
             buttonName={typeOfForm === "create" ? "Create" : "Update"}
           />
         </FormGrid>

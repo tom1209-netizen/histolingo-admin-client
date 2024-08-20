@@ -14,13 +14,15 @@ import { useRowActions } from "../../hooks/useRowActions";
 import { formatTimestamp } from "../../utils/formatTime";
 import { getTopics, switchTopicStatus } from "../../api/topic";
 import { LoadingTable } from "../../components/reusable/Loading";
+import { no_img } from "../../constant/image";
+import { toast } from "react-toastify";
 
 const Topic = () => {
   const { handleEditRow } = useRowActions();
   const [loading, setLoading] = useState<boolean>(true);
   const [topics, setTopics] = useState<any[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchTopicQuery = convertSearchParamsToObj(searchParams);
+  const searchTopicQuery: any = convertSearchParamsToObj(searchParams);
   const [rowCount, setRowCount] = useState<number>(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -29,7 +31,11 @@ const Topic = () => {
 
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchTopicStatus(id, status);
-    console.log(response);
+    if (response.status === 200) {
+      toast.success("Status changed successfully");
+    } else {
+      toast.error("Failed to change status. Please try again.");
+    }
   };
 
   const columns: GridColDef[] = [
@@ -37,10 +43,36 @@ const Topic = () => {
     {
       field: "description",
       headerName: "Description",
-      flex: 2,
+      flex: 3,
       sortable: false,
     },
-    { field: "countryId", headerName: "Country", flex: 1, sortable: false },
+    {
+      field: "country",
+      headerName: "Country",
+      flex: 1,
+      sortable: false,
+      valueGetter: (value, row) =>
+        row.country ? row.country.name : "N/A",
+    },
+    {
+      field: "image",
+      headerName: "Image",
+      flex: 1,
+      sortable: false,
+      renderCell: (params) => (
+        <img
+          src={params.row.image || no_img}
+          alt={params.row.name}
+          style={{
+            width: 80,
+            height: 50,
+            objectFit: "cover",
+            borderRadius: 5,
+            border: "1px solid #ccc",
+          }}
+        />
+      ),
+    },
     { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
     { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
     {
@@ -65,6 +97,7 @@ const Topic = () => {
       headerName: "Edit topic",
       flex: 0,
       width: 100,
+      align: "center",
       sortable: false,
       renderCell: (params) => (
         <IconButton
@@ -88,7 +121,7 @@ const Topic = () => {
         updatedAt: formatTimestamp(topic.updatedAt),
       }));
 
-      console.log(topicsData);
+      console.log(formattedTopics);
       setRowCount(response.data.data.totalTopics);
       setTopics(formattedTopics);
     } catch (error) {
@@ -127,7 +160,7 @@ const Topic = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchTopicQuery, status: value })
             }
-            value=""
+            value={searchTopicQuery.status}
           />
           <SearchField
             label="Search topic"

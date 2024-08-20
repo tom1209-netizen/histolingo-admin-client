@@ -13,6 +13,7 @@ import { useRowActions } from "../../hooks/useRowActions";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import { LoadingTable } from "../../components/reusable/Loading";
+import { toast } from "react-toastify";
 
 const Admin = () => {
   const { handleEditRow } = useRowActions();
@@ -31,6 +32,12 @@ const Admin = () => {
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchAdminStatus(id, status);
     console.log(response);
+    if (response.status === 200) {
+      console.log("hello?");
+      toast.success("Status changed successfully");
+    } else {
+      toast.error("Failed to change status. Please try again.");
+    }
   };
 
   const columns: GridColDef[] = [
@@ -47,7 +54,7 @@ const Admin = () => {
       field: "supervisorId",
       headerName: "Supervisor",
       flex: 1,
-      valueGetter: (value, row) => row.adminName,
+      valueGetter: (value, row) => row.supervisorId.adminName,
       sortable: false,
     },
     { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },

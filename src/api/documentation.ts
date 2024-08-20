@@ -49,7 +49,7 @@ export const updateDocument = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.put(
+    const response = await axios.patch(
       `${domain_api}/documentations/${id}`,
       body,
       {

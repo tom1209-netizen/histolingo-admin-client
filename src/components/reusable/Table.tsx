@@ -15,6 +15,7 @@ interface DataTableProps {
   checkboxSelection?: boolean;
   isLoading?: boolean;
   onSelectionModelChange?: (selectionModel: GridRowSelectionModel) => void;
+  selectedRows?: GridRowSelectionModel;
 }
 
 export default function DataTable({
@@ -26,6 +27,7 @@ export default function DataTable({
   getRowId,
   checkboxSelection,
   isLoading,
+  selectedRows,
   onSelectionModelChange,
 }: DataTableProps) {
   const [page, setPage] = React.useState<number>(0);
@@ -35,6 +37,8 @@ export default function DataTable({
         <DataGrid
         loading={isLoading}
          checkboxSelection={checkboxSelection? true : false}
+         rowSelectionModel={selectedRows}
+         disableRowSelectionOnClick={true}
          getRowHeight={() => 'auto'} getEstimatedRowHeight={() => 200} 
           sx={{
             "& .MuiDataGrid-cell": {
