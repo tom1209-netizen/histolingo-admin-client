@@ -13,6 +13,7 @@ import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import { LoadingTable } from "../../components/reusable/Loading";
 import { getDocuments, switchDocumentStatus } from "../../api/documentation";
+import { toast } from "react-toastify";
 
 const Documentation = () => {
   const { handleEditRow } = useRowActions();
@@ -29,7 +30,11 @@ const Documentation = () => {
 
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchDocumentStatus(id, status);
-    console.log(response);
+    if (response.status === 200) {
+      toast.success("Status changed successfully");
+    } else {
+      toast.error("Failed to change status. Please try again.");
+    }
   };
 
   const columns: GridColDef[] = [
@@ -55,7 +60,7 @@ const Documentation = () => {
       flex: 1,
       sortable: false,
       renderCell: (params) => {
-        return <Link to={params.row.source}>Link</Link>;
+        return <Link to={params.row.source} target="_blank" rel="noopener noreferrer">Link</Link>;
       },
     },
 

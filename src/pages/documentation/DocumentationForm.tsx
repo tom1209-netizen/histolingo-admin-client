@@ -1,8 +1,8 @@
 import {
-    CssBaseline,
-    Grid,
-    SelectChangeEvent,
-    ThemeProvider,
+  CssBaseline,
+  Grid,
+  SelectChangeEvent,
+  ThemeProvider,
 } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
 import { auto } from "@popperjs/core";
@@ -18,13 +18,20 @@ import LocaleTextInputField from "../../components/localeComponents/LocaleTextIn
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
-import { DocumentationFormProps } from "../../interfaces/documentaion.interface";
 import {
-    FormValues
-} from "../../interfaces/question.interface";
+  DocumentationFormProps,
+  FormValues,
+} from "../../interfaces/documentaion.interface";
 import theme from "../../theme/GlobalCustomTheme";
 import NameInputField from "../../components/formComponents/NameInputField";
+import { createDocument, updateDocument } from "../../api/documentation";
 
+const defaultFormValues = {
+  language: "en-US",
+  localeData: {
+    "en-US": { name: "", content: "" },
+  },
+};
 const DocumentationForm: React.FC<DocumentationFormProps> = ({
   typeOfForm,
   documentationData,
@@ -35,20 +42,17 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
     watch,
   } = useForm<any>({
     mode: "onChange",
-    defaultValues: {
-      language: "en-US",
-      localeData: {
-        "en-US": { name: "", content: "" },
-      },
-    },
+    defaultValues: defaultFormValues,
   });
 
   const navigate = useNavigate();
   const language = watch("language");
   const country = watch("country");
+  const localeData = watch("localeData");
   const activeCompulsory = typeOfForm === "create";
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -77,23 +81,33 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
     fetchCountries();
   }, []);
 
-  // HANDLE COUNTRY CHANGE & FETCH TOPICS
-  const handleCountryChange = async (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setValue("country", value);
-    try {
-      const topics = await getTopicsByCountry(value);
-      console.log(topics, "filtered topics");
-      const topicNames = topics.map((topic: any) => ({
-        value: topic._id,
-        label: topic.name,
-      }));
-      setTopicNames(topicNames);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to fetch topics");
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const topics = await getTopicsByCountry(country);
+        console.log(topics, "filtered topics");
+        const topicNames = topics.map((topic: any) => ({
+          value: topic._id,
+          label: topic.name,
+        }));
+        setTopicNames(topicNames);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to fetch topics");
+      }
+    };
+
+    if (country) {
+      fetchTopics();
     }
-  };
+  }, [country]);
+
+  useEffect(() => {
+    if (typeOfForm === "update" && documentationData) {
+      console.log("Updating form with documentationData:", documentationData);
+      reset({ ...defaultFormValues, ...documentationData });
+    }
+  }, [documentationData]);
 
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
@@ -109,16 +123,53 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
+    if (
+      !localeData["en-US"].name.trim() ||
+      !localeData["en-US"].content.trim()
+    ) {
+      toast.error(
+        "Please fill in the name and description for English language."
+      );
+      return;
+    }
+
     console.log(data);
     const status = data.status === "active" ? 1 : 0;
     const body = {
       countryId: data.country,
       topicId: data.topic,
-      ask: data.localeData["en-US"].ask,
-      questionType: Number(data.questionType),
+      name: data.localeData["en-US"].name,
+      content: data.localeData["en-US"].content,
+      source: data.source,
       localeData: data.localeData,
     };
     console.log("Question form submitted with data:", body);
+
+    try {
+      if (typeOfForm === "create") {
+        const response = await createDocument(body);
+        if (response.data.success) {
+          toast.success("Document created successfully.");
+          navigate("/documentation");
+        } else {
+          console.log(response);
+          toast.error("An error occurred. Please try again.");
+        }
+      } else if (typeOfForm === "update" && documentationData) {
+        body["status"] = status;
+        const response = await updateDocument(documentationData?.id, body);
+        if (response.data.success) {
+          toast.success("Document updated successfully.");
+          navigate("/documentation");
+        } else {
+          console.log(response);
+          toast.error("An error occurred. Please try again.");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to submit question:", error);
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   if (loading) {
@@ -146,7 +197,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
             name="country"
             label="Country"
             options={countryNames}
-            onChange={handleCountryChange}
+            // onChange={handleCountryChange}
           />
         </FormGrid>
 
@@ -180,6 +231,51 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="name" required>
+            Document name
+          </FormLabel>
+          <LocaleTextInputField
+            property={"name"}
+            errors={errors}
+            control={control}
+            language={language}
+            name={"Document name"}
+            length={100}
+            multiline={false}
+            minRows={1}
+          />
+        </FormGrid>
+
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="content" required>
+            Content
+          </FormLabel>
+          <LocaleTextInputField
+            property={"content"}
+            language={language}
+            name="Content"
+            control={control}
+            errors={errors}
+            length={500}
+            minRows={14}
+            multiline={true}
+          />
+        </FormGrid>
+
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="source" required>
+            Source
+          </FormLabel>
+          <NameInputField
+            minRows={14}
+            length={2100}
+            control={control}
+            errors={errors}
+            fieldLabel="source"
+          />
+        </FormGrid>
+
+        <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
             Status
           </FormLabel>
@@ -190,31 +286,10 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
           />
         </FormGrid>
 
-        <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="status" required>
-            Source
-          </FormLabel>
-          <NameInputField control={control} errors={errors} fieldLabel="source" />
-        </FormGrid>
-
-        <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="content" required>
-            Content
-          </FormLabel>
-          <LocaleTextInputField
-            property={"content"}
-            language={language}
-            name="content"
-            control={control}
-            errors={errors}
-            length={500}
-            minRows={14}
-            multiline={true}
-          />
-        </FormGrid>
-
+        <FormGrid item xs={12} md={6}></FormGrid>
         <FormGrid item>
           <CreateButtonGroup
+            nagivateTo={"/documentation"}
             buttonName={typeOfForm === "create" ? "Create" : "Update"}
           />
         </FormGrid>

@@ -3,10 +3,11 @@ export interface DocumentationFormProps {
   documentationData?: {
     name: string;
     content: string;
-    countryId: string;
-    topicId: string;
+    source: string;
+    country: string;
+    topic: string;
     id: string;
-    status: number;
+    status: string;
     localeData: {
       "en-US": { name: string; content: string };
       "ja-JP": { name: string; content: string };
@@ -20,6 +21,7 @@ export interface FormValues {
   content: string;
   country: string;
   topic: string;
+  source: string;
   status: string;
   localeData: {
     "en-US": { name: string; content: string };

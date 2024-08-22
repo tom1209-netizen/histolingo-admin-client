@@ -72,17 +72,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
   useEffect(() => {
     if (typeOfForm === "update" && topicData) {
       console.log("Updating form with topicData:", topicData);
-      // reset(topicData);
       reset({...defaultFormValues, ...topicData});
-
-      // setValue("country", topicData.countryId);
-      // Object.keys(topicData.localeData).forEach((key) => {
-      //   setValue(`localeData.${key}.name`, topicData.localeData[key].name);
-      //   setValue(
-      //     `localeData.${key}.description`,
-      //     topicData.localeData[key].description
-      //   );
-      // });
     }
   }, [topicData]);
 
@@ -205,7 +195,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
             control={control}
             errors={errors}
             name="countryId"
-            label="country"
+            label="Country"
             options={countryNames}
             onChange={handleCountryChange}
           />
@@ -221,7 +211,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
             control={control}
             language={language}
             name={"Topic name"}
-            length={50}
+            length={100}
             multiline={false}
             minRows={1}
           />
@@ -264,13 +254,6 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
             minRows={14}
           />
         </FormGrid>
-
-        <FormGrid item xs={12} md={6}>
-          <Box>
-            <ErrorSummary errors={errors} />
-          </Box>
-        </FormGrid>
-        <FormGrid item xs={12} md={6}></FormGrid>
 
         <FormGrid item>
           <CreateButtonGroup

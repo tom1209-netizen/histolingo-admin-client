@@ -4,12 +4,16 @@ import { TextField } from "@mui/material";
 interface NameInputFieldProps {
   control: Control<any>;
   errors: FieldErrors<any>;
+  minRows: number;
+  length: number;
   fieldLabel: "firstName" | "lastName" | "adminName" | "roleName" | "source";
 }
 
 const NameInputField: React.FC<NameInputFieldProps> = ({
   control,
   errors,
+  length,
+  minRows,
   fieldLabel,
 }) => {
   const name = fieldLabel;
@@ -29,7 +33,7 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
       label = "Role name";
       break;
     case "source":
-      label = "source";
+      label = "Source";
       break;
     default:
       label = "";
@@ -42,28 +46,30 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
       rules={{
         required: `${label} is required`,
         maxLength: {
-          value: 50,
-          message: `${label} must be less than 50 characters`,
+          value: length,
+          message: `${length} must be less than ${length} characters`,
         },
         validate: {
-          notEmptyOrWhitespace: value => {
+          notEmptyOrWhitespace: (value) => {
             if (!value.trim()) {
               return "Cannot be empty or whitespace only";
             }
             return true;
-          }
-        }
+          },
+        },
       }}
       render={({ field }) => (
         <TextField
           {...field}
+          multiline
+          minRows={minRows}
           placeholder={`Enter ${label}`}
           variant="outlined"
           error={!!errors[name]}
-          helperText={(errors[name] as any)?.message || ''}
+          helperText={(errors[name] as any)?.message || ""}
           fullWidth
           margin="normal"
-          inputProps={{ maxLength: 50 }}
+          inputProps={{ maxLength: length }}
         />
       )}
     />

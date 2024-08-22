@@ -295,8 +295,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     console.log(data);
     const status = data.status === "active" ? 1 : 0;
     let baseBody = {
-      countryId: data.country,
-      topicId: data.topic,
+      countryId: data.countryId,
+      topicId: data.topicId,
       ask: data.localeData["en-US"].ask,
       questionType: Number(data.questionType),
       //   status: status,
@@ -335,8 +335,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  console.log('abc', questionType)
 
   return (
     <ThemeProvider theme={theme}>

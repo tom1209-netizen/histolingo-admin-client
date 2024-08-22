@@ -11,7 +11,11 @@ import NameInputField from "../../components/formComponents/NameInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
 import PasswordInputField from "../../components/formComponents/PasswordInputField";
-import { createAdmin, getRolesBypassAuthorization, updateAdmin } from "../../api/admin";
+import {
+  createAdmin,
+  getRolesBypassAuthorization,
+  updateAdmin,
+} from "../../api/admin";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FormGrid } from "../../constant/FormGrid";
@@ -137,6 +141,8 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
             First name
           </FormLabel>
           <NameInputField
+            minRows={1}
+            length={50}
             control={control}
             errors={errors}
             fieldLabel="firstName"
@@ -147,6 +153,8 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
             Last name
           </FormLabel>
           <NameInputField
+            minRows={1}
+            length={50}
             control={control}
             errors={errors}
             fieldLabel="lastName"
@@ -157,6 +165,8 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
             Admin name
           </FormLabel>
           <NameInputField
+          minRows={1}
+           length={50}
             control={control}
             errors={errors}
             fieldLabel="adminName"
@@ -205,7 +215,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
 
         <FormGrid item>
           <CreateButtonGroup
-          nagivateTo={"/admin"}
+            nagivateTo={"/admin"}
             buttonName={typeOfForm === "create" ? "Create" : "Update"}
           />
         </FormGrid>

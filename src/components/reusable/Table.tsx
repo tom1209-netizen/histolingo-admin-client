@@ -42,8 +42,14 @@ export default function DataTable({
          getRowHeight={() => 'auto'} getEstimatedRowHeight={() => 200} 
           sx={{
             "& .MuiDataGrid-cell": {
-              display: "flex",
-              alignItems: "center",
+              display: "-webkit-box",
+              // alignItems: "center",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              lineHeight: "4.5rem", 
+              maxHeight: "4.5rem",
               padding: "8px",
             },
             "& .MuiDataGrid-row": {
