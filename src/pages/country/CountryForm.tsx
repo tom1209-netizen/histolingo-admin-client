@@ -24,6 +24,13 @@ import {
 import theme from "../../theme/GlobalCustomTheme";
 import { uploadFile } from "../../api/upload";
 
+const defaultFormValues = {
+  language: "en-US",
+  localeData: {
+    "en-US": { name: "", description: "" },
+  },
+};
+
 const CountryForm: React.FC<CountryFormProps> = ({
   typeOfForm,
   countryData,
@@ -37,12 +44,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
     reset,
   } = useForm<any>({
     mode: "onChange",
-    defaultValues: {
-      language: "en-US",
-      localeData: {
-        "en-US": { name: "", description: "" },
-      },
-    },
+    defaultValues: defaultFormValues,
   });
 
   const navigate = useNavigate();
@@ -71,7 +73,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
   useEffect(() => {
     if (typeOfForm === "update" && countryData) {
       console.log("Updating form with countryData:", countryData);
-      reset(countryData);
+      reset({...defaultFormValues, ...countryData});
     }
   }, [countryData]);
 

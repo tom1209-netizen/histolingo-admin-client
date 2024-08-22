@@ -144,6 +144,8 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
             Role name
           </FormLabel>
           <NameInputField
+            minRows={1}
+          length={50}
             control={control}
             errors={errors}
             fieldLabel="roleName"
