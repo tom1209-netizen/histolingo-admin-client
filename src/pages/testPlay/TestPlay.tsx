@@ -117,21 +117,25 @@ function MatchingQuestion({ questionsData, onAnswerChange, selectedAnswer, disab
 
     const handleSelectTerm = (term) => {
         setSelectedTerm(term);
+        if (selectedDefinition) {
+            handleMatch(term, selectedDefinition);
+        }
     };
 
     const handleSelectDefinition = (definition) => {
         setSelectedDefinition(definition);
+        if (selectedTerm) {
+            handleMatch(selectedTerm, definition);
+        }
     };
 
-    const handleMatch = () => {
-        if (selectedTerm && selectedDefinition) {
-            const color = colors[matches.length % colors.length]; // Rotate through colors
-            const newMatches = [...matches, { term: selectedTerm, definition: selectedDefinition, color }];
-            setMatches(newMatches);
-            setSelectedTerm(null);
-            setSelectedDefinition(null);
-            onAnswerChange(newMatches);
-        }
+    const handleMatch = (term, definition) => {
+        const color = colors[matches.length % colors.length];
+        const newMatches = [...matches, { term, definition, color }];
+        setMatches(newMatches);
+        setSelectedTerm(null);
+        setSelectedDefinition(null);
+        onAnswerChange(newMatches);
     };
 
     const getTermColor = (term) => {
@@ -185,16 +189,6 @@ function MatchingQuestion({ questionsData, onAnswerChange, selectedAnswer, disab
                         ))}
                     </Grid>
                 </Grid>
-                <Box sx={{ marginTop: 2 }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleMatch}
-                        disabled={!selectedTerm || !selectedDefinition || disabled}
-                    >
-                        Match
-                    </Button>
-                </Box>
             </Container>
         </AnimatedPaper>
     );
