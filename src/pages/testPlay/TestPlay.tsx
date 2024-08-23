@@ -90,62 +90,94 @@ function MultipleChoiceQuestion({ questionsData, onAnswerChange, selectedAnswer,
 }
 
 function FillInTheBlankQuestion({ questionsData, onAnswerChange, selectedAnswer, disabled, isCorrect }) {
+    const [fillInAnswer, setFillInAnswer] = useState(selectedAnswer || []);
+
+    const handleChange = (value, index) => {
+        const updatedAnswers = [...fillInAnswer.slice(0, index), value, ...fillInAnswer.slice(index + 1)];
+        setFillInAnswer(updatedAnswers);
+        onAnswerChange(updatedAnswers);
+    };
+
     return (
         <AnimatedPaper isCorrect={isCorrect}>
             <Typography variant="h5">{questionsData.ask}</Typography>
             <Typography variant="h5">Fill In The Blank Question</Typography>
-            <TextField
-                fullWidth
-                label="Your Answer"
-                variant="outlined"
-                sx={{ marginTop: 2 }}
-                onChange={(e) => onAnswerChange(e.target.value)}
-                value={selectedAnswer}
-                disabled={disabled}
-            />
+            {
+                questionsData['answer'].map((_, index) => (
+                    <TextField
+                        key={index}
+                        fullWidth
+                        label={`Answer ${index + 1}`}
+                        variant="outlined"
+                        sx={{ marginTop: 2 }}
+                        onChange={(e) => handleChange(e.target.value, index)}
+                        value={fillInAnswer[index] || ''}
+                        disabled={disabled}
+                    />
+                ))
+            }
         </AnimatedPaper>
     );
 }
 
 function MatchingQuestion({ questionsData, onAnswerChange, selectedAnswer, disabled, isCorrect }) {
-    const [selectedTerm, setSelectedTerm] = useState(null);
-    const [selectedDefinition, setSelectedDefinition] = useState(null);
+    const [selectedLeftColumn, setSelectedLeftColumn] = useState(null);
+    const [selectedRightColumn, setSelectedRightColumn] = useState(null);
     const [matches, setMatches] = useState(selectedAnswer || []);
+    const [matchColors, setMatchColors] = useState({});
 
     const rightColumn = questionsData['answer'].map(item => item['rightColumn']);
     const leftColumn = questionsData['answer'].map(item => item['leftColumn']);
 
-    const handleSelectTerm = (term) => {
-        setSelectedTerm(term);
-        if (selectedDefinition) {
-            handleMatch(term, selectedDefinition);
+    const handleSelectLeftColumn = (left) => {
+        setSelectedLeftColumn(left);
+        if (selectedRightColumn) {
+            handleMatch(left, selectedRightColumn);
         }
     };
 
-    const handleSelectDefinition = (definition) => {
-        setSelectedDefinition(definition);
-        if (selectedTerm) {
-            handleMatch(selectedTerm, definition);
+    const handleSelectRightColumn = (right) => {
+        setSelectedRightColumn(right);
+        if (selectedLeftColumn) {
+            handleMatch(selectedLeftColumn, right);
         }
     };
 
-    const handleMatch = (term, definition) => {
-        const color = colors[matches.length % colors.length];
-        const newMatches = [...matches, { term, definition, color }];
+    const handleMatch = (left, right) => {
+        const newMatch = {
+            "leftColumn": left,
+            "rightColumn": right
+        };
+
+        const newMatches = [...matches, newMatch];
         setMatches(newMatches);
-        setSelectedTerm(null);
-        setSelectedDefinition(null);
+
+        const color = colors[newMatches.length % colors.length];
+        setMatchColors(prevColors => ({
+            ...prevColors,
+            [left]: color,
+            [right]: color,
+        }));
+
+        setSelectedLeftColumn(null);
+        setSelectedRightColumn(null);
         onAnswerChange(newMatches);
     };
 
-    const getTermColor = (term) => {
-        const match = matches.find(match => match.term === term);
-        return match ? match.color : null;
+    const getLeftColumnColor = (left) => {
+        return matchColors[left] || (selectedLeftColumn === left ? 'lightgray' : null);
     };
 
-    const getDefinitionColor = (definition) => {
-        const match = matches.find(match => match.definition === definition);
-        return match ? match.color : null;
+    const getRightColumnColor = (right) => {
+        return matchColors[right] || (selectedRightColumn === right ? 'lightgray' : null);
+    };
+
+    const isLeftColumnDisabled = (left) => {
+        return matches.some(match => match.left === left);
+    };
+
+    const isRightColumnDisabled = (right) => {
+        return matches.some(match => match.right === right);
     };
 
     return (
@@ -162,10 +194,10 @@ function MatchingQuestion({ questionsData, onAnswerChange, selectedAnswer, disab
                                 sx={{
                                     padding: 2,
                                     marginBottom: 2,
-                                    cursor: disabled ? 'default' : 'pointer',
-                                    backgroundColor: getTermColor(item) || (selectedTerm === item ? 'lightgray' : 'white')
+                                    cursor: (disabled || isLeftColumnDisabled(item)) ? 'default' : 'pointer',
+                                    backgroundColor: getLeftColumnColor(item) || 'white'
                                 }}
-                                onClick={() => !disabled && handleSelectTerm(item)}
+                                onClick={() => !disabled && !isLeftColumnDisabled(item) && handleSelectLeftColumn(item)}
                             >
                                 {item}
                             </Paper>
@@ -179,10 +211,10 @@ function MatchingQuestion({ questionsData, onAnswerChange, selectedAnswer, disab
                                 sx={{
                                     padding: 2,
                                     marginBottom: 2,
-                                    cursor: disabled ? 'default' : 'pointer',
-                                    backgroundColor: getDefinitionColor(item) || (selectedDefinition === item ? 'lightgray' : 'white')
+                                    cursor: (disabled || isRightColumnDisabled(item)) ? 'default' : 'pointer',
+                                    backgroundColor: getRightColumnColor(item) || 'white'
                                 }}
-                                onClick={() => !disabled && handleSelectDefinition(item)}
+                                onClick={() => !disabled && !isRightColumnDisabled(item) && handleSelectRightColumn(item)}
                             >
                                 {item}
                             </Paper>
@@ -261,6 +293,9 @@ function TestPlay(props: any) {
 
             const sound = new Audio(isCorrect ? correctAudio : wrongAudio);
             await sound.play();
+
+            console.log('Submitted answer:', selectedAnswer);
+            console.log(selectedAnswer)
 
             setSubmittedAnswers(prev => ({
                 ...prev,
