@@ -16,7 +16,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
 import { getDocuments } from "../../api/documentation";
-import { createPlayerTest } from "../../api/playerTest";
+import { createPlayerTest, updatePlayerTest } from "../../api/playerTest";
 import { getQuestions } from "../../api/question";
 import { getTopicsByCountry } from "../../api/topic";
 import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
@@ -36,7 +36,14 @@ import { FormValues, TestFormProps } from "../../interfaces/test.interface";
 import theme from "../../theme/GlobalCustomTheme";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
+import MultiSelect2 from "../../components/formComponents/MultiSelect2";
 
+const defaultFormValues = {
+  language: "en-US",
+  localeData: {
+    "en-US": { name: "" },
+  },
+};
 const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   // USE FORM
   const {
@@ -48,17 +55,13 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     watch,
   } = useForm<any>({
     mode: "onChange",
-    defaultValues: {
-      language: "en-US",
-      localeData: {
-        "en-US": { name: "" },
-      },
-    },
+    defaultValues: defaultFormValues,
   });
 
   const navigate = useNavigate();
-  const country = watch("country");
+  // const country = watch("country");
   const localeData = watch("localeData");
+  const countryId = watch("countryId");
   const activeCompulsory = typeOfForm === "create";
   const [loading, setLoading] = useState<boolean>(true);
   const [countryNames, setCountryNames] = useState<any[]>([]);
@@ -66,7 +69,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
   const language = watch("language");
   const [selectedLanguage, setSelectedLanguage] = useState("");
-  const [documentationNames, setDocumentationNames] = useState<any[]>([]);
   const [documentationArray, setDocumentationArray] = useState<any[]>([]);
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
@@ -79,38 +81,47 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     const fetchData = async () => {
       if (typeOfForm === "update" && testData) {
         console.log("Updating form with testData:", testData);
-        setValue("countryId", testData.countryId._id);
-        const documentNames = testData.documentationsId.map(
-          (doc: any) => doc.name
-        );
-        setValue("documentationsId", documentNames);
-        const selectedRowIds: GridRowSelectionModel = testData.questionsId.map(
-          (content: any) => content._id
-        );
-        console.log(selectedRowIds, "selectedRowIds");
-        setSelectedRows(selectedRowIds);
-
-        console.log(testData.localeData["en-US"].name, "name");
-
-        Object.keys(testData.localeData).forEach((locale) => {
-          setValue(
-            `localeData[${locale}].name`,
-            testData.localeData[locale].name
-          );
+        setSelectedRows(testData.questionsId.map((question) => question._id))
+        reset({
+          ...defaultFormValues,
+          ...testData,
+          countryId: testData.countryId._id,
+          topicId: testData.topicId._id,
+          documentationsId: testData.documentationsId.map((doc) => doc._id),
         });
-        try {
-          const topics = await getTopicsByCountry(testData.countryId._id);
-          console.log(topics, "filtered topics");
-          const topicNames = topics.map((topic: any) => ({
-            value: topic._id,
-            label: topic.name,
-          }));
-          setTopicNames(topicNames);
-          setValue("topicId", testData.topicId._id);
-        } catch (error) {
-          console.error(error);
-          toast.error("Failed to fetch topics");
-        }
+
+        // setValue("countryId", testData.countryId._id);
+        // const documentNames = testData.documentationsId.map(
+        //   (doc: any) => doc.name
+        // );
+        // setValue("documentationsId", documentNames);
+        // const selectedRowIds: GridRowSelectionModel = testData.questionsId.map(
+        //   (content: any) => content._id
+        // );
+        // console.log(selectedRowIds, "selectedRowIds");
+        // setSelectedRows(selectedRowIds);
+
+        // console.log(testData.localeData["en-US"].name, "name");
+
+        // Object.keys(testData.localeData).forEach((locale) => {
+        //   setValue(
+        //     `localeData[${locale}].name`,
+        //     testData.localeData[locale].name
+        //   );
+        // });
+        // try {
+        //   const topics = await getTopicsByCountry(testData.countryId._id);
+        //   console.log(topics, "filtered topics");
+        //   const topicNames = topics.map((topic: any) => ({
+        //     value: topic._id,
+        //     label: topic.name,
+        //   }));
+        //   setTopicNames(topicNames);
+        //   setValue("topicId", testData.topicId._id);
+        // } catch (error) {
+        //   console.error(error);
+        //   toast.error("Failed to fetch topics");
+        // }
       }
     };
 
@@ -119,7 +130,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
 
   // HANDLE SELECTION CHANGE
   const handleSelectionChange = (rowSelectionModel: GridRowSelectionModel) => {
-    console.log(rowSelectionModel, "rowSelectionModel");
     setSelectedRows(rowSelectionModel);
   };
 
@@ -131,16 +141,12 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         const query = { status: 1 };
         const response = await getDocuments(query);
         const documentations = response.data.data.documentations;
-        console.log(documentations, "documentations");
-        const documentationNames = documentations.map(
-          (documentation: any) => documentation.name
-        );
         const documentationArray = documentations.map((doc: any) => ({
           value: doc._id,
           label: doc.name,
         }));
         setDocumentationArray(documentationArray);
-        setDocumentationNames(documentationNames);
+
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -171,23 +177,27 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     fetchCountries();
   }, []);
 
-  // HANDLE COUNTRY CHANGE & FETCH TOPICS
-  const handleCountryChange = async (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    setValue("country", value);
-    try {
-      const topics = await getTopicsByCountry(value);
-      console.log(topics, "filtered topics");
-      const topicNames = topics.map((topic: any) => ({
-        value: topic._id,
-        label: topic.name,
-      }));
-      setTopicNames(topicNames);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to fetch topics");
+
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const topics = await getTopicsByCountry(countryId);
+        console.log(topics, "filtered topics");
+        const topicNames = topics.map((topic: any) => ({
+          value: topic._id,
+          label: topic.name,
+        }));
+        setTopicNames(topicNames);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to fetch topics");
+      }
+    };
+
+    if (countryId) {
+      fetchTopics();
     }
-  };
+  }, [countryId]);
 
   // HANDLE TOPIC CHANGE
   const handleTopicChange = (event: SelectChangeEvent<string>) => {
@@ -285,6 +295,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
+    console.log(data, "form data")
     const status = data.status === "active" ? 1 : 0;
 
     const selectedQuestionCount = selectedRows.length;
@@ -301,27 +312,14 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
       return;
     }
 
-    const selectedDocumentationNames = data.documentationsId;
-    console.log(selectedDocumentationNames, "document names");
-
-    // Map documentation names with their ids
-    const selectedDocumentationIds = selectedDocumentationNames.map(
-      (name: string) => {
-        const documentation = documentationArray.find(
-          (doc) => doc.label === name
-        );
-        return documentation ? documentation.value : null;
-      }
-    );
-    const selectedQuestions = selectedRows.map((rowId) => rowId.toString());
 
     const body = {
       topicId: data.topicId,
       countryId: data.countryId,
-      questionsId: selectedQuestions,
+      questionsId: selectedRows.map((row) => row.toString()),
       name: data.localeData["en-US"].name,
       localeData: data.localeData,
-      documentationsId: selectedDocumentationIds,
+      documentationsId: data.documentationsId,
     };
     console.log(body, "body");
 
@@ -337,8 +335,13 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         }
       } else {
         // UPDATE TEST
-        // const response = await updateTest(testData._id, body);
-        // toast.success("Test updated successfully");
+        const response = await updatePlayerTest(testData?.id || "", body);
+        if (response.data.success) {
+          toast.success("Test updated successfully");
+          navigate("/playertest");
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
       }
     } catch (error) {
       console.error("Failed to submit test:", error);
@@ -385,7 +388,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
             errors={errors}
             control={control}
             language={language}
-            name={"Country name"}
+            name={"Test name"}
             length={50}
             minRows={1}
           />
@@ -401,7 +404,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
             name="countryId"
             label="Country"
             options={countryNames}
-            onChange={handleCountryChange}
           />
         </FormGrid>
 
@@ -416,7 +418,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
             label="Topic"
             options={topicNames}
             onChange={handleTopicChange}
-            disabled={!country}
+            disabled={!countryId}
           />
         </FormGrid>
 
@@ -435,12 +437,12 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           <FormLabel htmlFor="documentation" required>
             Documentation
           </FormLabel>
-          <MultiSelectInputField
+          <MultiSelect2
             control={control}
             errors={errors}
             required={false}
             name="documentationsId"
-            options={documentationNames}
+            options={documentationArray}
           />
         </FormGrid>
 
@@ -479,7 +481,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         <FormGrid item>
           <CreateButtonGroup
             nagivateTo={"/playertest"}
-            buttonName={typeOfForm === "create" ? "Create" : "Update"}
+            typeOfForm={typeOfForm}
           />
         </FormGrid>
       </Grid>

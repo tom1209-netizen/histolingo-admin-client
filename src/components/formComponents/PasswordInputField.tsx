@@ -19,17 +19,17 @@ const PasswordInputField: React.FC<PasswordInputFieldProps> = ({
       control={control}
       defaultValue=""
       rules={{
-        required: t("validation.password.required"),
+        required: t("passwordInputField.validation.required"),
         minLength: {
           value: 8,
-          message: t("validation.password.minLength"),
+          message: t("passwordInputField.validation.length"),
         },
       }}
       render={({ field }) => (
         <TextField
           {...field}
           type="password"
-          placeholder="Enter password"
+          placeholder={t("passwordInputField.placeholder")}
           variant="outlined"
           error={!!errors.password}
           helperText={errors.password ? errors.password.message : ""}

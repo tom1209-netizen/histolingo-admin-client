@@ -16,7 +16,11 @@ interface MultiSelectInputFieldProps {
   control: Control<any>;
   errors: FieldErrors<any>;
   name: string;
-  options: string[];
+  options: {
+    original: any;
+    value: string | number;
+    label: string | number;
+  }[];
   required?: boolean;
 }
 
@@ -32,19 +36,19 @@ const MenuProps = {
 };
 
 function getStyles(
-  name: string,
-  selectedNames: readonly string[],
+  value: string | number,
+  selectedValues: readonly any[],
   theme: Theme
 ) {
   return {
     fontWeight:
-      selectedNames.indexOf(name) === -1
+      selectedValues.indexOf(value) === -1
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
   };
 }
 
-const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
+const MultiSelect2: React.FC<MultiSelectInputFieldProps> = ({
   control,
   errors,
   name,
@@ -54,6 +58,7 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
   const { t } = useTranslation();
   const theme = useTheme();
   console.log(options);
+  
   return (
     <FormControl fullWidth margin="normal" required error={!!errors[name]}>
       <Controller
@@ -62,7 +67,11 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
         defaultValue={[]}
         rules={
           required
-            ? { required: `${t("multiSelectFieldInput.validation.required")} ${name}` }
+            ? {
+                required: `${t(
+                  "multiSelectFieldInput.validation.required"
+                )} ${name}`,
+              }
             : undefined
         }
         render={({ field }) => (
@@ -70,14 +79,13 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
             <Select
               {...field}
               multiple
-              // placeholder="Select privileges"
               value={field.value || []}
               onChange={(event) => field.onChange(event.target.value)}
               input={<OutlinedInput id="select-multiple-chip" />}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value, index) => (
-                    <Chip key={index} label={value} />
+                    <Chip key={index} label={options.find((option) => option.value == value )?.label} />
                   ))}
                 </Box>
               )}
@@ -86,10 +94,10 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
               {options.map((option, index) => (
                 <MenuItem
                   key={index}
-                  value={option}
-                  style={getStyles(option, field.value, theme)}
+                  value={option.value}
+                  style={getStyles(option.value, field.value, theme)}
                 >
-                  {option}
+                  {option.label}
                 </MenuItem>
               ))}
             </Select>
@@ -105,4 +113,4 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
   );
 };
 
-export default MultiSelectInputField;
+export default MultiSelect2;

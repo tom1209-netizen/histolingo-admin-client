@@ -27,16 +27,14 @@ export const getPlayerTests = async (
   }
 };
 
-export const createPlayerTest = async (body: TestData ): Promise<AxiosResponse<any>> => {
+export const createPlayerTest = async (
+  body: TestData
+): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.post(
-      `${domain_api}/tests`,
-      {body},
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    );
+    const response = await axios.post(`${domain_api}/tests`, body, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -55,13 +53,9 @@ export const updatePlayerTest = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(
-      `${domain_api}/tests/${id}`,
-      { body },
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    );
+    const response = await axios.patch(`${domain_api}/tests/${id}`, body, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {

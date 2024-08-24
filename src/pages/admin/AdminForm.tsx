@@ -7,7 +7,7 @@ import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import EmailInputField from "../../components/formComponents/EmailInputField";
 import { useForm } from "react-hook-form";
 import theme from "../../theme/GlobalCustomTheme";
-import NameInputField from "../../components/formComponents/NameInputField";
+import NonLocaleInputFieldProps from "../../components/formComponents/NonLocaleInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
 import PasswordInputField from "../../components/formComponents/PasswordInputField";
@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FormGrid } from "../../constant/FormGrid";
 import { AdminFormProps, FormValues } from "../../interfaces/admin.interface";
+import { useTranslation } from "react-i18next";
 
 const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   const {
@@ -30,6 +31,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
     formState: { errors },
   } = useForm<FormValues>({ mode: "onChange" });
 
+  const {t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const activeCompulsory = typeOfForm === "create";
@@ -125,10 +127,12 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
     return <p>Loading...</p>;
   }
 
+
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? "Create an" : "Update"} admin</h1>
+      <h1>{typeOfForm === "create" ? t("createAdmin.createAdmin") : t("createAdmin.updateAdmin")}</h1>
       <Grid
         container
         spacing={3}
@@ -140,7 +144,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           <FormLabel htmlFor="first-name" required>
             First name
           </FormLabel>
-          <NameInputField
+          <NonLocaleInputFieldProps
             minRows={1}
             length={50}
             control={control}
@@ -152,7 +156,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           <FormLabel htmlFor="last-name" required>
             Last name
           </FormLabel>
-          <NameInputField
+          <NonLocaleInputFieldProps
             minRows={1}
             length={50}
             control={control}
@@ -164,7 +168,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           <FormLabel htmlFor="admin-name" required>
             Admin name
           </FormLabel>
-          <NameInputField
+          <NonLocaleInputFieldProps
           minRows={1}
            length={50}
             control={control}
@@ -216,7 +220,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
         <FormGrid item>
           <CreateButtonGroup
             nagivateTo={"/admin"}
-            buttonName={typeOfForm === "create" ? "Create" : "Update"}
+            typeOfForm={typeOfForm}
           />
         </FormGrid>
       </Grid>

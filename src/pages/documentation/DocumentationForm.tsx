@@ -23,7 +23,7 @@ import {
   FormValues,
 } from "../../interfaces/documentaion.interface";
 import theme from "../../theme/GlobalCustomTheme";
-import NameInputField from "../../components/formComponents/NameInputField";
+import NonLocaleInputField from "../../components/formComponents/NonLocaleInputField";
 import { createDocument, updateDocument } from "../../api/documentation";
 
 const defaultFormValues = {
@@ -266,7 +266,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
           <FormLabel htmlFor="source" required>
             Source
           </FormLabel>
-          <NameInputField
+          <NonLocaleInputField
             minRows={14}
             length={2100}
             control={control}
@@ -290,7 +290,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
         <FormGrid item>
           <CreateButtonGroup
             nagivateTo={"/documentation"}
-            buttonName={typeOfForm === "create" ? "Create" : "Update"}
+            typeOfForm={typeOfForm}
           />
         </FormGrid>
       </Grid>

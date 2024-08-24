@@ -218,7 +218,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
         <FormGrid item>
           <CreateButtonGroup
             nagivateTo={"/country"}
-            buttonName={typeOfForm === "create" ? "Create" : "Update"}
+            typeOfForm={typeOfForm}
           />
         </FormGrid>
       </Grid>

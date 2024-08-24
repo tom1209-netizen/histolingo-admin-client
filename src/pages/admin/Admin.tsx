@@ -14,8 +14,10 @@ import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import { LoadingTable } from "../../components/reusable/Loading";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const Admin = () => {
+  const {t} = useTranslation();
   const { handleEditRow } = useRowActions();
   const [loading, setLoading] = useState<boolean>(true);
   const [admins, setAdmins] = useState<any[]>([]);
@@ -138,7 +140,7 @@ const Admin = () => {
 
   return (
     <>
-      <h1>Admin Dashboard</h1>
+      <h1>{t("adminDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -155,7 +157,7 @@ const Admin = () => {
             value={searchAdminQuery.status || ""}
           />
           <SearchField
-            label="Search admin"
+            label={`Search ${t("admin")}`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchAdminQuery, search: value })

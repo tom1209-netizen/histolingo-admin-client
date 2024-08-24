@@ -4,16 +4,13 @@ import IconButton from "@mui/material/IconButton";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { getLearners, switchLearnerStatus } from "../../api/learners";
-import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
+import { LoadingTable } from "../../components/reusable/Loading";
 import NavTabs from "../../components/reusable/NavTabs";
 import SearchField from "../../components/reusable/SearchField";
 import DataTable from "../../components/reusable/Table";
 import { convertSearchParamsToObj } from "../../utils/common";
-import { formatTimestamp } from "../../utils/formatTime";
-import { LoadingTable } from "../../components/reusable/Loading";
-import { toast } from "react-toastify";
-import { no_img } from "../../constant/image";
 
 const Learner = () => {
   const [searchParams, setSearchParams] = useSearchParams();

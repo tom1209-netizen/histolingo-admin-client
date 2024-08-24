@@ -1,7 +1,8 @@
 import React from "react";
 import { Controller, Control, FieldErrors } from "react-hook-form";
 import { TextField } from "@mui/material";
-interface NameInputFieldProps {
+import { useTranslation } from "react-i18next";
+interface NonLocaleInputFieldProps {
   control: Control<any>;
   errors: FieldErrors<any>;
   minRows: number;
@@ -9,13 +10,14 @@ interface NameInputFieldProps {
   fieldLabel: "firstName" | "lastName" | "adminName" | "roleName" | "source";
 }
 
-const NameInputField: React.FC<NameInputFieldProps> = ({
+const NonLocaleInputField: React.FC<NonLocaleInputFieldProps> = ({
   control,
   errors,
   length,
   minRows,
   fieldLabel,
 }) => {
+  const { t } = useTranslation();
   const name = fieldLabel;
   let label: string;
 
@@ -44,15 +46,15 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
       control={control}
       defaultValue=""
       rules={{
-        required: `${label} is required`,
-        maxLength: {
-          value: length,
-          message: `${length} must be less than ${length} characters`,
-        },
+        required: `${label} ${t("nonLocaleInputField.validation.required")}`,
+        // maxLength: {
+        //   value: length,
+        //   message: `${length} ${t("nonLocaleInputField.validation.maxLength1")} ${length} ${t("nonLocaleInputField.validation.maxLength2")} `,
+        // },
         validate: {
           notEmptyOrWhitespace: (value) => {
             if (!value.trim()) {
-              return "Cannot be empty or whitespace only";
+              return t("nonLocaleInputField.validation.emptyOrWhitespace");
             }
             return true;
           },
@@ -63,7 +65,7 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
           {...field}
           multiline
           minRows={minRows}
-          placeholder={`Enter ${label}`}
+          placeholder={`${t("nonLocaleInputField.placeholder")} ${label}`}
           variant="outlined"
           error={!!errors[name]}
           helperText={(errors[name] as any)?.message || ""}
@@ -76,4 +78,4 @@ const NameInputField: React.FC<NameInputFieldProps> = ({
   );
 };
 
-export default NameInputField;
+export default NonLocaleInputField;

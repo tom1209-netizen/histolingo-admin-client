@@ -19,14 +19,14 @@ const PasswordConfirmationInputField: React.FC<
       control={control}
       defaultValue=""
       rules={{
-        required: t("validation.confirmPassword.required"),
-        validate: (value) => value === passwordValue || t("validation.confirmPassword.mustMatch"),
+        required: t("confirmPasswordInputField.validation.required"),
+        validate: (value) => value === passwordValue || t("confirmPasswordInputField.validation.match"),
       }}
       render={({ field }) => (
         <TextField
           {...field}
           type="password"
-          label={t("validation.confirmPassword.label")}
+          placeholder={t("confirmPasswordInputField.placeholder")}
           variant="outlined"
           error={!!errors.passwordConfirmation}
           helperText={
