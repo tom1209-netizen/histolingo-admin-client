@@ -64,7 +64,6 @@ function TrueFalseQuestion({ questionsData, onAnswerChange, selectedAnswer, disa
     return (
         <AnimatedPaper isCorrect={isCorrect}>
             <Typography variant="h5">{questionsData.ask}</Typography>
-            <Typography variant="h5">True/False Question</Typography>
             <RadioGroup onChange={(e) => onAnswerChange(e.target.value)} value={selectedAnswer}>
                 <FormControlLabel value="true" control={<Radio disabled={disabled} />} label="True" />
                 <FormControlLabel value="false" control={<Radio disabled={disabled} />} label="False" />
@@ -77,7 +76,6 @@ function MultipleChoiceQuestion({ questionsData, onAnswerChange, selectedAnswer,
     return (
         <AnimatedPaper isCorrect={isCorrect}>
             <Typography variant="h5">{questionsData.ask}</Typography>
-            <Typography variant="h5">Multiple Choice Question</Typography>
             <RadioGroup onChange={(e) => onAnswerChange(e.target.value)} value={selectedAnswer}>
                 {
                     questionsData.options.map((option, index) => (
@@ -101,7 +99,6 @@ function FillInTheBlankQuestion({ questionsData, onAnswerChange, selectedAnswer,
     return (
         <AnimatedPaper isCorrect={isCorrect}>
             <Typography variant="h5">{questionsData.ask}</Typography>
-            <Typography variant="h5">Fill In The Blank Question</Typography>
             {
                 questionsData['answer'].map((_, index) => (
                     <TextField
@@ -173,18 +170,17 @@ function MatchingQuestion({ questionsData, onAnswerChange, selectedAnswer, disab
     };
 
     const isLeftColumnDisabled = (left) => {
-        return matches.some(match => match.left === left);
+        return matches.some(match => match.leftColumn === left);
     };
 
     const isRightColumnDisabled = (right) => {
-        return matches.some(match => match.right === right);
+        return matches.some(match => match.rightColumn === right);
     };
 
     return (
         <AnimatedPaper isCorrect={isCorrect}>
             <Container sx={{ marginTop: 4 }}>
                 <Typography variant="h5">{questionsData.ask}</Typography>
-                <Typography variant="h5" gutterBottom>Matching Question</Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
                         <Typography variant="h6">Left Column</Typography>
@@ -311,7 +307,7 @@ function TestPlay(props: any) {
 
     return (
         <Container sx={{ marginTop: 4 }}>
-            <Typography variant="h4" gutterBottom>Test Play Page</Typography>
+            <h1>Test Play</h1>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     {currentQuestion.questionType === 1 && (
