@@ -25,7 +25,7 @@ const UpdatePlayerTest = () => {
 
   const testData = {
     name: test?.name || "",
-    status: test?.status,
+    status: test?.status === 1 ? "active" : "inactive",
     countryId: test?.countryId || {},
     questionsId: test?.questionsId || [],
     topicId: test?.topicId || {},

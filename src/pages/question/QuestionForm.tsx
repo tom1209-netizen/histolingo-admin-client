@@ -29,7 +29,7 @@ import {
 } from "../../interfaces/question.interface";
 import theme from "../../theme/GlobalCustomTheme";
 import { createQuestion } from "../../api/question";
-import { set } from "mongoose";
+import { register } from "module";
 
 const defaultFormValues = {
   language: "en-US",
@@ -46,6 +46,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors },
     setValue,
     reset,
@@ -53,6 +54,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   } = useForm<any>({
     mode: "onChange",
     defaultValues: defaultFormValues,
+    
   });
 
   // USE FIELD ARRAY
@@ -65,11 +67,13 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   const language = watch("language");
   const countryId = watch("countryId");
   const questionType = watch("questionType");
+
   const activeCompulsory = typeOfForm === "create";
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
   const [countryNames, setCountryNames] = useState<any[]>([]);
   const [topicNames, setTopicNames] = useState<any[]>([]);
+  console.log(getValues("questionType"), "get value")
 
   // FETCH COUNTRIES
   useEffect(() => {
@@ -91,24 +95,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     };
     fetchCountries();
   }, []);
-
-  // HANDLE COUNTRY CHANGE & FETCH TOPICS
-  // const handleCountryChange = async (event: SelectChangeEvent<string>) => {
-  //   const value = event.target.value;
-  //   setValue("country", value);
-  //   try {
-  //     const topics = await getTopicsByCountry(value);
-  //     console.log(topics, "filtered topics");
-  //     const topicNames = topics.map((topic: any) => ({
-  //       value: topic._id,
-  //       label: topic.name,
-  //     }));
-  //     setTopicNames(topicNames);
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Failed to fetch topics");
-  //   }
-  // };
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -432,6 +418,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           />
         </FormGrid>
 
+       
         {questionType === "0" && (
           <>
             <MCQQuestionText
@@ -533,7 +520,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         <FormGrid item>
           <CreateButtonGroup
             nagivateTo={"/question"}
-            buttonName={typeOfForm === "create" ? "Create" : "Update"}
+            typeOfForm={typeOfForm}
           />
         </FormGrid>
       </Grid>

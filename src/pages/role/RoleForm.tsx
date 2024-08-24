@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import { FormLabel } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
-import NameInputField from "../../components/formComponents/NameInputField";
+import NonLocaleInputField from "../../components/formComponents/NonLocaleInputField";
 import { useForm } from "react-hook-form";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
@@ -143,7 +143,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
           <FormLabel htmlFor="role-name" required>
             Role name
           </FormLabel>
-          <NameInputField
+          <NonLocaleInputField
             minRows={1}
           length={50}
             control={control}
@@ -176,7 +176,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
         <FormGrid item>
           <CreateButtonGroup
             nagivateTo={"/role"}
-            buttonName={typeOfForm === "create" ? "Create" : "Update"}
+            typeOfForm={typeOfForm}
           />
         </FormGrid>
       </Grid>

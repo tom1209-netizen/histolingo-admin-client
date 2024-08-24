@@ -1,7 +1,7 @@
 export interface FormValues {
   name: string;
   status: string;
-  questions: string[];
+  questionsId: any[];
   countryId: string;
   topicId: string;
   documentationsId: string[];
@@ -14,12 +14,13 @@ export interface TestFormProps {
   typeOfForm: string;
   testData?: {
     name: string;
+    id: string;
     countryId: { _id: string; name: string };
     topicId: { _id: string; name: string };
     questionsId: {
       _id: string;
     }[];
-    status: number;
+    status: string;
     documentationsId: {
       _id: string;
     }[];

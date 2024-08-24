@@ -1,18 +1,18 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
-import theme from "../../theme/GlobalCustomTheme";
-import { useNavigate } from "react-router-dom";
-import Copyright from "../../components/reusable/Copyright";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 import { useForm } from "react-hook-form";
-import EmailInputField from "../../components/formComponents/EmailInputField";
-import { forgetPassword } from "../../api/auth";
-import LanguageSelect from "../../components/layouts/LanguageSelect";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { forgetPassword } from "../../api/auth";
+import EmailInputField from "../../components/formComponents/EmailInputField";
+import LanguageSelect from "../../components/layouts/LanguageSelect";
+import Copyright from "../../components/reusable/Copyright";
+import theme from "../../theme/GlobalCustomTheme";
 
 interface FormValues {
   email: string;
@@ -62,10 +62,10 @@ export default function ForgetPassword() {
               <LanguageSelect />
             </Box>
           <Typography component="h1" variant="h5">
-          {t("forgetPassword.title")}
+          {t("forgotPassword.title")}
           </Typography>
           <Typography component="h2">
-          {t("forgetPassword.instruction")}
+          {t("forgotPassword.instruction")}
           </Typography>
           <Box
             component="form"
@@ -75,7 +75,7 @@ export default function ForgetPassword() {
           >
             <EmailInputField control={control} errors={errors} />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-            {t("forgetPassword.sendLink")}
+            {t("forgotPassword.sendLink")}
             </Button>
             <Button
               onClick={handleBackToLogin}
@@ -84,7 +84,7 @@ export default function ForgetPassword() {
               variant="outlined"
               sx={{ mt: 1, mb: 2 }}
             >
-               {t("forgetPassword.backToLogin")}
+               {t("forgotPassword.backToLogin")}
             </Button>
           </Box>
         </Box>

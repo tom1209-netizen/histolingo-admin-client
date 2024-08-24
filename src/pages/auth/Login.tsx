@@ -71,10 +71,10 @@ export default function Login() {
             <LanguageSelect />
           </Box>
           <Typography component="h2" variant="h6">
-            {t("login.Welcome")}
+            {t("login.welcome")}
           </Typography>
           <Typography component="h1" variant="h5">
-            {t("login.Log in")}
+            {t("login.logIn")}
           </Typography>
           <Box
             component="form"
@@ -90,12 +90,12 @@ export default function Login() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              {t("login.Log in")}
+              {t("login.logIn")}
             </Button>
             <Grid container>
               <Grid item xs>
                 <Link href="/forgetpassword" variant="body2">
-                  {t("login.Forgot password")}
+                  {t("login.forgotPassword")}
                 </Link>
               </Grid>
             </Grid>

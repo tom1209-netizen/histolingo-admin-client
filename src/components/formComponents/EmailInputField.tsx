@@ -16,17 +16,16 @@ const EmailInputField: React.FC<EmailInputFieldProps> = ({ control, errors }) =>
               control={control}
               defaultValue=""
               rules={{
-                required: t("validation.email.required"),
+                required: t("emailInputField.validation.required"),
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: t("validation.email.invalid"),
+                  message: t("emailInputField.validation.invalid"),
                 },
               }}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  // label="Email"
-                  placeholder='Enter email'
+                  placeholder={t("emailInputField.placeholder")}
                   variant="outlined"
                   error={!!errors.email}
                   helperText={errors.email ? errors.email.message : ''}

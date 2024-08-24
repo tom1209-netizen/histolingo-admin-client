@@ -2,8 +2,10 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-const CreateButtonGroup = ({ buttonName, nagivateTo }) => {
+const CreateButtonGroup = ({ typeOfForm, nagivateTo }) => {
+  const {t} = useTranslation();
   const navigate = useNavigate();
   return (
     <Box sx={{ display: "flex", gap: 2 }}>
@@ -13,10 +15,10 @@ const CreateButtonGroup = ({ buttonName, nagivateTo }) => {
         type="button"
         onClick={() => navigate(nagivateTo)}
       >
-        Cancel
+        {t("createButtonGroup.cancel")}
       </Button>
       <Button variant="contained" type="submit">
-        {buttonName}
+        { typeOfForm === "create" ? t("createButtonGroup.create") : t("createButtonGroup.update")}
       </Button>
     </Box>
   );

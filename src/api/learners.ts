@@ -42,7 +42,7 @@ export const getLearners = async (query : SearchQuery = {}): Promise<AxiosRespon
   export const switchLearnerStatus = async (id: string, status: string): Promise<AxiosResponse<any>> => {   
     try {
       const accessToken = Cookies.get("accessToken");
-      const response = await axios.patch(`${domain_api}/learners/${id}`, { status }, {
+      const response = await axios.patch(`${domain_api}/players/${id}`, { status }, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       return response;

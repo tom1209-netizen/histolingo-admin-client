@@ -28,6 +28,7 @@ const Topic = () => {
     page: 0,
     pageSize: 10,
   });
+  const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchTopicStatus(id, status);
@@ -51,8 +52,7 @@ const Topic = () => {
       headerName: "Country",
       flex: 1,
       sortable: false,
-      valueGetter: (value, row) =>
-        row.country ? row.country.name : "N/A",
+      valueGetter: (value, row) => (row.country ? row.country.name : "N/A"),
     },
     {
       field: "image",
@@ -112,8 +112,13 @@ const Topic = () => {
   ];
 
   const fetchTopics = async (page: number, pageSize: number) => {
+    setIsTableLoading(true);
     try {
-      const response = await getTopics(searchTopicQuery);
+      const response = await getTopics({
+        ...searchTopicQuery,
+        page: paginationModel.page + 1,
+        pageSize: paginationModel.pageSize,
+      });
       const topicsData = response.data.data.topics;
       const formattedTopics = topicsData.map((topic: any) => ({
         ...topic,
@@ -128,6 +133,7 @@ const Topic = () => {
       console.log(error);
     } finally {
       setLoading(false);
+      setIsTableLoading(false);
     }
   };
 
@@ -173,6 +179,7 @@ const Topic = () => {
         <CreateImportButtonGroup createPath="/createtopic" importPath="/" />
       </Box>
       <DataTable
+        isLoading={isTableLoading}
         columns={columns}
         rows={topics}
         getRowId={(row) => row._id}
