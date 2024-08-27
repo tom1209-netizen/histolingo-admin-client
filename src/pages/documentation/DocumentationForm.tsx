@@ -159,8 +159,9 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       content: data.localeData["en-US"].content,
       source: data.source,
       localeData: data.localeData,
+      image: image
     };
-    console.log("Question form submitted with data:", body);
+    console.log("Documents form submitted with data:", body);
 
     try {
       if (typeOfForm === "create") {
