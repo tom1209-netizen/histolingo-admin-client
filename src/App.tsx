@@ -32,6 +32,7 @@ import CreatePlayerTest from "./pages/playerTest/CreatePlayerTest";
 import Documentation from "./pages/documentation/Documentation";
 import UpdateDocumentation from "./pages/documentation/UpdateDocumentation";
 import CreateDocumentation from "./pages/documentation/CreateDocumentation";
+import FeedbackDialog from "./pages/feedback/FeedbackDialog";
 
 const App: React.FC = () => {
   return (
@@ -72,8 +73,10 @@ const App: React.FC = () => {
           <Route path="/documentation/:documentationId" element={<UpdateDocumentation />} />
           <Route path="/createdocumentation" element={<CreateDocumentation />} />
 
-          <Route path="/learner" element={<Learner />} />
           <Route path="/feedback" element={<Feedback />} />
+          {/* <Route path="/feedback/:feedbackId" element={<FeedbackDialog />} /> */}
+
+          <Route path="/learner" element={<Learner />} />
           <Route path="/account" element={<MyAccount />} />
         </Route>
       </Routes>

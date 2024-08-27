@@ -22,7 +22,7 @@ import { getTopicsByCountry } from "../../api/topic";
 import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
-import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
+import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import SearchField from "../../components/reusable/SearchField";
 import DataTable from "../../components/reusable/Table";
@@ -37,6 +37,7 @@ import theme from "../../theme/GlobalCustomTheme";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import MultiSelect2 from "../../components/formComponents/MultiSelect2";
+import { useTranslation } from "react-i18next";
 
 const defaultFormValues = {
   language: "en-US",
@@ -57,6 +58,8 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     mode: "onChange",
     defaultValues: defaultFormValues,
   });
+
+  const {t} = useTranslation()
 
   const navigate = useNavigate();
   // const country = watch("country");
@@ -328,24 +331,24 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         const response = await createPlayerTest(body);
         console.log(response, "response");
         if (response.data.success) {
-          toast.success("Test created successfully");
+          toast.success(t("toast.createSuccess"));
           navigate("/playertest");
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       } else {
         // UPDATE TEST
         const response = await updatePlayerTest(testData?.id || "", body);
         if (response.data.success) {
-          toast.success("Test updated successfully");
+          toast.success(t("toast.updateSuccess"));
           navigate("/playertest");
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       }
     } catch (error) {
       console.error("Failed to submit test:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error(t("toast.error"));
     }
   };
 
@@ -451,7 +454,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
             label="Search question"
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchQuestionQuery, search: value })
+              setSearchParams({ ...searchQuestionQuery, search: value.trim() })
             }
           />
         </FormGrid>

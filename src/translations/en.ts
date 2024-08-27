@@ -1,4 +1,5 @@
 export default {
+   // PAGES
     "login": {
         "welcome": "Welcome back to Histolingo Admin!",
         "logIn": "Log in",
@@ -16,6 +17,42 @@ export default {
         "resetPassword": "Send reset link",
         "backToLogin": "Back to login"
     },
+    "adminDashboard": {
+        "admin": "admin",
+        "title": "Admin Dashboard"
+    },
+    "createAdmin": {
+        "admin": "admin",
+        "createAdmin": "Create an admin",
+        "updateAdmin": "Update admin",
+        "inputFields": {
+            "firstName": "First name",
+            "lastName": "Last name",
+            "adminName": "Admin name",
+            "role": "Role",
+            "password": "Password (at least 8 characters)"
+        }
+    },
+    "createRole": {
+        "role": "role",
+        "createRole": "Create a role",
+        "updateAdmin": "Update role",
+        "selectPrivileges": "Select privileges (Multiselect)",
+        "inputFields": {
+            "roleName": "Role name",
+            "privilege": "privilege",
+        }
+    },
+    "feedbackDialog": {
+        "inputFields": {
+            "reply": "Reply",
+            "title": "Title"
+        }
+    } 
+    ,
+
+     // FORM COMPONENTS
+    "status": "Status",
     "emailInputField": {
         "placeholder": "Enter email",
         "validation": {
@@ -51,22 +88,23 @@ export default {
             "required": "Please select at least one",
         }
     },
-    "adminDashboard": {
-        "admin": "admin",
-        "title": "Admin Dashboard"
-    },
-    "createAdmin": {
-        "admin": "admin",
-        "createAdmin": "Create an admin",
-        "updateAdmin": "Update admin",
-        "inputFields": {
-            
-        }
-    },
+
+    // REUSABLE COMPONENTS
     "createButtonGroup": {
         "create": "Create",
         "cancel": "Cancel",
         "update": "Update"
-    }
+    },
 
+    // TOAST
+    "toast": {
+        "createSuccess": "Created successfully",
+        "updateSuccess": "Updated successfully",
+        "switchStatusSuccess": "Switch status success",
+        "switchStatusFail": "Switch status failed",
+        "error": "An error occured. Please try again",
+        "enUS": "Please fill in the name and description for English language.",
+        "uploadSuccess": "Upload image successfully",
+        "uploadFail": "Upload image failed",
+    }
 }

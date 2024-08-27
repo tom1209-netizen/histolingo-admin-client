@@ -15,8 +15,10 @@ import { formatTimestamp } from "../../utils/formatTime";
 import { getQuestions, switchQuestionStatus } from "../../api/question";
 import { LoadingTable } from "../../components/reusable/Loading";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const Question = () => {
+  const { t } = useTranslation();
   const { handleEditRow } = useRowActions();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuestionQuery: any = convertSearchParamsToObj(searchParams);
@@ -34,11 +36,11 @@ const Question = () => {
     console.log(response);
     if (response.status === 200) {
       console.log("hello?");
-      toast.success("Status changed successfully");
+      toast.success(t("toast.switchStatusSuccess"));
     } else {
-      toast.error("Failed to change status. Please try again.");
+      toast.error(t("toast.switchStatusFail"));
     }
-  }
+  };
 
   const columns: GridColDef[] = [
     { field: "ask", headerName: "Question", width: 250 },
@@ -81,10 +83,14 @@ const Question = () => {
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
-      renderCell: (params) => <Switch 
-      defaultChecked={params.row.status == 1} 
-      onChange={() => handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)}
-       />,
+      renderCell: (params) => (
+        <Switch
+          defaultChecked={params.row.status == 1}
+          onChange={() =>
+            handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+          }
+        />
+      ),
     },
     {
       field: "edit",
@@ -162,7 +168,7 @@ const Question = () => {
             label="Search question"
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchQuestionQuery, search: value })
+              setSearchParams({ ...searchQuestionQuery, search: value.trim() })
             }
           />
         </Box>

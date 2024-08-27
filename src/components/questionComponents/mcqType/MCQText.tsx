@@ -2,7 +2,6 @@ import React from "react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useEffect } from "react";
 
 interface InputFieldProps {
   control: Control<any>;
@@ -25,11 +24,6 @@ const MultipleChoiceText: React.FC<InputFieldProps> = ({
 }) => {
   const fieldName = `localeData[${language}][${property}][${index}]`;
   const fieldError = errors?.localeData?.[language]?.[property]?.[index];
-  // useEffect(() => {
-  //   console.log("Errors:", errors);
-  //   const fieldError = errors?.localeData?.[language]?.[property]?.[index];
-  //   console.log(`Error for field ${fieldName}:`, fieldError);
-  // }, [errors, language, property, index]);
 
   return (
     <Controller

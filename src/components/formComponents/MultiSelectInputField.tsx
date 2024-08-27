@@ -18,6 +18,7 @@ interface MultiSelectInputFieldProps {
   name: string;
   options: string[];
   required?: boolean;
+  label: string;
 }
 
 const ITEM_HEIGHT = 48;
@@ -48,6 +49,7 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
   control,
   errors,
   name,
+  label,
   required = true,
   options,
 }) => {
@@ -62,7 +64,7 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
         defaultValue={[]}
         rules={
           required
-            ? { required: `${t("multiSelectFieldInput.validation.required")} ${name}` }
+            ? { required: `${t("multiSelectFieldInput.validation.required")} ${label}` }
             : undefined
         }
         render={({ field }) => (
@@ -70,7 +72,6 @@ const MultiSelectInputField: React.FC<MultiSelectInputFieldProps> = ({
             <Select
               {...field}
               multiple
-              // placeholder="Select privileges"
               value={field.value || []}
               onChange={(event) => field.onChange(event.target.value)}
               input={<OutlinedInput id="select-multiple-chip" />}

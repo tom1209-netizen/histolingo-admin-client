@@ -24,6 +24,7 @@ import {
   FormValues,
   FlattenedPermission,
 } from "../../interfaces/role.interface";
+import { useTranslation } from "react-i18next";
 
 const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   const {
@@ -32,6 +33,8 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
     setValue,
     formState: { errors },
   } = useForm<FormValues>({ mode: "onChange" });
+
+  const { t } = useTranslation();
 
   const [roles, setRoles] = useState<string[]>([]);
   const [privilegesMap, setRolePrivilegesMap] = useState<Map<string, number>>(
@@ -105,22 +108,22 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
       if (typeOfForm === "create") {
         const response = await createRole(body);
         if (response.data.success) {
-          toast.success("Role created successfully.");
+          toast.success(t("toast.createSuccess"));
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && roleId) {
         const response = await updateRole(roleId, body);
         if (response.data.success) {
-          toast.success("Role updated successfully.");
+          toast.success(t("toast.updateSuccess"));
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       }
       navigate("/role");
     } catch (error) {
       console.error("Failed to submit role:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error(t("toast.error"));
     }
   };
 
@@ -131,7 +134,11 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? "Create a" : "Update"} role</h1>
+      <h1>
+        {typeOfForm === "create"
+          ? t("createRole.createRole")
+          : t("createRole.updateRole")}
+      </h1>
       <Grid
         container
         spacing={3}
@@ -141,19 +148,20 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
       >
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="role-name" required>
-            Role name
+            {t("createRole.inputFields.roleName")}
           </FormLabel>
           <NonLocaleInputField
+            name="roleName"
             minRows={1}
-          length={50}
+            length={50}
             control={control}
             errors={errors}
-            fieldLabel="roleName"
+            fieldLabel={t("createRole.inputFields.roleName")}
           />
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
-            Status
+            {t("status")}
           </FormLabel>
           <SelectStatusInputField
             control={control}
@@ -163,9 +171,10 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel id="demo-multiple-chip-label" required>
-            Select privileges (Multiselect)
+            {t("createRole.selectPrivileges")}
           </FormLabel>
           <MultiSelectInputField
+            label={t("createRole.inputFields.privilege")}
             control={control}
             errors={errors}
             name="privilege"
@@ -174,10 +183,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
         </FormGrid>
         <FormGrid item xs={12} md={6}></FormGrid>
         <FormGrid item>
-          <CreateButtonGroup
-            nagivateTo={"/role"}
-            typeOfForm={typeOfForm}
-          />
+          <CreateButtonGroup nagivateTo={"/role"} typeOfForm={typeOfForm} />
         </FormGrid>
       </Grid>
     </ThemeProvider>

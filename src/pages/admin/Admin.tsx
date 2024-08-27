@@ -36,9 +36,9 @@ const Admin = () => {
     console.log(response);
     if (response.status === 200) {
       console.log("hello?");
-      toast.success("Status changed successfully");
+      toast.success(t("toast.switchStatusSuccess"));
     } else {
-      toast.error("Failed to change status. Please try again.");
+      toast.error(t("toast.switchStatusFail"));
     }
   };
 
@@ -160,7 +160,7 @@ const Admin = () => {
             label={`Search ${t("admin")}`}
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchAdminQuery, search: value })
+              setSearchParams({ ...searchAdminQuery, search: value.trim() })
             }
           />
         </Box>

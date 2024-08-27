@@ -15,8 +15,10 @@ import { useRowActions } from "../../hooks/useRowActions";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const PlayerTest = () => {
+  const { t } = useTranslation();
   const { handleEditRow } = useRowActions();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchTestQuery: any = convertSearchParamsToObj(searchParams);
@@ -32,9 +34,9 @@ const PlayerTest = () => {
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchTestStatus(id, status);
     if (response.status === 200) {
-      toast.success("Status changed successfully");
+      toast.error(t("toast.switchStatusSuccess"));
     } else {
-      toast.error("Failed to change status. Please try again.");
+      toast.error(t("toast.switchStatusFail"));
     }
   };
 
@@ -171,7 +173,7 @@ const PlayerTest = () => {
             label="Search test"
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchTestQuery, search: value })
+              setSearchParams({ ...searchTestQuery, search: value.trim() })
             }
           />
         </Box>

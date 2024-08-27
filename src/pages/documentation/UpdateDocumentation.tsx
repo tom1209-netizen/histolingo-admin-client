@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import DocumentationForm from "./DocumentationForm";
 import { useParams } from "react-router-dom";
 import { getIndividualDocument } from "../../api/documentation";
-import { localeData } from "../../../../histolingo-server/localization";
+import DocumentationForm from "./DocumentationForm";
 
 const UpdateDocumentation = () => {
   const { documentationId } = useParams<{ documentationId?: string }>();
@@ -34,25 +33,8 @@ const UpdateDocumentation = () => {
     source: documentation?.source || "",
     country: documentation?.countryId._id || "",
     topic: documentation?.topicId._id || "",
+    image: documentation?.image || ""
   }
-
-  // export interface DocumentationFormProps {
-  //   typeOfForm: string;
-  //   documentationData?: {
-  //     name: string;
-  //     content: string;
-  //     source: string;
-  //     countryId: string;
-  //     topicId: string;
-  //     id: string;
-  //     status: number;
-  //     localeData: {
-  //       "en-US": { name: string; content: string };
-  //       "ja-JP": { name: string; content: string };
-  //       "vi-VN": { name: string; content: string };
-  //     };
-  //   };
-  // }
     
   return <DocumentationForm typeOfForm="update" documentationData={documentationData} />;
 };

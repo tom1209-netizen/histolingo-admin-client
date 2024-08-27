@@ -5,54 +5,86 @@ import { SearchQuery } from "../schemas/schema";
 
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 
-export const getFeedbacks = async (query : SearchQuery = {}): Promise<AxiosResponse<any>> => {
-    try {
-      const accessToken = Cookies.get("accessToken");
-      const response = await axios.get(`${domain_api}/feedbacks`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-        params: query,
-      });
-      console.log(response)
-      return response;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data.message || "Get feedbacks failed");
-      } else {
-        throw error;
-      }
+export const getFeedbacks = async (
+  query: SearchQuery = {}
+): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.get(`${domain_api}/feedbacks`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      params: query,
+    });
+    console.log(response);
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "Get feedbacks failed");
+    } else {
+      throw error;
     }
   }
+};
 
-
-  export const getIndividualFeedback = async (id: string): Promise<AxiosResponse<any>> => {
-    try {
-      const accessToken = Cookies.get("accessToken");
-      const response = await axios.get(`${domain_api}/feedbacks/${id}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      return response;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data.message || "Get feedback failed");
-      } else {
-        throw error;
-      }
+export const getIndividualFeedback = async (
+  id: string
+): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.get(`${domain_api}/feedbacks/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "Get feedback failed");
+    } else {
+      throw error;
     }
   }
+};
 
-  export const switchFeedbackStatus = async (id: string, status: string): Promise<AxiosResponse<any>> => {
-    try {
-      const accessToken = Cookies.get("accessToken");
-      const response = await axios.patch(`${domain_api}/feedbacks/${id}`, { status }, {
+export const switchFeedbackStatus = async (
+  id: string,
+  status: string
+): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.patch(
+      `${domain_api}/feedbacks/${id}`,
+      { status },
+      {
         headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      return response;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data.message || "Update feedback status failed");
-      } else {
-        throw error;
       }
+    );
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data.message || "Update feedback status failed"
+      );
+    } else {
+      throw error;
     }
   }
-    
+};
+
+export const replyFeedback = async (
+  id: string,
+  body: any
+): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.post(`${domain_api}/feedbacks/reply/${id}`, body, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data.message || "Reply feedback failed"
+      );
+    } else {
+      throw error;
+    }
+  }
+};

@@ -5,7 +5,6 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
-import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -13,16 +12,16 @@ import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
 import { createTopic, updateTopic } from "../../api/topic";
 import { uploadFile } from "../../api/upload";
-import ErrorSummary from "../../components/formComponents/ErrorSummary";
+import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import UploadFile from "../../components/formComponents/UploadFile";
-import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
 import { TopicFormProps } from "../../interfaces/topic.interface";
 import theme from "../../theme/GlobalCustomTheme";
+import { useTranslation } from "react-i18next";
 
 const defaultFormValues = {
   language: "en-US",
@@ -44,23 +43,18 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     defaultValues: defaultFormValues,
   });
 
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const localeData = watch("localeData");
   const language = watch("language");
+  let image = watch("image")
   const activeCompulsory = typeOfForm === "create" ? true : false;
   const [countryNames, setCountryNames] = useState<any[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState("");
-  
   const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
     useState<boolean>(true);
-
-  // CHECK IF ENGLISH FIELDS ARE FILLED
-  useEffect(() => {
-    const locale = localeData["en-US"] || { name: "", description: "" };
-    const { name = "", description = "" } = locale;
-    setIsEnglishFieldsFilled(name.trim() !== "" && description.trim() !== "");
-  }, [localeData]);
 
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
@@ -72,7 +66,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
   useEffect(() => {
     if (typeOfForm === "update" && topicData) {
       console.log("Updating form with topicData:", topicData);
-      reset({...defaultFormValues, ...topicData});
+      reset({ ...defaultFormValues, ...topicData });
     }
   }, [topicData]);
 
@@ -103,6 +97,13 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     setValue("country", value);
   };
 
+   // CHECK IF ENGLISH FIELDS ARE FILLED
+   useEffect(() => {
+    const locale = localeData["en-US"] || { name: "", description: "" };
+    const { name = "", description = "" } = locale;
+    setIsEnglishFieldsFilled(name.trim() !== "" && description.trim() !== "");
+  }, [localeData]);
+
   // HANDLE FORM SUBMISSION
   const onSubmit = async (data: any) => {
     if (
@@ -115,8 +116,8 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
       return;
     }
 
-    let image;
     try {
+      console.log(image, "image")
       if (data.image) {
         console.log("data.image:", data.image);
         const response = await uploadFile(data.image);
@@ -124,7 +125,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
         console.log(image);
       }
     } catch (error) {
-      toast.error("Cannot upload image. Please try again.");
+      toast.error(t("toast.uploadFail"));
     }
     const body = {
       image: image,
@@ -139,23 +140,23 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
       if (typeOfForm === "create") {
         const response = await createTopic(body);
         if (response.data.success) {
-          toast.success("Topic created successfully.");
+          toast.success(t("toast.createSuccess"));
           navigate("/topic");
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && topicData) {
         const response = await updateTopic(topicData?.id, body);
         if (response.data.success) {
-          toast.success("Topic updated successfully.");
+          toast.success(t("toast.updateSuccess"));
           navigate("/topic");
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error(t("toast.error"));
     }
   };
 
@@ -256,10 +257,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
         </FormGrid>
 
         <FormGrid item>
-          <CreateButtonGroup
-            nagivateTo={"/topic"}
-            typeOfForm={typeOfForm}
-          />
+          <CreateButtonGroup nagivateTo={"/topic"} typeOfForm={typeOfForm} />
         </FormGrid>
       </Grid>
     </ThemeProvider>

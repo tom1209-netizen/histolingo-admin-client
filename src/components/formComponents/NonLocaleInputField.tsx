@@ -5,52 +5,33 @@ import { useTranslation } from "react-i18next";
 interface NonLocaleInputFieldProps {
   control: Control<any>;
   errors: FieldErrors<any>;
+  multiline?: boolean;
   minRows: number;
-  length: number;
-  fieldLabel: "firstName" | "lastName" | "adminName" | "roleName" | "source";
+  length?: number;
+  fieldLabel: string;
+  name: string;
 }
 
 const NonLocaleInputField: React.FC<NonLocaleInputFieldProps> = ({
   control,
   errors,
+  multiline,
   length,
   minRows,
+  name,
   fieldLabel,
 }) => {
   const { t } = useTranslation();
-  const name = fieldLabel;
-  let label: string;
 
-  switch (fieldLabel) {
-    case "firstName":
-      label = "First name";
-      break;
-    case "lastName":
-      label = "Last name";
-      break;
-    case "adminName":
-      label = "Admin name";
-      break;
-    case "roleName":
-      label = "Role name";
-      break;
-    case "source":
-      label = "Source";
-      break;
-    default:
-      label = "";
-  }
   return (
     <Controller
       name={name}
       control={control}
       defaultValue=""
       rules={{
-        required: `${label} ${t("nonLocaleInputField.validation.required")}`,
-        // maxLength: {
-        //   value: length,
-        //   message: `${length} ${t("nonLocaleInputField.validation.maxLength1")} ${length} ${t("nonLocaleInputField.validation.maxLength2")} `,
-        // },
+        required: `${fieldLabel} ${t(
+          "nonLocaleInputField.validation.required"
+        )}`,
         validate: {
           notEmptyOrWhitespace: (value) => {
             if (!value.trim()) {
@@ -63,9 +44,9 @@ const NonLocaleInputField: React.FC<NonLocaleInputFieldProps> = ({
       render={({ field }) => (
         <TextField
           {...field}
-          multiline
+          multiline={multiline}
           minRows={minRows}
-          placeholder={`${t("nonLocaleInputField.placeholder")} ${label}`}
+          placeholder={`${t("nonLocaleInputField.placeholder")} ${fieldLabel}`}
           variant="outlined"
           error={!!errors[name]}
           helperText={(errors[name] as any)?.message || ""}
