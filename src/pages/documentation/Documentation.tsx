@@ -14,8 +14,10 @@ import { formatTimestamp } from "../../utils/formatTime";
 import { LoadingTable } from "../../components/reusable/Loading";
 import { getDocuments, switchDocumentStatus } from "../../api/documentation";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const Documentation = () => {
+  const { t } = useTranslation();
   const { handleEditRow } = useRowActions();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchDocumentationQuery = convertSearchParamsToObj(searchParams);
@@ -31,15 +33,14 @@ const Documentation = () => {
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchDocumentStatus(id, status);
     if (response.status === 200) {
-      toast.success("Status changed successfully");
+      toast.success(t("toast.switchStatusSuccess"));
     } else {
-      toast.error("Failed to change status. Please try again.");
+      toast.error(t("toast.switchStatusFail"));
     }
   };
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", flex: 1, sortable: false },
-    { field: "content", headerName: "Content", flex: 2, sortable: false },
     {
       field: "country",
       headerName: "Country",
@@ -60,7 +61,15 @@ const Documentation = () => {
       flex: 1,
       sortable: false,
       renderCell: (params) => {
-        return <Link to={params.row.source} target="_blank" rel="noopener noreferrer">Link</Link>;
+        return (
+          <Link
+            to={params.row.source}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Link
+          </Link>
+        );
       },
     },
 
@@ -164,7 +173,7 @@ const Documentation = () => {
             label="Search document"
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchDocumentationQuery, search: value })
+              setSearchParams({ ...searchDocumentationQuery, search: value.trim() })
             }
           />
         </Box>

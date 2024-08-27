@@ -15,8 +15,10 @@ import { formatTimestamp } from "../../utils/formatTime";
 import { LoadingTable } from "../../components/reusable/Loading";
 import { toast } from "react-toastify";
 import { no_img } from "../../constant/image";
+import { useTranslation } from "react-i18next";
 
 const Country = () => {
+  const { t } = useTranslation();
   const { handleEditRow } = useRowActions();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchCountryQuery: any = convertSearchParamsToObj(searchParams);
@@ -33,9 +35,9 @@ const Country = () => {
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchCountryStatus(id, status);
     if (response.status === 200) {
-      toast.success("Status changed successfully");
+      toast.success(t("toast.switchStatusSuccess"));
     } else {
-      toast.error("Failed to change status. Please try again.");
+      toast.error(t("toast.switchStatusFail"));
     }
   };
 
@@ -167,7 +169,7 @@ const Country = () => {
             label="Search country"
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchCountryQuery, search: value })
+              setSearchParams({ ...searchCountryQuery, search: value.trim() })
             }
           />
         </Box>

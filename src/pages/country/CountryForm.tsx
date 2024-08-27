@@ -13,7 +13,7 @@ import { createCountry, updateCountry } from "../../api/country";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import UploadFile from "../../components/formComponents/UploadFile";
-import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
+import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
@@ -23,6 +23,7 @@ import {
 } from "../../interfaces/country.interface";
 import theme from "../../theme/GlobalCustomTheme";
 import { uploadFile } from "../../api/upload";
+import { useTranslation } from "react-i18next";
 
 const defaultFormValues = {
   language: "en-US",
@@ -47,6 +48,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
     defaultValues: defaultFormValues,
   });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const language = watch("language");
   const localeData = watch("localeData");
@@ -73,7 +75,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
   useEffect(() => {
     if (typeOfForm === "update" && countryData) {
       console.log("Updating form with countryData:", countryData);
-      reset({...defaultFormValues, ...countryData});
+      reset({ ...defaultFormValues, ...countryData });
     }
   }, [countryData]);
 
@@ -83,9 +85,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].description.trim()
     ) {
-      toast.error(
-        "Please fill in the name and description for English language."
-      );
+      toast.error(t("toast.enUS"));
       return;
     }
 
@@ -98,7 +98,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
         console.log(image);
       }
     } catch (error) {
-      toast.error("Cannot upload image. Please try again.");
+      toast.error(t("toast.uploadFail"));
     }
 
     const body = {
@@ -113,24 +113,24 @@ const CountryForm: React.FC<CountryFormProps> = ({
       if (typeOfForm === "create") {
         const response = await createCountry(body);
         if (response.data.success) {
-          toast.success("Country created successfully.");
+          toast.success(t("toast.createSuccess"));
           navigate("/country");
         } else {
           console.log(response);
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && countryData) {
         const response = await updateCountry(countryData?.id, body);
         if (response.data.success) {
-          toast.success("Country updated successfully.");
+          toast.success(t("toast.updateSuccess"));
           navigate("/country");
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error(t("toast.error"));
     }
   };
 
@@ -216,10 +216,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
         <FormGrid item xs={12} md={6}></FormGrid>
 
         <FormGrid item>
-          <CreateButtonGroup
-            nagivateTo={"/country"}
-            typeOfForm={typeOfForm}
-          />
+          <CreateButtonGroup nagivateTo={"/country"} typeOfForm={typeOfForm} />
         </FormGrid>
       </Grid>
     </ThemeProvider>

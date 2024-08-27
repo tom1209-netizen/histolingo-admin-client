@@ -11,10 +11,11 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
+import { createQuestion } from "../../api/question";
 import { getTopicsByCountry } from "../../api/topic";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
-import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
+import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
 import MatchingPair from "../../components/questionComponents/matchingType/MatchingPair";
 import MCQQuestionText from "../../components/questionComponents/mcqType/MCQQuestionText";
 import MultipleChoiceAnswer from "../../components/questionComponents/mcqType/MCQSelectAnswer";
@@ -28,8 +29,7 @@ import {
   QuestionFormProps,
 } from "../../interfaces/question.interface";
 import theme from "../../theme/GlobalCustomTheme";
-import { createQuestion } from "../../api/question";
-import { register } from "module";
+import { useTranslation } from "react-i18next";
 
 const defaultFormValues = {
   language: "en-US",
@@ -56,6 +56,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     defaultValues: defaultFormValues,
     
   });
+
+  const {t} = useTranslation()
 
   // USE FIELD ARRAY
   const { fields, append, remove } = useFieldArray({
@@ -309,12 +311,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       const response = await createQuestion(baseBody);
       console.log(response);
       if (response.data.success) {
-        toast.success("Question created successfully.");
+        toast.success(t("toast.createSuccess"));
         navigate("/question");
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error(t("toast.error"));
     }
   };
 

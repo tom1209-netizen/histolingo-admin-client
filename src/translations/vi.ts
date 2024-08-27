@@ -1,4 +1,5 @@
 export default {
+  // PAGES 
   "login": {
       "welcome": "Chào mừng quay trở lại Histolingo Admin!",
       "logIn": "Đăng nhập",
@@ -16,6 +17,43 @@ export default {
       "resetPassword": "Đặt lại mật khẩu",
       "backToLogin": "Quay lại đăng nhập"
   },
+  "adminDashboard": {
+    "admin": "admin",
+    "title": "Danh sách admin"
+},
+"createAdmin": {
+    "admin": "admin",
+    "createAdmin": "Tạo admin",
+    "updateAdmin": "Cập nhật admin",
+    "inputFields": {
+            "firstName": "Tên",
+            "lastName": "Họ",
+            "adminName": "Tên admin",
+            "role": "Vai trò",
+            "password": "Mật khẩu (ít nhất 8 ký tự)"
+        }
+},
+"createRole": {
+        "role": "vai trò",
+        "createRole": "Tạo vai trò",
+        "updateAdmin": "Cập nhật vai trò",
+        "selectPrivileges": "Chọn ít nhất một quyền",
+        "inputFields": {
+            "roleName": "Tên vai trò",
+            "privilege": "quyền",
+        }
+    },
+
+    "feedbackDialog": {
+      "inputFields": {
+          "reply": "trả lời",
+          "title": "tiêu đề"
+      }
+  } 
+  ,
+
+  // FORM COMPONENTS
+  "status": "Trạng thái",
   "emailInputField": {
       "placeholder": "Điền email",
       "validation": {
@@ -51,19 +89,22 @@ export default {
           "required": "Chọn ít nhất một",
       }
   },
-  "adminDashboard": {
-      "admin": "admin",
-      "title": "Danh sách admin"
-  },
-  "createAdmin": {
-      "admin": "admin",
-      "createAdmin": "Tạo admin",
-      "updateAdmin": "Cập nhật admin"
-  },
+
+  // REUSABLE COMPONENTS
   "createButtonGroup": {
       "create": "Tạo",
       "cancel": "Huỷ",
       "update": "Cập nhật"
-  }
+  },
+   // TOAST
+   "toast": {
+    "createSuccess": "Tạo thành công",
+    "updateSuccess": "Cập nhật thành công",
+    "switchStatusSuccess": "Thay đổi trạng thái thành công",
+    "switchStatusFail": "Thay đổi trạng thái không thành công",
+    "uploadSuccess": "Tải ảnh lên thành công",
+    "error": "Có lỗi xảy ra. Xin thử lại sau",
+    "enUS": "Vui lòng điền các trường cho ngôn ngữ tiếng Anh"
+}
 
 }

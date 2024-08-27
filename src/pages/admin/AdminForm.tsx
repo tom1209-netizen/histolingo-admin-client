@@ -1,37 +1,34 @@
-import React, { useEffect, useState } from "react";
+import { CssBaseline, FormLabel, Grid } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
-import { CssBaseline } from "@mui/material";
-import { Grid } from "@mui/material";
-import { FormLabel } from "@mui/material";
-import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
-import EmailInputField from "../../components/formComponents/EmailInputField";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import theme from "../../theme/GlobalCustomTheme";
-import NonLocaleInputFieldProps from "../../components/formComponents/NonLocaleInputField";
-import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
-import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
-import PasswordInputField from "../../components/formComponents/PasswordInputField";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   createAdmin,
   getRolesBypassAuthorization,
   updateAdmin,
 } from "../../api/admin";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import EmailInputField from "../../components/formComponents/EmailInputField";
+import MultiSelectInputField from "../../components/formComponents/MultiSelectInputField";
+import NonLocaleInputFieldProps from "../../components/formComponents/NonLocaleInputField";
+import PasswordInputField from "../../components/formComponents/PasswordInputField";
+import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
+import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { AdminFormProps, FormValues } from "../../interfaces/admin.interface";
-import { useTranslation } from "react-i18next";
+import theme from "../../theme/GlobalCustomTheme";
 
 const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   const {
     control,
     handleSubmit,
     setValue,
-    reset,
     formState: { errors },
   } = useForm<FormValues>({ mode: "onChange" });
 
-  const {t } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const activeCompulsory = typeOfForm === "create";
@@ -103,23 +100,23 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
       if (typeOfForm === "create") {
         const response = await createAdmin(body);
         if (response.data.success) {
-          toast.success("Admin created successfully.");
+          toast.success(t("toast.createSuccess"));
           navigate("/admin");
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && adminData) {
         const response = await updateAdmin(adminData.id, body);
         if (response.data.success) {
-          toast.success("Role updated successfully.");
+          toast.success(t("toast.updateSuccess"));
           navigate("/admin");
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error(t("toast.error"));
     }
   };
 
@@ -127,12 +124,14 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
     return <p>Loading...</p>;
   }
 
-
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? t("createAdmin.createAdmin") : t("createAdmin.updateAdmin")}</h1>
+      <h1>
+        {typeOfForm === "create"
+          ? t("createAdmin.createAdmin")
+          : t("createAdmin.updateAdmin")}
+      </h1>
       <Grid
         container
         spacing={3}
@@ -142,45 +141,49 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
       >
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="first-name" required>
-            First name
+            {t("createAdmin.inputFields.firstName")}
           </FormLabel>
           <NonLocaleInputFieldProps
             minRows={1}
             length={50}
             control={control}
             errors={errors}
-            fieldLabel="firstName"
+            name="firstName"
+            fieldLabel={t("createAdmin.inputFields.firstName")}
           />
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="last-name" required>
-            Last name
+            {t("createAdmin.inputFields.lastName")}
           </FormLabel>
           <NonLocaleInputFieldProps
+            name="lastName"
             minRows={1}
             length={50}
             control={control}
             errors={errors}
-            fieldLabel="lastName"
+            fieldLabel={t("createAdmin.inputFields.lastName")}
           />
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="admin-name" required>
-            Admin name
+            {t("createAdmin.inputFields.adminName")}
           </FormLabel>
           <NonLocaleInputFieldProps
-          minRows={1}
-           length={50}
+           name="adminName"
+            minRows={1}
+            length={50}
             control={control}
             errors={errors}
-            fieldLabel="adminName"
+            fieldLabel={t("createAdmin.inputFields.adminName")}
           />
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="roles" required>
-            Role
+            {t("createAdmin.inputFields.role")}
           </FormLabel>
           <MultiSelectInputField
+            label={t("createAdmin.inputFields.role")}
             control={control}
             errors={errors}
             name="roles"
@@ -196,7 +199,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
-            Status
+            {t("status")}
           </FormLabel>
           <SelectStatusInputField
             control={control}
@@ -209,7 +212,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           <>
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="password" required>
-                Password (at least 8 characters)
+                {t("createAdmin.inputFields.password")}
               </FormLabel>
               <PasswordInputField control={control} errors={errors} />
             </FormGrid>
@@ -218,10 +221,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
         )}
 
         <FormGrid item>
-          <CreateButtonGroup
-            nagivateTo={"/admin"}
-            typeOfForm={typeOfForm}
-          />
+          <CreateButtonGroup nagivateTo={"/admin"} typeOfForm={typeOfForm} />
         </FormGrid>
       </Grid>
     </ThemeProvider>

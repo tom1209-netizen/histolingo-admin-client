@@ -11,8 +11,10 @@ import NavTabs from "../../components/reusable/NavTabs";
 import SearchField from "../../components/reusable/SearchField";
 import DataTable from "../../components/reusable/Table";
 import { convertSearchParamsToObj } from "../../utils/common";
+import { useTranslation } from "react-i18next";
 
 const Learner = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchLearnerQuery: any = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
@@ -29,9 +31,9 @@ const Learner = () => {
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchLearnerStatus(id, status);
     if (response.status === 200) {
-      toast.success("Status changed successfully");
+      toast.success(t("toast.switchStatusSuccess"));
     } else {
-      toast.error("Failed to change status. Please try again.");
+      toast.error(t("toast.switchStatusFail"));
     }
   };
 
@@ -151,13 +153,13 @@ const Learner = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchLearnerQuery, status: value })
             }
-            value={searchLearnerQuery.status || ""} 
+            value={searchLearnerQuery.status || ""}
           />
           <SearchField
             label="Search learner"
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchLearnerQuery, search: value })
+              setSearchParams({ ...searchLearnerQuery, search: value.trim() })
             }
           />
         </Box>

@@ -5,16 +5,20 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import FormLabel from "@mui/material/FormLabel";
-import { auto } from "@popperjs/core";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
+import { createDocument, updateDocument } from "../../api/documentation";
 import { getTopicsByCountry } from "../../api/topic";
+import { uploadFile } from "../../api/upload";
+import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
+import NonLocaleInputField from "../../components/formComponents/NonLocaleInputField";
+import QuillTextEditor from "../../components/formComponents/QuillTextEditor";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
-import LocaleTextInputField from "../../components/localeComponents/LocaleTextInputField";
+import UploadFile from "../../components/formComponents/UploadFile";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
@@ -23,8 +27,7 @@ import {
   FormValues,
 } from "../../interfaces/documentaion.interface";
 import theme from "../../theme/GlobalCustomTheme";
-import NonLocaleInputField from "../../components/formComponents/NonLocaleInputField";
-import { createDocument, updateDocument } from "../../api/documentation";
+import { useTranslation } from "react-i18next";
 
 const defaultFormValues = {
   language: "en-US",
@@ -49,6 +52,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
     defaultValues: defaultFormValues,
   });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const language = watch("language");
   const country = watch("country");
@@ -134,6 +138,19 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
     }
 
     console.log(data);
+
+    let image;
+    try {
+      if (data.image) {
+        console.log("data.image:", data.image);
+        const response = await uploadFile(data.image);
+        image = response.data.data.fileUrl;
+        console.log(image);
+      }
+    } catch (error) {
+      toast.error(t("toast.uploadFail"));
+    }
+
     const status = data.status === "active" ? 1 : 0;
     const body = {
       countryId: data.country,
@@ -149,26 +166,26 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       if (typeOfForm === "create") {
         const response = await createDocument(body);
         if (response.data.success) {
-          toast.success("Document created successfully.");
+          toast.success(t("toast.createSuccess"));
           navigate("/documentation");
         } else {
           console.log(response);
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && documentationData) {
         body["status"] = status;
         const response = await updateDocument(documentationData?.id, body);
         if (response.data.success) {
-          toast.success("Document updated successfully.");
+          toast.success(t("toast.updateSuccess"));
           navigate("/documentation");
         } else {
           console.log(response);
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("toast.error"));
         }
       }
     } catch (error) {
       console.error("Failed to submit question:", error);
-      toast.error("An error occurred. Please try again.");
+      toast.error(t("toast.error"));
     }
   };
 
@@ -197,7 +214,6 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
             name="country"
             label="Country"
             options={countryNames}
-            // onChange={handleCountryChange}
           />
         </FormGrid>
 
@@ -231,6 +247,17 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="status" required>
+            Status
+          </FormLabel>
+          <SelectStatusInputField
+            control={control}
+            errors={errors}
+            activeCompulsory={activeCompulsory}
+          />
+        </FormGrid>
+
+        <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="name" required>
             Document name
           </FormLabel>
@@ -247,28 +274,14 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="content" required>
-            Content
-          </FormLabel>
-          <LocaleTextInputField
-            property={"content"}
-            language={language}
-            name="Content"
-            control={control}
-            errors={errors}
-            length={500}
-            minRows={14}
-            multiline={true}
-          />
-        </FormGrid>
-
-        <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="source" required>
             Source
           </FormLabel>
           <NonLocaleInputField
-            minRows={14}
+            name="source"
+            minRows={1}
             length={2100}
+            multiline={false}
             control={control}
             errors={errors}
             fieldLabel="source"
@@ -276,17 +289,30 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="status" required>
-            Status
+          <FormLabel htmlFor="content" required>
+            Content
           </FormLabel>
-          <SelectStatusInputField
+          <QuillTextEditor
+            property={"content"}
+            language={language}
+            name="Content"
             control={control}
             errors={errors}
-            activeCompulsory={activeCompulsory}
+            // length={5000}
           />
         </FormGrid>
 
-        <FormGrid item xs={12} md={6}></FormGrid>
+        <FormGrid item xs={12} md={6}>
+          <FormLabel htmlFor="image" required>
+            Upload Image
+          </FormLabel>
+          <UploadFile
+            control={control}
+            errors={errors}
+            initialImageUrl={documentationData?.image}
+          />
+        </FormGrid>
+
         <FormGrid item>
           <CreateButtonGroup
             nagivateTo={"/documentation"}

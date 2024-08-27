@@ -16,8 +16,10 @@ import { getTopics, switchTopicStatus } from "../../api/topic";
 import { LoadingTable } from "../../components/reusable/Loading";
 import { no_img } from "../../constant/image";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const Topic = () => {
+  const { t } = useTranslation();
   const { handleEditRow } = useRowActions();
   const [loading, setLoading] = useState<boolean>(true);
   const [topics, setTopics] = useState<any[]>([]);
@@ -33,9 +35,9 @@ const Topic = () => {
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchTopicStatus(id, status);
     if (response.status === 200) {
-      toast.success("Status changed successfully");
+      toast.success(t("toast.switchStatusSuccess"));
     } else {
-      toast.error("Failed to change status. Please try again.");
+      toast.error(t("toast.switchStatusFail"));
     }
   };
 
@@ -172,7 +174,7 @@ const Topic = () => {
             label="Search topic"
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchTopicQuery, search: value })
+              setSearchParams({ ...searchTopicQuery, search: value.trim() })
             }
           />
         </Box>

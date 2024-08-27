@@ -6,6 +6,7 @@ export interface DocumentationFormProps {
     source: string;
     country: string;
     topic: string;
+    image: string;
     id: string;
     status: string;
     localeData: {
@@ -22,6 +23,7 @@ export interface FormValues {
   country: string;
   topic: string;
   source: string;
+  image: File | null;
   status: string;
   localeData: {
     "en-US": { name: string; content: string };

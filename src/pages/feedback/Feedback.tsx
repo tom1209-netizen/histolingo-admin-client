@@ -13,8 +13,11 @@ import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import { LoadingTable } from "../../components/reusable/Loading";
 import { toast } from "react-toastify";
+import FeedbackDialog from "./FeedbackDialog";
+import { useTranslation } from "react-i18next";
 
 const Feedback = () => {
+  const {t} = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams();
   const searchFeedbackQuery: any = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,25 +28,29 @@ const Feedback = () => {
     pageSize: 10,
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const navigate = useNavigate();
 
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchFeedbackStatus(id, status);
     if (response.status === 200) {
-      toast.success("Status changed successfully");
+      toast.success(t("toast.switchStatusSuccess"));
     } else {
-      toast.error("Failed to change status. Please try again.");
+      toast.error(t("toast.switchStatusFail"));
     }
   };
 
-  const handleViewDetail = (id: string) => {
-    navigate(`/feedbackdetail/${id}`);
+  const handleViewDetail = (row) => {
+    console.log(row)
+    setOpen(true);
+    setSelectedFeedback(row);
   };
 
   const columns: GridColDef[] = [
-    { field: "createdBy", headerName: "Name", flex: 1, sortable: false },
-    { field: "content", headerName: "Content", flex: 3, sortable: false },
+    { field: "createdBy", headerName: "Player's name", flex: 1, sortable: false },
+    { field: "content", headerName: "Feedback", flex: 3, sortable: false },
     { field: "testId", headerName: "Test", flex: 1, sortable: false },
     { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
     {
@@ -74,7 +81,7 @@ const Feedback = () => {
       sortable: false,
       renderCell: (params) => (
         <IconButton
-          onClick={() => handleViewDetail(params.row._id)}
+          onClick={() => handleViewDetail(params.row)}
           color="primary"
           aria-label="delete"
         >
@@ -144,7 +151,7 @@ const Feedback = () => {
             label="Search feedback"
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchFeedbackQuery, search: value })
+              setSearchParams({ ...searchFeedbackQuery, search: value.trim() })
             }
           />
         </Box>
@@ -157,6 +164,11 @@ const Feedback = () => {
         rowCount={rowCount}
         paginationModel={paginationModel}
         onPageChange={handlePageChange}
+      />
+      <FeedbackDialog
+        feedback={selectedFeedback}
+        open={open}
+        handleClose={() => setOpen(false)}
       />
     </>
   );
