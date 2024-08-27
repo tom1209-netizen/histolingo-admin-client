@@ -2,19 +2,25 @@
 FROM node:alpine AS builder
 
 # Setting up the work directory
+
 WORKDIR /app
 
-EXPOSE 3000
-EXPOSE 80
-EXPOSE 443
+# EXPOSE 3000
+# EXPOSE 80
+# EXPOSE 443
 
-# Copying all the files in our project
-COPY . .
+# # Copying all the files in our project
+# COPY . .
 
-RUN npm install
+# RUN rm -rf ./node_modules
+# RUN npm install
 
-# Building our application
-RUN npm run build
+# ENV NODE_ENV=production
+
+# # Building our application
+# RUN npm run build
+
+COPY ./dist ./dist
 
 # Fetching the latest nginx image
 FROM nginx
@@ -24,3 +30,4 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copying our nginx.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
