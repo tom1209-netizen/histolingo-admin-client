@@ -12,10 +12,12 @@ import {
     RadioGroup,
     TextField
 } from '@mui/material';
-import { getIndividualTest } from "../../api/test";
+
+import { getIndividualTest, checkAnswer } from "../../api/test";
 import { styled, keyframes } from '@mui/system';
 import correctAudio from '../../assets/audio/correct.mp3';
 import wrongAudio from '../../assets/audio/wrong.mp3';
+import { useNavigate } from 'react-router-dom';
 
 const colors = [
     '#f48fb1',
@@ -230,6 +232,11 @@ function TestPlay(props: any) {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [submittedAnswers, setSubmittedAnswers] = useState({});
     const [isCorrect, setIsCorrect] = useState(null);
+    const [startTime, setStartTime] = useState<Date | null>(null);
+    const [endTime, setEndTime] = useState<Date | null>(null);
+    const navigate = useNavigate();
+
+    // FIXME: Dummy test ID for testing purposes
     const dummyId = '66c09a692c5f7b45260f8006';
 
     useEffect(() => {
@@ -238,6 +245,7 @@ function TestPlay(props: any) {
                 const data = await getIndividualTest(dummyId);
                 setTest(data['data']['data']['test']);
                 setLoading(false);
+                setStartTime(new Date());
             } catch (error) {
                 console.error('Error fetching test:', error);
                 setLoading(false);
@@ -264,6 +272,11 @@ function TestPlay(props: any) {
             setSelectedAnswer(submittedAnswers[nextQuestionId]?.answer || null);
             setIsSubmitted(!!submittedAnswers[nextQuestionId]);
             setIsCorrect(submittedAnswers[nextQuestionId]?.isCorrect ?? null);
+        } else {
+            setEndTime(new Date());
+            const timeTaken = (endTime - startTime.getTime()) / 1000; // Time in seconds
+            const correctAnswersCount = Object.values(submittedAnswers).filter(answer => answer.isCorrect).length;
+            navigate('/result', { state: { correctAnswersCount, totalQuestions: questionsList.length, timeTaken } });
         }
     };
 
@@ -283,15 +296,18 @@ function TestPlay(props: any) {
 
     const handleSubmit = async () => {
         try {
-            const isCorrect = selectedAnswer === 'true';
+            const isCorrect = await checkAnswer(
+                {
+                    testResultId: dummyId,
+                    questionId: currentQuestion._id,
+                    answer: selectedAnswer
+                }
+            );
             setIsSubmitted(true);
             setIsCorrect(isCorrect);
 
             const sound = new Audio(isCorrect ? correctAudio : wrongAudio);
             await sound.play();
-
-            console.log('Submitted answer:', selectedAnswer);
-            console.log(selectedAnswer)
 
             setSubmittedAnswers(prev => ({
                 ...prev,

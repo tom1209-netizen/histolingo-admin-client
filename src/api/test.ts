@@ -71,3 +71,18 @@ export const updateTest = async (id: string, body: any): Promise<AxiosResponse<a
     }
 }
 
+export const checkAnswer = async (body: any): Promise<AxiosResponse<any>> => {
+    try {
+        const accessToken = Cookies.get("accessToken");
+        const response = await axios.post(`${domain_api}/tests/checkAnswer`, body, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        return response;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(error.response?.data.message || "Check answer failed");
+        } else {
+            throw error;
+        }
+    }
+}
