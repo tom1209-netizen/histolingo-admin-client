@@ -5,3 +5,5 @@ services:
     container_name: histolingo-admin-fe
     ports:
       - "3001:80"
+    environment:
+      - VITE_DOMAIN_API=https://histolingo-admin-be.cd95dznd.xyz
