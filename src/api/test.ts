@@ -71,6 +71,22 @@ export const updateTest = async (id: string, body: any): Promise<AxiosResponse<a
     }
 }
 
+export const startTest = async (body: any): Promise<AxiosResponse<any>> => {
+    try {
+        const accessToken = Cookies.get("accessToken");
+        const response = await axios.post(`${domain_api}/tests/startDemo`, body, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        return response;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(error.response?.data.message || "Start test failed");
+        } else {
+            throw error;
+        }
+    }
+}
+
 export const checkAnswer = async (body: any): Promise<AxiosResponse<any>> => {
     try {
         const accessToken = Cookies.get("accessToken");

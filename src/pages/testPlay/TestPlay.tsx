@@ -13,7 +13,7 @@ import {
     TextField
 } from '@mui/material';
 
-import { getIndividualTest, checkAnswer } from "../../api/test";
+import { getIndividualTest, startTest, checkAnswer } from "../../api/test";
 import { styled, keyframes } from '@mui/system';
 import correctAudio from '../../assets/audio/correct.mp3';
 import wrongAudio from '../../assets/audio/wrong.mp3';
@@ -81,7 +81,7 @@ function MultipleChoiceQuestion({ questionsData, onAnswerChange, selectedAnswer,
             <RadioGroup onChange={(e) => onAnswerChange(e.target.value)} value={selectedAnswer}>
                 {
                     questionsData.options.map((option, index) => (
-                        <FormControlLabel key={index} value={option} control={<Radio disabled={disabled} />} label={option} />
+                        <FormControlLabel key={index} value={index} control={<Radio disabled={disabled} />} label={option} />
                     ))
                 }
             </RadioGroup>
@@ -91,6 +91,7 @@ function MultipleChoiceQuestion({ questionsData, onAnswerChange, selectedAnswer,
 
 function FillInTheBlankQuestion({ questionsData, onAnswerChange, selectedAnswer, disabled, isCorrect }) {
     const [fillInAnswer, setFillInAnswer] = useState(selectedAnswer || []);
+    const count = (questionsData['ask'].match(/___/g) || []).length;
 
     const handleChange = (value, index) => {
         const updatedAnswers = [...fillInAnswer.slice(0, index), value, ...fillInAnswer.slice(index + 1)];
@@ -98,23 +99,26 @@ function FillInTheBlankQuestion({ questionsData, onAnswerChange, selectedAnswer,
         onAnswerChange(updatedAnswers);
     };
 
+    const textFields = [];
+    for (let i = 0; i < count; i++) {
+        textFields.push(
+            <TextField
+                key={i}
+                fullWidth
+                label={`Answer ${i + 1}`}
+                variant="outlined"
+                sx={{ marginTop: 2 }}
+                onChange={(e) => handleChange(e.target.value, i)}
+                value={fillInAnswer[i] || ''}
+                disabled={disabled}
+            />
+        );
+    }
+
     return (
         <AnimatedPaper isCorrect={isCorrect}>
             <Typography variant="h5">{questionsData.ask}</Typography>
-            {
-                questionsData['answer'].map((_, index) => (
-                    <TextField
-                        key={index}
-                        fullWidth
-                        label={`Answer ${index + 1}`}
-                        variant="outlined"
-                        sx={{ marginTop: 2 }}
-                        onChange={(e) => handleChange(e.target.value, index)}
-                        value={fillInAnswer[index] || ''}
-                        disabled={disabled}
-                    />
-                ))
-            }
+            {textFields}
         </AnimatedPaper>
     );
 }
@@ -225,13 +229,14 @@ function MatchingQuestion({ questionsData, onAnswerChange, selectedAnswer, disab
 }
 
 function TestPlay(props: any) {
-    const [test, setTest] = useState<any[]>([]);
+    const [questionsList, setQuestionsList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [submittedAnswers, setSubmittedAnswers] = useState({});
     const [isCorrect, setIsCorrect] = useState(null);
+    const [testResultId, setTestResultId] = useState('');
     const [startTime, setStartTime] = useState<Date | null>(null);
     const [endTime, setEndTime] = useState<Date | null>(null);
     const navigate = useNavigate();
@@ -240,18 +245,24 @@ function TestPlay(props: any) {
     const dummyId = '66c09a692c5f7b45260f8006';
 
     useEffect(() => {
-        const fetchTest = async () => {
+        const startTestSession = async () => {
+            const body = {
+                "testId": dummyId
+            }
+
             try {
-                const data = await getIndividualTest(dummyId);
-                setTest(data['data']['data']['test']);
-                setLoading(false);
+                const data = await startTest(body);
+                setQuestionsList(data['data']['data']['questions'])
+                setTestResultId(data['data']['data']['testResultId']);
                 setStartTime(new Date());
             } catch (error) {
-                console.error('Error fetching test:', error);
+                console.error('Error starting test session:', error);
+            } finally {
                 setLoading(false);
             }
         };
-        fetchTest();
+
+        startTestSession();
     }, [dummyId]);
 
     if (loading) {
@@ -262,7 +273,6 @@ function TestPlay(props: any) {
         );
     }
 
-    const questionsList = test['questionsId'];
     const currentQuestion = questionsList[currentQuestionIndex];
 
     const handleNext = () => {
@@ -274,7 +284,7 @@ function TestPlay(props: any) {
             setIsCorrect(submittedAnswers[nextQuestionId]?.isCorrect ?? null);
         } else {
             setEndTime(new Date());
-            const timeTaken = (endTime - startTime.getTime()) / 1000; // Time in seconds
+            const timeTaken = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
             const correctAnswersCount = Object.values(submittedAnswers).filter(answer => answer.isCorrect).length;
             navigate('/result', { state: { correctAnswersCount, totalQuestions: questionsList.length, timeTaken } });
         }
@@ -295,14 +305,24 @@ function TestPlay(props: any) {
     };
 
     const handleSubmit = async () => {
+
+        // Format the answer based on the question type
+        const convertAnswer = (answer) => {
+            if (!isNaN(answer) && typeof answer !== 'boolean') return parseInt(answer, 10);
+            return answer === 'true' ? 1 : answer === 'false' ? 0 : answer;
+        };
+
+        const body = {
+            testResultId: testResultId,
+            questionId: currentQuestion._id,
+            playerAnswer: convertAnswer(selectedAnswer)
+        }
+
         try {
-            const isCorrect = await checkAnswer(
-                {
-                    testResultId: dummyId,
-                    questionId: currentQuestion._id,
-                    answer: selectedAnswer
-                }
-            );
+            console.log(body['playerAnswer']);
+            const data = await checkAnswer(body);
+            const isCorrect = data['data']['data']['isCorrect'];
+
             setIsSubmitted(true);
             setIsCorrect(isCorrect);
 
@@ -380,7 +400,7 @@ function TestPlay(props: any) {
                     variant="contained"
                     color="primary"
                     onClick={handleNext}
-                    disabled={!isSubmitted || currentQuestionIndex >= questionsList.length - 1}>
+                    disabled={!isSubmitted || currentQuestionIndex >= questionsList.length}>
                     Next
                 </Button>
             </Box>

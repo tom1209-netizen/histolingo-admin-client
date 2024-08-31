@@ -18,6 +18,13 @@ function Result() {
         navigate('/testplay');
     };
 
+    const convertTime = (timeTaken: number) => {
+        const minutes = Math.floor(timeTaken / 60);
+        const seconds = timeTaken % 60;
+
+        return `${minutes}:${seconds}`;
+    }
+
     return (
         <Container sx={{ marginTop: 4 }}>
             <Paper sx={{ padding: 4 }}>
@@ -28,7 +35,7 @@ function Result() {
                     You answered {correctAnswersCount} out of {totalQuestions} questions correctly.
                 </Typography>
                 <Typography variant="h6">
-                    Time taken: {timeTaken} seconds
+                    Time taken: {convertTime(timeTaken)}
                 </Typography>
                 <Box sx={{ marginTop: 4 }}>
                     <Button variant="contained" color="primary" onClick={handleRetakeTest}>
