@@ -177,7 +177,7 @@ const PlayerTest = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createtest" importPath="/" />
+        <CreateImportButtonGroup createPath="/createtest" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

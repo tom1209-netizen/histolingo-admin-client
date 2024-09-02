@@ -2,6 +2,7 @@ version: "3.8"
 services:
   frontend:
     build: .
+    image: histolingo-admin-fe
     container_name: histolingo-admin-fe
     ports:
       - "3001:80"
