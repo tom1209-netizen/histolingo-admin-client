@@ -33,6 +33,8 @@ import Documentation from "./pages/documentation/Documentation";
 import UpdateDocumentation from "./pages/documentation/UpdateDocumentation";
 import CreateDocumentation from "./pages/documentation/CreateDocumentation";
 import FeedbackDialog from "./pages/feedback/FeedbackDialog";
+import TestPlay from "./pages/testPlay/TestPlay";
+import Result from "./pages/result/Result";
 
 const App: React.FC = () => {
   return (
@@ -73,13 +75,10 @@ const App: React.FC = () => {
           <Route path="/documentation/:documentationId" element={<UpdateDocumentation />} />
           <Route path="/createdocumentation" element={<CreateDocumentation />} />
 
-<<<<<<< Updated upstream
-=======
           <Route path="/testplay/:testId" element={<TestPlay />} />
           <Route path="/result" element={<Result />} />
 
           <Route path="/learner" element={<Learner />} />
->>>>>>> Stashed changes
           <Route path="/feedback" element={<Feedback />} />
           {/* <Route path="/feedback/:feedbackId" element={<FeedbackDialog />} /> */}
 

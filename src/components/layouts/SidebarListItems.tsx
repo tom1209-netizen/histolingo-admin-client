@@ -70,9 +70,5 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Feedback" />
     </ListItemButton>
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
   </React.Fragment>
 );
