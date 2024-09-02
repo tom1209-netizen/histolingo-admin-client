@@ -19,6 +19,7 @@ import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
 import { FormGrid } from "../../constant/FormGrid";
 import { AdminFormProps, FormValues } from "../../interfaces/admin.interface";
 import theme from "../../theme/GlobalCustomTheme";
+import { LoadingForm } from "../../components/reusable/Loading";
 
 const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   const {
@@ -121,7 +122,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingForm/>;
   }
 
   return (

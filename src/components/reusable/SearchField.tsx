@@ -22,7 +22,6 @@ const SearchField = ({ label, onChange, delay }: SearchFieldProps) => {
     <TextField
       size="small"
       id="outlined-search"
-      // label={label}
       type="search"
       placeholder={`${label}`}
       onChange={handleTextFieldChange}

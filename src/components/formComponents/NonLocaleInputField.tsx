@@ -30,12 +30,12 @@ const NonLocaleInputField: React.FC<NonLocaleInputFieldProps> = ({
       defaultValue=""
       rules={{
         required: `${fieldLabel} ${t(
-          "nonLocaleInputField.validation.required"
+          "localeInputField.validation.required"
         )}`,
         validate: {
           notEmptyOrWhitespace: (value) => {
             if (!value.trim()) {
-              return t("nonLocaleInputField.validation.emptyOrWhitespace");
+              return t("localeInputField.validation.emptyOrWhitespace");
             }
             return true;
           },
@@ -46,7 +46,7 @@ const NonLocaleInputField: React.FC<NonLocaleInputFieldProps> = ({
           {...field}
           multiline={multiline}
           minRows={minRows}
-          placeholder={`${t("nonLocaleInputField.placeholder")} ${fieldLabel}`}
+          placeholder={`${t("localeInputField.placeholder")} ${fieldLabel}`}
           variant="outlined"
           error={!!errors[name]}
           helperText={(errors[name] as any)?.message || ""}

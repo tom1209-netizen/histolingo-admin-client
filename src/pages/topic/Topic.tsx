@@ -178,7 +178,7 @@ const Topic = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createtopic" importPath="/" />
+        <CreateImportButtonGroup createPath="/createtopic" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

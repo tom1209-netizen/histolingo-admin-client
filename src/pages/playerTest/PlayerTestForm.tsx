@@ -38,6 +38,7 @@ import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
 import MultiSelect2 from "../../components/formComponents/MultiSelect2";
 import { useTranslation } from "react-i18next";
+import { LoadingForm } from "../../components/reusable/Loading";
 
 const defaultFormValues = {
   language: "en-US",
@@ -353,7 +354,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingForm/>;
   }
 
   return (
@@ -391,7 +392,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
             errors={errors}
             control={control}
             language={language}
-            name={"Test name"}
+            label={"Test name"}
             length={50}
             minRows={1}
           />

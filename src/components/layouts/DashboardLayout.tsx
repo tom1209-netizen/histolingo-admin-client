@@ -1,32 +1,24 @@
-import * as React from "react";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import MuiDrawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems } from "./SidebarListItems";
-import Avatar from "@mui/material/Avatar";
+import MenuIcon from "@mui/icons-material/Menu";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
 import { grey, indigo } from "@mui/material/colors";
-import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import MuiDrawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import List from "@mui/material/List";
+import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 import { Outlet } from "react-router-dom";
-import AvatarMenu from "./AvatarMenu";
-import Chip from "@mui/material/Chip";
-import { Language } from "@mui/icons-material";
-import LanguageSelect from "./LanguageSelect";
 import theme from "../../theme/GlobalCustomTheme";
+import AvatarMenu from "./AvatarMenu";
+import LanguageSelect from "./LanguageSelect";
+import  MainListItems  from "./SidebarListItems";
 
 function Copyright(props: any) {
   return (
@@ -98,9 +90,6 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-// TODO remove, this demo shouldn't need to reset the theme.
-const defaultTheme = createTheme();
-
 const Dashboard: React.FC = () => {
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -148,7 +137,7 @@ const Dashboard: React.FC = () => {
             </IconButton>
           </Toolbar>
           <Divider />
-          <List component="nav">{mainListItems}</List>
+          <List component="nav"><MainListItems/></List>
         </Drawer>
         <Box
           component="main"

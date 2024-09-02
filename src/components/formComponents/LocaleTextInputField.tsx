@@ -1,34 +1,35 @@
 import React from "react";
 import { TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+
+// This field is used to input text in multiple languages
 
 const LocaleTextInputField = ({
+  label,
   language,
+  property,
   control,
   errors,
-  name,
   length,
   minRows,
   multiline,
-  property,
 }) => {
+  const { t } = useTranslation();
   const fieldName = `localeData[${language}][${property}]`;
   const fieldError = errors?.localeData?.[language]?.[property];
+
   return (
     <Controller
       name={fieldName}
       key={fieldName}
       control={control}
       rules={{
-        required: `${name} is required`,
-        maxLength: {
-          value: length,
-          message: `${name} must be less than ${length} characters`,
-        },
+        required: `${label} ${t("localeInputField.validation.required")}`,
         validate: {
           notEmptyOrWhitespace: (value) => {
             if (!value.trim()) {
-              return "Cannot be empty or whitespace only";
+              return t("localeInputField.validation.emptyOrWhitespace");
             }
             return true;
           },
@@ -37,7 +38,7 @@ const LocaleTextInputField = ({
       render={({ field }) => (
         <TextField
           {...field}
-          placeholder={`Enter ${name}`}
+          placeholder={`${t("localeInputField.placeholder")} ${label}`}
           variant="outlined"
           fullWidth
           multiline={multiline}

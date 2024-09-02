@@ -28,6 +28,7 @@ import {
 } from "../../interfaces/documentaion.interface";
 import theme from "../../theme/GlobalCustomTheme";
 import { useTranslation } from "react-i18next";
+import { LoadingForm } from "../../components/reusable/Loading";
 
 const defaultFormValues = {
   language: "en-US",
@@ -191,7 +192,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingForm/>;
   }
 
   return (
@@ -267,7 +268,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
             errors={errors}
             control={control}
             language={language}
-            name={"Document name"}
+            label={"Document name"}
             length={100}
             multiline={false}
             minRows={1}

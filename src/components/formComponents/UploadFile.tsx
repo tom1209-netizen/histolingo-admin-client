@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
-import { useTheme } from '@mui/material';
-import { styled } from '@mui/system';
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Control, FieldErrors, useController } from 'react-hook-form';
+import { useEffect } from "react";
+import { useTheme } from "@mui/material";
+import { styled } from "@mui/system";
+import React, { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { Control, FieldErrors, useController } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 interface UploadFileProps {
   control: Control<any>;
@@ -11,62 +12,66 @@ interface UploadFileProps {
   initialImageUrl?: string;
 }
 
-const DropzoneWrapper = styled('div')({
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-  height: '355px',
-  border: '2px dashed #ccc',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  background: '#f9f9f9',
+const DropzoneWrapper = styled("div")({
+  position: "relative",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  height: "355px",
+  border: "2px dashed #ccc",
+  borderRadius: "8px",
+  overflow: "hidden",
+  background: "#f9f9f9",
   padding: 0,
-  marginTop: '1rem',
-  textAlign: 'center',
-  cursor: 'pointer',
+  marginTop: "1rem",
+  textAlign: "center",
+  cursor: "pointer",
 });
 
-const ImagePreview = styled('img')({
-  width: '100%',
-  height: '100%',
-  objectFit: 'contain',
+const ImagePreview = styled("img")({
+  width: "100%",
+  height: "100%",
+  objectFit: "contain",
 });
 
-const ErrorMessage = styled('div')({
-  color: 'red',
-  fontSize: '0.875rem',
-  marginTop: '0.5rem',
+const ErrorMessage = styled("div")({
+  color: "red",
+  fontSize: "0.875rem",
+  marginTop: "0.5rem",
 });
 
-const UploadFile: React.FC<UploadFileProps> = ({ control, errors, initialImageUrl }) => {
-    const theme = useTheme();
+const UploadFile: React.FC<UploadFileProps> = ({
+  control,
+  initialImageUrl,
+}) => {
+  const { t } = useTranslation();
+  const theme = useTheme();
   const [image, setImage] = useState<string | null>(null);
   const {
-    field: { onChange, onBlur, value, name, ref },
+    field: { onChange, onBlur, ref },
     fieldState: { error },
   } = useController({
-    name: 'image',
+    name: "image",
     control,
-    rules: { required: 'Image is required' }, 
+    rules: { required: t("dropzone.required") },
   });
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
-      'image/*': [],
+      "image/*": [],
     },
     onDrop: (acceptedFiles) => {
       const file = acceptedFiles[0];
       const reader = new FileReader();
       reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
+        if (typeof reader.result === "string") {
           setImage(reader.result);
         }
       };
       reader.readAsDataURL(file);
-      onChange(file); 
+      onChange(file);
     },
   });
 
@@ -84,15 +89,15 @@ const UploadFile: React.FC<UploadFileProps> = ({ control, errors, initialImageUr
         <div>
           <input
             {...getInputProps({
-              onBlur: () => onBlur(), 
-              ref: ref, 
+              onBlur: () => onBlur(),
+              ref: ref,
               onChange: (e) => {
-                onChange(e.target.files?.[0]); 
+                onChange(e.target.files?.[0]);
                 const file = e.target.files?.[0];
                 if (file) {
                   const reader = new FileReader();
                   reader.onloadend = () => {
-                    if (typeof reader.result === 'string') {
+                    if (typeof reader.result === "string") {
                       setImage(reader.result);
                     }
                   };
@@ -102,16 +107,22 @@ const UploadFile: React.FC<UploadFileProps> = ({ control, errors, initialImageUr
             })}
             type="file"
             accept="image/*"
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
           />
-          <div style={{backgroundColor: theme.palette.primary.main, color: 'white', padding: '8px 16px', borderRadius: '5px'}}>Drop a file here, or click to select a file</div>
+          <div
+            style={{
+              backgroundColor: theme.palette.primary.main,
+              color: "white",
+              padding: "8px 16px",
+              borderRadius: "5px",
+            }}
+          >
+            {t("dropzone.instruction")}
+          </div>
         </div>
       )}
-      {error && (
-        <ErrorMessage>{error.message}</ErrorMessage>
-      )}
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </DropzoneWrapper>
-    
   );
 };
 

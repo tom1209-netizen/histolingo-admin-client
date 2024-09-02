@@ -27,7 +27,6 @@ export default function UnstyledSelectIntroduction() {
     <Select onChange={handleChange} defaultValue="en">
       <Option value="en">🇺🇸 English</Option>
       <Option value="vi">🇻🇳 Tiếng Việt</Option>
-      <Option value="ja">🇯🇵 日本語</Option>
     </Select>
   );
 }

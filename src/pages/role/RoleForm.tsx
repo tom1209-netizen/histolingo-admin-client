@@ -25,6 +25,7 @@ import {
   FlattenedPermission,
 } from "../../interfaces/role.interface";
 import { useTranslation } from "react-i18next";
+import { LoadingForm } from "../../components/reusable/Loading";
 
 const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   const {
@@ -128,7 +129,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingForm />;
   }
 
   return (

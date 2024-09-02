@@ -1,13 +1,15 @@
-import * as React from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 interface NavTabsProps {
   onChange: (value: any) => void;
   value: string;
 }
 export default function NavTabs({ onChange, value }: NavTabsProps) {
-  console.log(value, "admin value");
+  const { t } = useTranslation();
+
   return (
     <ToggleButtonGroup size="small" exclusive>
       <ToggleButton
@@ -15,21 +17,21 @@ export default function NavTabs({ onChange, value }: NavTabsProps) {
         selected={value === ""}
         value="left"
       >
-        All
+        {t("navTab.all")}
       </ToggleButton>
       <ToggleButton
         onClick={() => onChange && onChange("1")}
         value="center"
         selected={value === "1"}
       >
-        Active
+        {t("navTab.active")}
       </ToggleButton>
       <ToggleButton
         onClick={() => onChange && onChange("0")}
         value="right"
         selected={value === "0"}
       >
-        Inactive
+        {t("navTab.inactive")}
       </ToggleButton>
     </ToggleButtonGroup>
   );

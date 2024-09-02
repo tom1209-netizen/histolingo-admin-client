@@ -131,3 +131,19 @@ export const getRolesBypassAuthorization = async (): Promise<
     }
   }
 };
+
+export const getProfile = async (): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await axios.get(`${domain_api}/admins/me`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "Get profile failed");
+    } else {
+      throw error;
+    }
+  }
+}

@@ -1,15 +1,14 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
+import Logout from "@mui/icons-material/Logout";
 import Avatar from "@mui/material/Avatar";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import { grey } from "@mui/material/colors";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Settings from "@mui/icons-material/Settings";
-import Logout from "@mui/icons-material/Logout";
-import { grey } from "@mui/material/colors";
-import { Link } from 'react-router-dom';
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -20,6 +19,7 @@ export default function AvatarMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const { t } = useTranslation();
   return (
     <React.Fragment>
       <IconButton
@@ -70,21 +70,15 @@ export default function AvatarMenu() {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem onClick={handleClose} component={Link} to="/account">
-          <Avatar /> My account
+          <Avatar /> {t("avatarMenu.profile")}
         </MenuItem>
         <Divider />
 
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
-          Logout
+          {t("avatarMenu.logout")}
         </MenuItem>
       </Menu>
     </React.Fragment>

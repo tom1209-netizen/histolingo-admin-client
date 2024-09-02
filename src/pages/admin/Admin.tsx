@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 const Admin = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const { handleEditRow } = useRowActions();
   const [loading, setLoading] = useState<boolean>(true);
   const [admins, setAdmins] = useState<any[]>([]);
@@ -164,7 +164,7 @@ const Admin = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createadmin" importPath="/" />
+        <CreateImportButtonGroup createPath="/createadmin" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

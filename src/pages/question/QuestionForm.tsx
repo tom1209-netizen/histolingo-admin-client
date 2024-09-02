@@ -30,6 +30,7 @@ import {
 } from "../../interfaces/question.interface";
 import theme from "../../theme/GlobalCustomTheme";
 import { useTranslation } from "react-i18next";
+import { LoadingForm } from "../../components/reusable/Loading";
 
 const defaultFormValues = {
   language: "en-US",
@@ -321,7 +322,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingForm/>;
   }
 
   return (
@@ -400,7 +401,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           <LocaleTextInputField
             property={"ask"}
             language={language}
-            name="Question ask"
+            label="Question ask"
             control={control}
             errors={errors}
             length={500}
@@ -507,7 +508,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
               <LocaleTextInputField
                 property={"answer"}
                 language={language}
-                name="Answer"
+                label="Answer"
                 control={control}
                 errors={errors}
                 length={500}

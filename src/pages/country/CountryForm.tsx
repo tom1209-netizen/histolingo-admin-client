@@ -169,7 +169,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
             errors={errors}
             control={control}
             language={language}
-            name={"Country name"}
+            label={"Country name"}
             length={50}
             minRows={1}
           />
@@ -195,7 +195,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
             errors={errors}
             control={control}
             language={language}
-            name={"Description"}
+            label={"Description"}
             length={1500}
             multiline={true}
             minRows={14}

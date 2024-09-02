@@ -7,6 +7,7 @@ import {
 import FormLabel from "@mui/material/FormLabel";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
@@ -17,11 +18,11 @@ import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import UploadFile from "../../components/formComponents/UploadFile";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
+import { LoadingForm } from "../../components/reusable/Loading";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
 import { TopicFormProps } from "../../interfaces/topic.interface";
 import theme from "../../theme/GlobalCustomTheme";
-import { useTranslation } from "react-i18next";
 
 const defaultFormValues = {
   language: "en-US",
@@ -49,7 +50,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
   const navigate = useNavigate();
   const localeData = watch("localeData");
   const language = watch("language");
-  let image = watch("image")
+  let image = watch("image");
   const activeCompulsory = typeOfForm === "create" ? true : false;
   const [countryNames, setCountryNames] = useState<any[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState("");
@@ -97,8 +98,8 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     setValue("country", value);
   };
 
-   // CHECK IF ENGLISH FIELDS ARE FILLED
-   useEffect(() => {
+  // CHECK IF ENGLISH FIELDS ARE FILLED
+  useEffect(() => {
     const locale = localeData["en-US"] || { name: "", description: "" };
     const { name = "", description = "" } = locale;
     setIsEnglishFieldsFilled(name.trim() !== "" && description.trim() !== "");
@@ -117,7 +118,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     }
 
     try {
-      console.log(image, "image")
+      console.log(image, "image");
       if (data.image) {
         console.log("data.image:", data.image);
         const response = await uploadFile(data.image);
@@ -161,7 +162,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingForm />;
   }
 
   return (
@@ -211,7 +212,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
             errors={errors}
             control={control}
             language={language}
-            name={"Topic name"}
+            label={"Topic name"}
             length={100}
             multiline={false}
             minRows={1}
@@ -249,7 +250,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
             errors={errors}
             control={control}
             language={language}
-            name={"Description"}
+            label={"Description"}
             length={1500}
             multiline={true}
             minRows={14}
