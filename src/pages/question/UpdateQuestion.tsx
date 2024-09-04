@@ -32,7 +32,7 @@ const UpdateQuestion = () => {
     questionType: question?.questionType || null,
     localeData: question?.localeData || {},
     id: questionId || "",
-    status: question?.status === 1 ? "active" : "inactive",
+    status: question?.status || null
   };
 
   console.log(questionData, "data passed in");

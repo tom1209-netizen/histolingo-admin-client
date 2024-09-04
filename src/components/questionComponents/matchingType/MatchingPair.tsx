@@ -3,7 +3,6 @@ import React from "react";
 import { Control, FieldErrors } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
 import { FormGrid } from "../../../constant/FormGrid";
-import MultipleChoiceText from "../mcqType/MCQText";
 import PairText from "./PairText";
 
 interface InputFieldProps {
@@ -11,6 +10,7 @@ interface InputFieldProps {
   errors: FieldErrors<any>;
   language: string;
   index?: number;
+  passedKey: string;
 }
 
 const MatchingPair: React.FC<InputFieldProps> = ({
@@ -18,7 +18,9 @@ const MatchingPair: React.FC<InputFieldProps> = ({
   control,
   errors,
   index,
+  passedKey,
 }) => {
+  console.log(passedKey, "key in Matching Pair ");
   return (
     <div style={{ display: "flex", gap: "24px" }}>
       <FormGrid item xs={12} md={6}>
@@ -26,6 +28,8 @@ const MatchingPair: React.FC<InputFieldProps> = ({
           Left Column
         </FormLabel>
         <PairText
+          key={passedKey}
+          passedKey={passedKey}
           position="leftColumn"
           property="answer"
           index={index}
@@ -42,6 +46,8 @@ const MatchingPair: React.FC<InputFieldProps> = ({
           Right Column
         </FormLabel>
         <PairText
+          key={passedKey}
+          passedKey={passedKey}
           index={index}
           position="rightColumn"
           property="answer"

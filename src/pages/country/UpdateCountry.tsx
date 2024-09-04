@@ -28,7 +28,7 @@ const UpdateCountry = () => {
     description: country?.description || "",
     localeData: country?.localeData || {},
     id: countryId || "",
-    status: country?.status === 1 ? "active" : "inactive",
+    status: country?.status,
   };
 
   console.log(countryData, "data passed in")

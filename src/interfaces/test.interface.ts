@@ -1,6 +1,6 @@
 export interface FormValues {
   name: string;
-  status: string;
+  status: number;
   questionsId: any[];
   countryId: string;
   topicId: string;

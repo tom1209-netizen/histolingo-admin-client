@@ -43,43 +43,43 @@ const Question = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "ask", headerName: "Question", width: 250 },
+    { field: "ask", headerName: t("question"), width: 250 },
     {
       field: "topic",
-      headerName: "Topic",
+      headerName: t("topic"),
       width: 180,
       valueGetter: (value, row) => (row.topic ? row.topic.name : "N/A"),
     },
     {
       field: "country",
-      headerName: "Country",
+      headerName: t("country"),
       width: 130,
       valueGetter: (value, row) => (row.country ? row.country.name : "N/A"),
     },
     {
       field: "questionType",
-      headerName: "Question Type",
+      headerName: t("questionType"),
       width: 130,
       valueGetter: (value, row) => {
         switch (row.questionType) {
           case 0:
-            return "Multiple Choice";
+            return t("questionDashboard.mcq");
           case 1:
-            return "True/False";
+            return t("questionDashboard.tf");
           case 2:
-            return "Matching";
+            return t("questionDashboard.matching");
           case 3:
-            return "Fill in the blank";
+            return t("questionDashboard.fill");
           default:
-            return "No question type";
+            return "N/A";
         }
       },
     },
-    { field: "createdAt", headerName: "Created At", width: 130 },
-    { field: "updatedAt", headerName: "Updated At", width: 130 },
+    { field: "createdAt", headerName: t("createdAt"), width: 130 },
+    { field: "updatedAt", headerName: t("updatedAt"), width: 130 },
     {
       field: "status",
-      headerName: "Status",
+      headerName: t("status"),
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
@@ -94,7 +94,7 @@ const Question = () => {
     },
     {
       field: "edit",
-      headerName: "Edit",
+      headerName: t("edit"),
       width: 50,
       sortable: false,
       renderCell: (params) => (
@@ -148,7 +148,7 @@ const Question = () => {
   }
   return (
     <>
-      <h1>Question Dashboard</h1>
+      <h1>{t("questionDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -165,14 +165,14 @@ const Question = () => {
             value={searchQuestionQuery.status || ""}
           />
           <SearchField
-            label="Search question"
+            label={`${t("search")} ${t("questionDashboard.question")}`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchQuestionQuery, search: value.trim() })
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createquestion" importPath="/" />
+        <CreateImportButtonGroup createPath="/createquestion" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

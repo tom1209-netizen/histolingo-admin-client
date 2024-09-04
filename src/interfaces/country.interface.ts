@@ -2,6 +2,7 @@ export interface FormValues {
   name: string;
   description: string;
   image: File | null;
+  status: number;
   localeData: {
     "en-US": { name: string; description: string };
     "ja-JP": { name: string; description: string };

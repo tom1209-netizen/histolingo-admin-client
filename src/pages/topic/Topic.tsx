@@ -42,23 +42,23 @@ const Topic = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Topic name", flex: 1, sortable: false },
+    { field: "name", headerName: t("topicDashboard.table.topicName"), flex: 1, sortable: false },
     {
       field: "description",
-      headerName: "Description",
+      headerName: t("description"),
       flex: 3,
       sortable: false,
     },
     {
       field: "country",
-      headerName: "Country",
+      headerName: t("country"),
       flex: 1,
       sortable: false,
       valueGetter: (value, row) => (row.country ? row.country.name : "N/A"),
     },
     {
       field: "image",
-      headerName: "Image",
+      headerName: t("image"),
       flex: 1,
       sortable: false,
       renderCell: (params) => (
@@ -75,11 +75,11 @@ const Topic = () => {
         />
       ),
     },
-    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
-    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
+    { field: "createdAt", headerName: t("createdAt"), flex: 1, sortable: false },
+    { field: "updatedAt", headerName: t("updatedAt"), flex: 1, sortable: false },
     {
       field: "status",
-      headerName: "Status",
+      headerName: t("status"),
       flex: 0,
       sortable: false,
       description:
@@ -96,7 +96,7 @@ const Topic = () => {
     },
     {
       field: "edit",
-      headerName: "Edit topic",
+      headerName: t("edit"),
       flex: 0,
       width: 100,
       align: "center",
@@ -154,7 +154,7 @@ const Topic = () => {
 
   return (
     <>
-      <h1>Topic Dashboard</h1>
+      <h1>{t("topicDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -171,7 +171,7 @@ const Topic = () => {
             value={searchTopicQuery.status}
           />
           <SearchField
-            label="Search topic"
+            label={`${t("search")} ${t("topicDashboard.topic")}`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchTopicQuery, search: value.trim() })

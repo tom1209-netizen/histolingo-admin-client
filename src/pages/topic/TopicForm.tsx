@@ -168,7 +168,11 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? "Create a" : "Update"} topic</h1>
+      <h1>
+        {typeOfForm === "create"
+          ? t("createTopic.createTopic")
+          : t("createTopic.updateTopic")}
+      </h1>
       <Grid
         container
         spacing={3}
@@ -178,7 +182,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
       >
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="language-select" required>
-            Language
+            {t("language")}
           </FormLabel>
           <SelectInputField
             control={control}
@@ -191,7 +195,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
         </FormGrid>
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="country-select" required>
-            Country
+            {t("country")}
           </FormLabel>
           <SelectInputField
             control={control}
@@ -205,14 +209,14 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="name" required>
-            Topic name
+            {t("createTopic.inputFields.topicName")}
           </FormLabel>
           <LocaleTextInputField
             property={"name"}
             errors={errors}
             control={control}
             language={language}
-            label={"Topic name"}
+            label={t("createTopic.inputFields.topicName")}
             length={100}
             multiline={false}
             minRows={1}
@@ -221,7 +225,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
-            Status
+           {t("status")}
           </FormLabel>
           <SelectStatusInputField
             control={control}
@@ -232,7 +236,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="image" required>
-            Upload Image
+            {t("image")}
           </FormLabel>
           <UploadFile
             control={control}
@@ -243,14 +247,14 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="description" required>
-            Description (max 1500 characters)
+            {t("description")}
           </FormLabel>
           <LocaleTextInputField
             property={"description"}
             errors={errors}
             control={control}
             language={language}
-            label={"Description"}
+            label={t("description")}
             length={1500}
             multiline={true}
             minRows={14}

@@ -26,13 +26,12 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
   const onSubmit = async (data) => {
     console.log(data);
     const body = {
-        reply: data.reply,
-        subject: data.subject
-    }
+      reply: data.reply,
+      subject: data.subject,
+    };
     try {
       const response = await replyFeedback(feedback._id, body);
       console.log(response);
-
     } catch (error) {
       console.log(error);
       toast.error(t("toast.error"));
@@ -57,10 +56,10 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
           onSubmit: handleSubmit(onSubmit),
         }}
       >
-        <DialogTitle>Reply Feedback</DialogTitle>
+        <DialogTitle>{t("feedbackDialog.title")}</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ color: "black" }}>
-            Player's name
+            {t("feedbackDialog.playerName")}
           </DialogContentText>
           <DialogContentText sx={{ marginBottom: "1rem" }}>
             {feedback ? feedback.createdBy : ""}
@@ -72,7 +71,7 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
             {feedback ? feedback.content : ""}
           </DialogContentText>
           <DialogContentText sx={{ color: "black" }}>
-            Reply title
+            {t("feedbackDialog.inputFields.replyTitle")}
           </DialogContentText>
           <NonLocaleInputField
             name="subject"
@@ -80,10 +79,10 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
             length={50}
             control={control}
             errors={errors}
-            fieldLabel={t("feedbackDialog.inputFields.title")}
+            fieldLabel={t("feedbackDialog.inputFields.replyTitle")}
           />
           <DialogContentText sx={{ color: "black" }}>
-            Reply content
+            {t("feedbackDialog.inputFields.replyContent")}
           </DialogContentText>
           <NonLocaleInputField
             name="reply"
@@ -91,12 +90,12 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
             multiline={true}
             control={control}
             errors={errors}
-            fieldLabel={t("feedbackDialog.inputFields.reply")}
+            fieldLabel={t("feedbackDialog.inputFields.replyContent")}
           />
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose}>{t("feedbackDialog.cancel")}</Button>
             <Button type="submit" variant="contained" color="primary">
-              Send
+              {t("feedbackDialog.send")}
             </Button>
           </DialogActions>
         </DialogContent>

@@ -160,7 +160,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       content: data.localeData["en-US"].content,
       source: data.source,
       localeData: data.localeData,
-      image: image
+      image: image,
     };
     console.log("Documents form submitted with data:", body);
 
@@ -192,13 +192,17 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
   };
 
   if (loading) {
-    return <LoadingForm/>;
+    return <LoadingForm />;
   }
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? "Create a" : "Update"} document</h1>
+      <h1>
+        {typeOfForm === "create"
+          ? t("createDocumentation.createDocumentation")
+          : t("createDocumentation.updateDocumentation")}{" "}
+      </h1>
       <Grid
         container
         spacing={3}
@@ -208,26 +212,26 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       >
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="country-select" required>
-            Country
+            {t("country")}
           </FormLabel>
           <SelectInputField
             control={control}
             errors={errors}
             name="country"
-            label="Country"
+            label={t("country")}
             options={countryNames}
           />
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="topic-select" required>
-            Topic
+            {t("topic")}
           </FormLabel>
           <SelectInputField
             control={control}
             errors={errors}
             name="topic"
-            label="Topic"
+            label={t("topic")}
             options={topicNames}
             onChange={handleTopicChange}
             disabled={!country}
@@ -236,7 +240,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="language-select" required>
-            Language
+            {t("language")}
           </FormLabel>
           <SelectInputField
             control={control}
@@ -250,7 +254,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
-            Status
+            {t("status")}
           </FormLabel>
           <SelectStatusInputField
             control={control}
@@ -261,14 +265,14 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="name" required>
-            Document name
+            {t("createDocumentation.inputFields.documentName")}
           </FormLabel>
           <LocaleTextInputField
             property={"name"}
             errors={errors}
             control={control}
             language={language}
-            label={"Document name"}
+            label={t("createDocumentation.inputFields.documentName")}
             length={100}
             multiline={false}
             minRows={1}
@@ -277,7 +281,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="source" required>
-            Source
+            {t("createDocumentation.inputFields.source")}
           </FormLabel>
           <NonLocaleInputField
             name="source"
@@ -286,13 +290,13 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
             multiline={false}
             control={control}
             errors={errors}
-            fieldLabel="source"
+            fieldLabel={t("createDocumentation.inputFields.source")}
           />
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="content" required>
-            Content
+            {t("createDocumentation.inputFields.content")}
           </FormLabel>
           <QuillTextEditor
             property={"content"}
@@ -306,7 +310,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="image" required>
-            Upload Image
+            {t("image")}
           </FormLabel>
           <UploadFile
             control={control}

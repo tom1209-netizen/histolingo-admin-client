@@ -1,3 +1,5 @@
+import { t } from "i18next";
+
 export default {
   // PAGES
   login: {
@@ -20,6 +22,15 @@ export default {
   adminDashboard: {
     admin: "admin",
     title: "Admin Dashboard",
+    table: {
+      adminName: "Admin name",
+      createdAt: "Created At",
+      updatedAt: "Updated At",
+      supervisor: "Supervisor",
+      role: "Roles",
+      status: "Status",
+      edit: "Edit admin",
+    },
   },
   createAdmin: {
     admin: "admin",
@@ -43,10 +54,143 @@ export default {
       privilege: "privilege",
     },
   },
-  feedbackDialog: {
+  roleDashboard: {
+    role: "role",
+    title: "Role Dashboard",
+    table: {
+      roleName: "Role name",
+      permission: "Permissions",
+      createdAt: "Created At",
+      updatedAt: "Updated At",
+      status: "Status",
+      edit: "Edit role",
+    },
+  },
+  learnerDashboard: {
+    learner: "learner",
+    title: "Learner Dashboard",
+    table: {
+      username: "Username",
+      createdAt: "Created At",
+      updatedAt: "Updated At",
+      status: "Status",
+      ranking: "Ranking",
+      registrationDate: "Registration Date",
+      totalScore: "Total Score",
+      totalTime: "Total Time",
+    },
+  },
+  countryDashboard: {
+    country: "country",
+    title: "Country Dashboard",
+    table: {
+      countryName: "Country name",
+      description: "Description",
+      image: "Image",
+      createdAt: "Created At",
+      updatedAt: "Updated At",
+      status: "Status",
+      edit: "Edit country",
+    },
+  },
+  createCountry: {
+    country: "country",
+    createCountry: "Create a country",
+    updateCountry: "Update country",
     inputFields: {
-      reply: "Reply",
-      title: "Title",
+      countryName: "Country name",
+    },
+  },
+  topicDashboard: {
+    topic: "topic",
+    title: "Topic Dashboard",
+    table: {
+      topicName: "Topic name",
+    },
+  },
+  createTopic: {
+    topic: "topic",
+    createTopic: "Create a topic",
+    updateTopic: "Update topic",
+    inputFields: {
+      topicName: "Topic name",
+    },
+  },
+  questionDashboard: {
+    question: "question",
+    title: "Question Dashboard",
+    mcq: "Multiple Choice",
+    tf: "True/False",
+    fill: "Fill in the blank",
+    matching: "Matching",
+  },
+  createQuestion: {
+    question: "question",
+    createQuestion: "Create a question",
+    updateQuestion: "Update question",
+    inputFields: {
+      questionName: "Question name",
+      questionType: "Question type (choose one only)",
+      answer: "Answer",
+      correct: "Correct answer",
+      leftColumn: "Left column",
+      rightColumn: "Right column",
+    },
+  },
+  testDashboard: {
+    test: "test",
+    title: "Test Dashboard",
+    table: {
+      testName: "Test name",
+      creator: "Creator",
+      numberOfQuestions: "Number of questions",
+      play: "Play test",
+    },
+  },
+  createTest: {
+    test: "test",
+    createTest: "Create a test",
+    updateTest: "Update test",
+    inputFields: {
+      testName: "Test name",
+      select: "Select questions (min 5 questions and max 15 questions)",
+    },
+  },
+  documentationDashboard: {
+    documentation: "documentation",
+    title: "Documentation Dashboard",
+    table: {
+      documentName: "Document name",
+      source: "Source",
+    },
+  },
+  createDocumentation: {
+    documentation: "documentation",
+    createDocumentation: "Create a documentation",
+    updateDocumentation: "Update documentation",
+    inputFields: {
+      documentName: "Document name",
+      source: "Source",
+      content: "Content",
+    },
+  },
+  feedbackDashboard: {
+    feedback: "feedback",
+    title: "Feedback Dashboard",
+    table: {
+      playerName: "Player name",
+      test: "Test",
+      detail: "See detail"
+    },
+  },
+  feedbackDialog: {
+    title: "Reply Feedback",
+    playerName: "Player's name",
+    cancel: "Cancel",
+    send: "Send",
+    inputFields: {
+      replyTitle: "Reply title",
+      replyContent: "Reply content",
     },
   },
   profile: {
@@ -58,8 +202,21 @@ export default {
     supervisor: "Supervisor",
     createdAt: "Created At",
   },
+
   // FORM COMPONENTS
   status: "Status",
+  search: "Search",
+  description: "Description",
+  image: "Image",
+  language: "Language",
+  country: "Country",
+  topic: "Topic",
+  question: "Question",
+  questionType: "Question Type",
+  documentation: "Document",
+  createdAt: "Created At",
+  updatedAt: "Updated At",
+  edit: "Edit",
   emailInputField: {
     placeholder: "Enter email",
     validation: {
@@ -106,7 +263,7 @@ export default {
   },
   dropzone: {
     required: "Image is equired",
-    instruction: "Drag 'n' drop some files here, or click to select files",
+    instruction: "Drag 'n' drop a file here, or click to select file",
   },
   // REUSABLE COMPONENTS
   createButtonGroup: {
@@ -129,8 +286,7 @@ export default {
     all: "All",
     active: "Active",
     inactive: "Inactive",
-  }
-  ,
+  },
   // AVATAR MENu
   avatarMenu: {
     profile: "Profile",

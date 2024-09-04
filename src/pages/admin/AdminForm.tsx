@@ -16,10 +16,10 @@ import NonLocaleInputFieldProps from "../../components/formComponents/NonLocaleI
 import PasswordInputField from "../../components/formComponents/PasswordInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
+import { LoadingForm } from "../../components/reusable/Loading";
 import { FormGrid } from "../../constant/FormGrid";
 import { AdminFormProps, FormValues } from "../../interfaces/admin.interface";
 import theme from "../../theme/GlobalCustomTheme";
-import { LoadingForm } from "../../components/reusable/Loading";
 
 const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   const {
@@ -54,8 +54,8 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           }))
         );
         console.log(roleOptions, "roleOptions");
+
         if (typeOfForm === "update" && adminData) {
-          const status = adminData.status === 1 ? "active" : "inactive";
           setValue("email", adminData.email);
           setValue("firstName", adminData.firstName);
           setValue("lastName", adminData.lastName);
@@ -64,7 +64,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
             "roles",
             adminData.roles.map((role: any) => role.name)
           );
-          setValue("status", status);
+          setValue("status", adminData.status);
         }
         setLoading(false);
       } catch (error) {
@@ -77,6 +77,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
+    console.log(data, "data");
     console.log(roleOptions, "roleOptions");
     const roleIds = data.roles
       .map((name) => {
@@ -85,15 +86,14 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
       })
       .filter((id) => id !== null);
 
-    const status = data.status === "active" ? 1 : 0;
     const body = {
       email: data.email.trim(),
       password: data.password,
       firstName: data.firstName.trim(),
       lastName: data.lastName.trim(),
       adminName: data.adminName.trim(),
+      status: 1,
       roles: roleIds,
-      status,
     };
     console.log(body, "body");
 
@@ -107,6 +107,8 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && adminData) {
+        body["status"] = data.status;
+        console.log(body, "body updated");
         const response = await updateAdmin(adminData.id, body);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -122,7 +124,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   };
 
   if (loading) {
-    return <LoadingForm/>;
+    return <LoadingForm />;
   }
 
   return (
@@ -171,7 +173,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
             {t("createAdmin.inputFields.adminName")}
           </FormLabel>
           <NonLocaleInputFieldProps
-           name="adminName"
+            name="adminName"
             minRows={1}
             length={50}
             control={control}

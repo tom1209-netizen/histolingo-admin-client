@@ -33,20 +33,26 @@ const Admin = () => {
 
   const handleStatusChange = async (id: any, status: any) => {
     const response = await switchAdminStatus(id, status);
+    console.log(response, "response");
     console.log(response);
     if (response.status === 200) {
-      console.log("hello?");
       toast.success(t("toast.switchStatusSuccess"));
+      fetchAdmins(paginationModel.page, paginationModel.pageSize);
     } else {
       toast.error(t("toast.switchStatusFail"));
     }
   };
 
   const columns: GridColDef[] = [
-    { field: "adminName", headerName: "Admin name", flex: 1, sortable: false },
+    {
+      field: "adminName",
+      headerName: t("adminDashboard.table.adminName"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "roles",
-      headerName: "Roles",
+      headerName: t("adminDashboard.table.role"),
       flex: 1,
       sortable: false,
       valueGetter: (value, row) => row.role.name.join(", "),
@@ -54,17 +60,27 @@ const Admin = () => {
     { field: "email", headerName: "Email", flex: 1, sortable: false },
     {
       field: "supervisorId",
-      headerName: "Supervisor",
+      headerName: t("adminDashboard.table.supervisor"),
       flex: 1,
       valueGetter: (value, row) => row.supervisorId.adminName,
       sortable: false,
     },
-    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
-    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
+    {
+      field: "createdAt",
+      headerName: t("adminDashboard.table.createdAt"),
+      flex: 1,
+      sortable: false,
+    },
+    {
+      field: "updatedAt",
+      headerName: t("adminDashboard.table.updatedAt"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "status",
       flex: 0,
-      headerName: "Status",
+      headerName: t("adminDashboard.table.status"),
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
@@ -73,16 +89,20 @@ const Admin = () => {
         return (
           <Switch
             defaultChecked={params.row.status == 1}
-            onChange={() =>
-              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
-            }
+            onChange={() => {
+              console.log(params.row.status, "current status");
+              handleStatusChange(
+                params.row._id,
+                params.row.status === 1 ? 0 : 1
+              );
+            }}
           />
         );
       },
     },
     {
       field: "edit",
-      headerName: "Edit admin",
+      headerName: t("adminDashboard.table.edit"),
       width: 100,
       sortable: false,
       flex: 0,
@@ -157,7 +177,7 @@ const Admin = () => {
             value={searchAdminQuery.status || ""}
           />
           <SearchField
-            label={`Search ${t("admin")}`}
+            label={`${t("search")} ${t("admin")}`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchAdminQuery, search: value.trim() })

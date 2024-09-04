@@ -29,10 +29,10 @@ const UpdateAdmin = () => {
     lastName: admin?.lastName || "",
     adminName: admin?.adminName || "",
     roles: admin?.roles || [],
-    status: admin?.status ,
-    id: adminId || "", 
+    status: admin?.status,
+    id: adminId || "",
   };
-  return <AdminForm typeOfForm="update" adminData={adminData}/>;
+  return <AdminForm typeOfForm="update" adminData={adminData} />;
 };
 
 export default UpdateAdmin;

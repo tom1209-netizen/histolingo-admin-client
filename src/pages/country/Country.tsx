@@ -36,22 +36,28 @@ const Country = () => {
     const response = await switchCountryStatus(id, status);
     if (response.status === 200) {
       toast.success(t("toast.switchStatusSuccess"));
+      fetchCountries(paginationModel.page, paginationModel.pageSize);
     } else {
       toast.error(t("toast.switchStatusFail"));
     }
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Country name", flex: 1, sortable: false },
+    {
+      field: "name",
+      headerName: t("countryDashboard.table.countryName"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "description",
-      headerName: "Description",
+      headerName: t("description"),
       flex: 3,
       sortable: false,
     },
     {
       field: "image",
-      headerName: "Image",
+      headerName: t("image"),
       flex: 1,
       sortable: false,
       renderCell: (params) => (
@@ -68,13 +74,23 @@ const Country = () => {
         />
       ),
     },
-    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
-    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
+    {
+      field: "createdAt",
+      headerName: t("createdAt"),
+      flex: 1,
+      sortable: false,
+    },
+    {
+      field: "updatedAt",
+      headerName: t("updatedAt"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "status",
       flex: 0,
       sortable: false,
-      headerName: "Status",
+      headerName: t("status"),
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
@@ -83,16 +99,19 @@ const Country = () => {
         return (
           <Switch
             defaultChecked={params.row.status == 1}
-            onChange={() =>
-              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
-            }
+            onChange={() => {
+              handleStatusChange(
+                params.row._id,
+                params.row.status === 1 ? 0 : 1
+              );
+            }}
           />
         );
       },
     },
     {
       field: "edit",
-      headerName: "Edit country",
+      headerName: t("edit"),
       width: 100,
       flex: 0,
       align: "center",
@@ -149,7 +168,7 @@ const Country = () => {
 
   return (
     <>
-      <h1>Country Dashboard</h1>
+      <h1>{t("countryDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -166,14 +185,14 @@ const Country = () => {
             value={searchCountryQuery.status || ""}
           />
           <SearchField
-            label="Search country"
+            label={`${t("search")} ${t("countryDashboard.country")} `}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchCountryQuery, search: value.trim() })
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createcountry" importPath="/" />
+        <CreateImportButtonGroup createPath="/createcountry" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

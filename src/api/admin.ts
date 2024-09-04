@@ -7,10 +7,10 @@ interface AdminData {
   adminName: string;
   email: string;
   password: string;
+  status: number;
   firstName: string;
   lastName: string;
   roles: string[];
-  status: number;
 }
 
 export const getAdmins = async (
@@ -94,6 +94,7 @@ export const switchAdminStatus = async (
   status: string
 ): Promise<AxiosResponse<any>> => {
   try {
+    console.log(status, "new status");
     const accessToken = Cookies.get("accessToken");
     const response = await axios.patch(
       `${domain_api}/admins/${id}`,
