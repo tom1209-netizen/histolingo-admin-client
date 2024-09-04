@@ -7,14 +7,17 @@ import {
 import FormLabel from "@mui/material/FormLabel";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { createCountry, updateCountry } from "../../api/country";
+import { uploadFile } from "../../api/upload";
+import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
 import UploadFile from "../../components/formComponents/UploadFile";
-import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
 import CreateButtonGroup from "../../components/reusable/CreateButtonGroup";
+import { LoadingForm } from "../../components/reusable/Loading";
 import { FormGrid } from "../../constant/FormGrid";
 import { languageOptions } from "../../constant/languageOptions";
 import {
@@ -22,8 +25,6 @@ import {
   FormValues,
 } from "../../interfaces/country.interface";
 import theme from "../../theme/GlobalCustomTheme";
-import { uploadFile } from "../../api/upload";
-import { useTranslation } from "react-i18next";
 
 const defaultFormValues = {
   language: "en-US",
@@ -54,7 +55,6 @@ const CountryForm: React.FC<CountryFormProps> = ({
   const localeData = watch("localeData");
   const activeCompulsory = typeOfForm === "create";
   const [selectedLanguage, setSelectedLanguage] = useState("");
-  const [loading, setLoading] = useState<boolean>(true);
   const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
     useState<boolean>(true);
 
@@ -89,9 +89,10 @@ const CountryForm: React.FC<CountryFormProps> = ({
       return;
     }
 
-    let image;
+    let image = countryData?.image || "";
+    console.log(data.image, "data.image");
     try {
-      if (data.image) {
+      if (data.image instanceof File) {
         console.log("data.image:", data.image);
         const response = await uploadFile(data.image);
         image = response.data.data.fileUrl;
@@ -120,6 +121,8 @@ const CountryForm: React.FC<CountryFormProps> = ({
           toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && countryData) {
+        body["status"] = data.status;
+        console.log(body, "body updated");
         const response = await updateCountry(countryData?.id, body);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -137,7 +140,11 @@ const CountryForm: React.FC<CountryFormProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? "Create a" : "Update"} country</h1>
+      <h1>
+        {typeOfForm === "create"
+          ? t("createCountry.createCountry")
+          : t("createCountry.updateCountry")}
+      </h1>
       <Grid
         container
         spacing={3}
@@ -147,7 +154,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
       >
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="language-select" required>
-            Language
+            {t("language")}
           </FormLabel>
           <SelectInputField
             control={control}
@@ -161,7 +168,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="name" required>
-            Country name
+            {t("createCountry.inputFields.countryName")}
           </FormLabel>
           <LocaleTextInputField
             property={"name"}
@@ -169,7 +176,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
             errors={errors}
             control={control}
             language={language}
-            name={"Country name"}
+            label={t("createCountry.inputFields.countryName")}
             length={50}
             minRows={1}
           />
@@ -177,7 +184,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="image" required>
-            Upload Image
+            {t("image")}
           </FormLabel>
           <UploadFile
             control={control}
@@ -188,14 +195,14 @@ const CountryForm: React.FC<CountryFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="description" required>
-            Description (max 1500 characters)
+            {t("description")}
           </FormLabel>
           <LocaleTextInputField
             property={"description"}
             errors={errors}
             control={control}
             language={language}
-            name={"Description"}
+            label={t("description")}
             length={1500}
             multiline={true}
             minRows={14}
@@ -204,7 +211,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
-            Status
+            {t("status")}
           </FormLabel>
           <SelectStatusInputField
             control={control}

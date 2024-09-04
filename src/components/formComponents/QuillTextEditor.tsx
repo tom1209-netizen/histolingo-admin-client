@@ -4,6 +4,7 @@ import ReactQuill, { Quill } from "react-quill";
 
 import ImageUploader from "quill-image-uploader";
 import { uploadFile } from "../../api/upload";
+import { useTranslation } from "react-i18next";
 
 Quill.register("modules/imageUploader", ImageUploader);
 
@@ -28,7 +29,7 @@ const QuillModules = {
 const QuillTextEditor = ({ language, control, errors, name, property }) => {
   const fieldName = `localeData[${language}][${property}]`;
   const fieldError = errors?.localeData?.[language]?.[property];
-
+  const { t } = useTranslation();
   return (
     <Controller
       name={fieldName}
@@ -36,16 +37,7 @@ const QuillTextEditor = ({ language, control, errors, name, property }) => {
       control={control}
       defaultValue=""
       rules={{
-        required: `${name} is required`,
-        // validate: {
-        //   notEmptyOrWhitespace: (value) => {
-        //     const textContent = value.replace(/<[^>]*>/g, "").trim();
-        //     if (!textContent) {
-        //       return "Cannot be empty or whitespace only";
-        //     }
-        //     return true;
-        //   },
-        // },
+        required: `${name} ${t("localeInputField.validation.required")}`,
       }}
       render={({ field }) => (
         <div style={{ margin: "16px 0" }}>

@@ -40,24 +40,29 @@ const Documentation = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Name", flex: 1, sortable: false },
+    {
+      field: "name",
+      headerName: t("documentationDashboard.table.documentName"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "country",
-      headerName: "Country",
+      headerName: t("country"),
       flex: 1,
       sortable: false,
       valueGetter: (value, row) => row.country.name,
     },
     {
       field: "topic",
-      headerName: "Topic",
+      headerName: t("topic"),
       flex: 1,
       sortable: false,
       valueGetter: (value, row) => row.topic.name,
     },
     {
       field: "source",
-      headerName: "Source",
+      headerName: t("documentationDashboard.table.source"),
       flex: 1,
       sortable: false,
       renderCell: (params) => {
@@ -73,13 +78,23 @@ const Documentation = () => {
       },
     },
 
-    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
-    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
+    {
+      field: "createdAt",
+      headerName: t("createdAt"),
+      flex: 1,
+      sortable: false,
+    },
+    {
+      field: "updatedAt",
+      headerName: t("updatedAt"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "status",
       flex: 0,
       sortable: false,
-      headerName: "Status",
+      headerName: t("status"),
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
@@ -97,7 +112,7 @@ const Documentation = () => {
     },
     {
       field: "edit",
-      headerName: "Edit",
+      headerName: t("edit"),
       width: 100,
       flex: 0,
       align: "center",
@@ -153,7 +168,7 @@ const Documentation = () => {
   }
   return (
     <>
-      <h1>Documentation Dashboard</h1>
+      <h1>{t("documentationDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -170,17 +185,17 @@ const Documentation = () => {
             value=""
           />
           <SearchField
-            label="Search document"
+            label={`${t("search")} ${t("documentationDashboard.documentation")}`}
             delay={1500}
             onChange={(value: any) =>
-              setSearchParams({ ...searchDocumentationQuery, search: value.trim() })
+              setSearchParams({
+                ...searchDocumentationQuery,
+                search: value.trim(),
+              })
             }
           />
         </Box>
-        <CreateImportButtonGroup
-          createPath="/createdocumentation"
-          importPath="/"
-        />
+        <CreateImportButtonGroup createPath="/createdocumentation" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

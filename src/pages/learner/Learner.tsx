@@ -1,8 +1,7 @@
-import { PreviewOutlined } from "@mui/icons-material";
 import { Box, Switch } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getLearners, switchLearnerStatus } from "../../api/learners";
@@ -11,7 +10,6 @@ import NavTabs from "../../components/reusable/NavTabs";
 import SearchField from "../../components/reusable/SearchField";
 import DataTable from "../../components/reusable/Table";
 import { convertSearchParamsToObj } from "../../utils/common";
-import { useTranslation } from "react-i18next";
 
 const Learner = () => {
   const { t } = useTranslation();
@@ -37,13 +35,9 @@ const Learner = () => {
     }
   };
 
-  const handleViewDetail = (id: string) => {
-    navigate(`/learnerdetail/${id}`);
-  };
-
   const columns: GridColDef[] = [
-    { field: "userName", headerName: "Username", flex: 1, sortable: false },
-    { field: "rank", headerName: "Ranking", flex: 1, sortable: false },
+    { field: "userName", headerName: t("learnerDashboard.table.username"), flex: 1, sortable: false },
+    { field: "rank", headerName: t("learnerDashboard.table.ranking"), flex: 1, sortable: false },
     {
       field: "email",
       headerName: "Email",
@@ -52,26 +46,27 @@ const Learner = () => {
     },
     {
       field: "registrationDate",
-      headerName: "Registration Date",
+      headerName: t("learnerDashboard.table.registrationDate"),
       flex: 1,
+
       sortable: false,
     },
     {
       field: "totalScore",
-      headerName: "Total Score",
+      headerName: t("learnerDashboard.table.totalScore"),
       flex: 1,
       sortable: false,
     },
     {
       field: "totalTime",
-      headerName: "Total time",
+      headerName: t("learnerDashboard.table.totalTime"),
       flex: 1,
       sortable: false,
     },
     {
       field: "status",
       flex: 0,
-      headerName: "Status",
+      headerName: t("learnerDashboard.table.status"),
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
@@ -86,23 +81,6 @@ const Learner = () => {
         );
       },
     },
-    {
-      field: "edit",
-      headerName: "See detail",
-      width: 100,
-      flex: 0,
-      align: "center",
-      sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleViewDetail(params.row._id)}
-          color="primary"
-          aria-label="delete"
-        >
-          <PreviewOutlined />
-        </IconButton>
-      ),
-    },
   ];
 
   const fetchLearners = async (page: number, pageSize: number) => {
@@ -114,9 +92,7 @@ const Learner = () => {
         pageSize: paginationModel.pageSize,
       });
       const learnersData = response.data.data.players;
-      console.log(learnersData);
       const totalRows = response.data.data.totalCount;
-      console.log(learnersData);
       setLearners(learnersData);
       setRowCount(totalRows);
     } catch (error) {
@@ -139,7 +115,7 @@ const Learner = () => {
   }
   return (
     <>
-      <h1>Learner Dashboard</h1>
+      <h1>{t("learnerDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -156,7 +132,7 @@ const Learner = () => {
             value={searchLearnerQuery.status || ""}
           />
           <SearchField
-            label="Search learner"
+            label={`${t("search")} ${t( "learnerDashboard.learner")}`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchLearnerQuery, search: value.trim() })

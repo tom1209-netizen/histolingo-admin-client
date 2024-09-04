@@ -1,34 +1,34 @@
-import React from "react";
-import { Control, FieldErrors } from "react-hook-form";
-import { Controller } from "react-hook-form";
 import {
-  Select,
-  MenuItem,
   FormControl,
   FormHelperText,
+  MenuItem,
+  Select,
   SelectChangeEvent,
 } from "@mui/material";
+import React from "react";
+import { Control, Controller, FieldErrors } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 interface SelectProps {
   control: Control<any>;
   errors: FieldErrors<any>;
   name: string;
   label: string;
-  options: { value: string; label: string }[];
+  options: { value: string | number; label: string }[];
   onChange?: (event: SelectChangeEvent<string>) => void;
   disabled?: boolean;
 }
 
-
 const SelectInputField: React.FC<SelectProps> = ({
-  control,
-  errors,
   name,
   label,
+  control,
+  errors,
   options,
   disabled,
-  onChange
+  onChange,
 }) => {
+  const { t } = useTranslation();
   return (
     <FormControl fullWidth margin="normal" required error={!!errors[name]}>
       <Controller
@@ -37,15 +37,14 @@ const SelectInputField: React.FC<SelectProps> = ({
         control={control}
         defaultValue=""
         rules={{
-          required: `${label} is required`,
+          required: `${label} ${t("selectInputField.validation.required")}`,
         }}
         render={({ field }) => (
           <Select
             {...field}
-            placeholder="Select role"
             onChange={(e) => {
-              field.onChange(e); 
-              onChange && onChange(e); 
+              field.onChange(e);
+              onChange && onChange(e);
             }}
             value={field.value || ""}
           >

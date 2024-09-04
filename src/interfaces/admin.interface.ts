@@ -5,7 +5,7 @@ export interface FormValues {
   lastName: string;
   adminName: string;
   roles: string[];
-  status: string;
+  status: number;
 }
 
 export interface AdminData {

@@ -1,10 +1,13 @@
 import { EditOutlined } from "@mui/icons-material";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import { Switch } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import { Box } from "@mui/system";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { getPlayerTests, switchTestStatus } from "../../api/playerTest";
 import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
 import { LoadingTable } from "../../components/reusable/Loading";
@@ -14,8 +17,6 @@ import DataTable from "../../components/reusable/Table";
 import { useRowActions } from "../../hooks/useRowActions";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
-import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
 
 const PlayerTest = () => {
   const { t } = useTranslation();
@@ -41,44 +42,59 @@ const PlayerTest = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Test name", flex: 1, sortable: false },
+    {
+      field: "name",
+      headerName: t("testDashboard.table.testName"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "country",
-      headerName: "Country",
+      headerName: t("country"),
       valueGetter: (value, row) => row.country.name,
       flex: 1,
       sortable: false,
     },
     {
       field: "topic",
-      headerName: "Topic",
+      headerName: t("topic"),
       flex: 1,
       valueGetter: (value, row) => row.topic.name,
       sortable: false,
     },
     {
       field: "createdBy",
-      headerName: "Creator",
+      headerName: t("testDashboard.table.creator"),
       flex: 1,
       valueGetter: (value, row) => row.createdBy.name,
       sortable: false,
     },
     {
       field: "questionId",
-      headerName: "No. of questions",
+      headerName: t("testDashboard.table.numberOfQuestions"),
       flex: 1,
       align: "center",
       valueGetter: (value, row) =>
         row.questionsId ? row.questionsId.length : "N/A",
       sortable: false,
     },
-    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
-    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
+    {
+      field: "createdAt",
+      headerName: t("createdAt"),
+      flex: 1,
+      sortable: false,
+    },
+    {
+      field: "updatedAt",
+      headerName: t("updatedAt"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "status",
       flex: 0,
       sortable: false,
-      headerName: "Status",
+      headerName: t("status"),
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
@@ -95,8 +111,25 @@ const PlayerTest = () => {
       },
     },
     {
+      field: "play",
+      headerName: t("testDashboard.table.play"),
+      width: 100,
+      flex: 0,
+      align: "center",
+      sortable: false,
+      renderCell: (params) => (
+        <IconButton
+          onClick={() => handleEditRow(params.id.toString(), "testplay")}
+          color="primary"
+          aria-label="delete"
+        >
+          <PlayCircleIcon />
+        </IconButton>
+      ),
+    },
+    {
       field: "edit",
-      headerName: "Edit test",
+      headerName: t("edit"),
       width: 100,
       flex: 0,
       align: "center",
@@ -153,7 +186,7 @@ const PlayerTest = () => {
 
   return (
     <>
-      <h1>Test Dashboard</h1>
+      <h1>{t("testDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -170,14 +203,14 @@ const PlayerTest = () => {
             value={searchTestQuery.status || ""}
           />
           <SearchField
-            label="Search test"
+            label={`${t("search")} ${t("testDashboard.test")}`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchTestQuery, search: value.trim() })
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createtest" importPath="/" />
+        <CreateImportButtonGroup createPath="/createtest" />
       </Box>
       <DataTable
         isLoading={isTableLoading}

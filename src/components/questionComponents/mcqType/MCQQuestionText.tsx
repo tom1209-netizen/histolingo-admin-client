@@ -2,13 +2,15 @@ import React from "react";
 import { FormGrid } from "../../../constant/FormGrid";
 import { FormLabel } from "@mui/material";
 import MultipleChoiceText from "./MCQText";
+import { useTranslation } from "react-i18next";
 
 const MCQQuestionText = ({ language, control, errors }) => {
+  const { t } = useTranslation();
   return (
     <>
       <FormGrid item xs={12} md={6}>
         <FormLabel htmlFor="answer-text-A" required>
-          Question A
+          {t("createQuestion.inputFields.answer")} A
         </FormLabel>
         <MultipleChoiceText
           index={0}
@@ -23,7 +25,7 @@ const MCQQuestionText = ({ language, control, errors }) => {
 
       <FormGrid item xs={12} md={6}>
         <FormLabel htmlFor="answer-text-B" required>
-          Question B
+          {t("createQuestion.inputFields.answer")} B
         </FormLabel>
         <MultipleChoiceText
           index={1}
@@ -38,7 +40,7 @@ const MCQQuestionText = ({ language, control, errors }) => {
 
       <FormGrid item xs={12} md={6}>
         <FormLabel htmlFor="answer-text-C" required>
-          Question C
+          {t("createQuestion.inputFields.answer")} C
         </FormLabel>
         <MultipleChoiceText
           index={2}
@@ -53,7 +55,7 @@ const MCQQuestionText = ({ language, control, errors }) => {
 
       <FormGrid item xs={12} md={6}>
         <FormLabel htmlFor="answer-text-D" required>
-          Question D
+          {t("createQuestion.inputFields.answer")} D
         </FormLabel>
         <MultipleChoiceText
           index={3}

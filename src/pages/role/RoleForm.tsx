@@ -25,6 +25,7 @@ import {
   FlattenedPermission,
 } from "../../interfaces/role.interface";
 import { useTranslation } from "react-i18next";
+import { LoadingForm } from "../../components/reusable/Loading";
 
 const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   const {
@@ -65,9 +66,8 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
         if (typeOfForm === "update" && roleId) {
           const response = await getIndividualRole(roleId);
           const roleData = response.data.data.role;
-          const status = roleData.status === 1 ? "active" : "inactive";
           setValue("roleName", roleData.name);
-          setValue("status", status);
+          setValue("status", roleData.status);
           setValue(
             "privilege",
             roleData.permissions.map((code) => {
@@ -96,12 +96,10 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
       return code;
     });
 
-    const status = data.status === "active" ? 1 : 0;
-
     const body = {
       permissions,
       name: data.roleName,
-      status,
+      status: 1,
     };
     console.log(body, "body");
     try {
@@ -113,6 +111,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
           toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && roleId) {
+        body["status"] = data.status;
         const response = await updateRole(roleId, body);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -128,7 +127,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <LoadingForm />;
   }
 
   return (

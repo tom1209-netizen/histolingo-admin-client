@@ -49,15 +49,15 @@ const Feedback = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "createdBy", headerName: "Player's name", flex: 1, sortable: false },
+    { field: "createdBy", headerName: t("feedbackDashboard.table.playerName"), flex: 1, sortable: false },
     { field: "content", headerName: "Feedback", flex: 3, sortable: false },
-    { field: "testId", headerName: "Test", flex: 1, sortable: false },
-    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
+    { field: "testId", headerName: t("feedbackDashboard.table.test"), flex: 1, sortable: false },
+    { field: "createdAt", headerName: t("createdAt"), flex: 1, sortable: false },
     {
       field: "status",
       flex: 0,
       sortable: false,
-      headerName: "Status",
+      headerName: t("status"),
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
@@ -74,7 +74,7 @@ const Feedback = () => {
     },
     {
       field: "edit",
-      headerName: "See detail",
+      headerName: t("feedbackDashboard.table.detail"),
       width: 100,
       flex: 0,
       align: "center",
@@ -131,7 +131,7 @@ const Feedback = () => {
 
   return (
     <>
-      <h1>Feedback Dashboard</h1>
+      <h1>{t("feedbackDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -148,7 +148,7 @@ const Feedback = () => {
             value={searchFeedbackQuery.status || ""}
           />
           <SearchField
-            label="Search feedback"
+            label={`${t("search")} feedback`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchFeedbackQuery, search: value.trim() })

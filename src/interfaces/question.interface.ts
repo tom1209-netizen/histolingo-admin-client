@@ -2,7 +2,7 @@ export interface BaseFormValues {
   topicId: string;
   countryId: string;
   questionType: 0 | 1 | 2 | 3;
-  status: string;
+  status: number;
   localeData: any;
 }
 

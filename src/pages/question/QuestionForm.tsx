@@ -11,7 +11,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getCountries } from "../../api/country";
-import { createQuestion } from "../../api/question";
+import { createQuestion, updateQuestion } from "../../api/question";
 import { getTopicsByCountry } from "../../api/topic";
 import SelectInputField from "../../components/formComponents/SelectInputField";
 import SelectStatusInputField from "../../components/formComponents/SelectStatusInputField";
@@ -30,6 +30,7 @@ import {
 } from "../../interfaces/question.interface";
 import theme from "../../theme/GlobalCustomTheme";
 import { useTranslation } from "react-i18next";
+import { LoadingForm } from "../../components/reusable/Loading";
 
 const defaultFormValues = {
   language: "en-US",
@@ -54,10 +55,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   } = useForm<any>({
     mode: "onChange",
     defaultValues: defaultFormValues,
-    
   });
-
-  const {t} = useTranslation()
 
   // USE FIELD ARRAY
   const { fields, append, remove } = useFieldArray({
@@ -65,17 +63,20 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     name: "answer",
   });
 
+  // SET UP
   const navigate = useNavigate();
+  const activeCompulsory = typeOfForm === "create";
+  const { t } = useTranslation();
+
   const language = watch("language");
   const countryId = watch("countryId");
   const questionType = watch("questionType");
 
-  const activeCompulsory = typeOfForm === "create";
-  const [selectedLanguage, setSelectedLanguage] = useState("");
-  const [loading, setLoading] = useState<boolean>(true);
-  const [countryNames, setCountryNames] = useState<any[]>([]);
-  const [topicNames, setTopicNames] = useState<any[]>([]);
-  console.log(getValues("questionType"), "get value")
+  const [selectedLanguage, setSelectedLanguage] = useState(""); // Change language
+  const [loading, setLoading] = useState<boolean>(true); // Set loading
+  const [countryNames, setCountryNames] = useState<any[]>([]); // Set country names
+  const [topicNames, setTopicNames] = useState<any[]>([]); // Set topic names
+  console.log(getValues("questionType"), "get value");
 
   // FETCH COUNTRIES
   useEffect(() => {
@@ -98,6 +99,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     fetchCountries();
   }, []);
 
+  // FETCH TOPICS
   useEffect(() => {
     const fetchTopics = async () => {
       try {
@@ -113,118 +115,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         toast.error("Failed to fetch topics");
       }
     };
-
     if (countryId) {
       fetchTopics();
     }
   }, [countryId]);
 
-  // FETCH QUESTION DATA IF UPDATE FORM
   useEffect(() => {
-    const updateForm = async () => {
-      try {
-        if (typeOfForm === "update" && questionData) {
-          console.log("Updating form with questionData:", questionData);
-          // map data
-
-          questionData.countryId = questionData.countryId._id;
-          questionData.topicId = questionData.topicId._id;
-          questionData.questionType = questionData.questionType.toString();
-          console.log('question type', questionData.questionType);
-          
-
-          // if (questionData.questionType === 0) {
-          //   questionData["answer-type-0"] = questionData.answer;
-          // }
-
-          // if (questionData.questionType === 1) {
-          //   questionData["answer-type-1"] = questionData.answer;
-          // }
-
-          if (questionData.questionType === "3") {
-            console.log("abcxyz", language)
-            for(const locale in questionData.localeData){
-              
-                questionData.localeData[locale].answer = questionData.localeData[locale].answer.join("\n");
-              
-            }
-            // questionData.answer = "abcxyz";
-            // questionData[`localeData[${language}].answer`] = questionData.answer.join("\n");
-          } else {
-            questionData[`answer-type-${questionData.questionType}`] =
-              questionData.answer;
-          }
-
-          reset({ ...defaultFormValues, ...questionData });
-          //   const questionType = questionData.questionType.toString();
-          //   setValue("questionType", questionType);
-          //   setValue("country", questionData.countryId._id);
-          //   setValue("status", questionData.status);
-          //   Object.keys(questionData.localeData).forEach((locale) => {
-          //     setValue(
-          //       `localeData[${locale}].ask`,
-          //       questionData.localeData[locale].ask
-          //     );
-          //   });
-
-          //   // fetch topics and setValue of topic
-          //   try {
-          //     const topics = await getTopicsByCountry(questionData.countryId._id);
-          //     const topicNames = topics.map((topic: any) => ({
-          //       value: topic._id,
-          //       label: topic.name,
-          //     }));
-          //     setTopicNames(topicNames);
-          //     setValue("topic", questionData.topicId._id);
-          //   } catch (error) {
-          //     console.error(error);
-          //     toast.error("Failed to fetch topics");
-          //   }
-
-          //   if (questionData.questionType === 0) {
-          //     setValue("answer", questionData.answer);
-          //   }
-
-          //   if (questionData.questionType === 1) {
-          //     const answer = questionData.answer === true ? "true" : "false";
-          //     setValue("answer-type-1", answer);
-          //   }
-
-          //   if (questionData.questionType === 2) {
-          //     Object.keys(questionData.localeData).forEach((locale) => {
-          //       setValue(
-          //         `localeData[${locale}].ask`,
-          //         questionData.localeData[locale].ask
-          //       );
-          //       setValue(
-          //         `localeData[${locale}].answer`,
-          //         questionData.localeData[locale].answer
-          //       );
-          //     });
-          //   }
-
-          //   if (questionData.questionType === 3) {
-          //     console.log("are you innnn");
-          //     Object.keys(questionData.localeData).forEach((locale) => {
-          //       const answersArray = questionData.localeData[locale].answer;
-          //       const answersString = Array.isArray(answersArray)
-          //         ? answersArray.join("\n")
-          //         : "";
-          //       console.log(answersString, "answersString");
-          //       setValue(`localeData[${locale}].answer`, answersString);
-          //     });
-          //   }
-        }
-      } catch (error) {
-        console.error(error);
-        toast("Fetching data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    updateForm();
-  }, [questionData]);
+    console.log("Current form values:", getValues());
+  }, [countryId, questionType]);
 
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
@@ -238,23 +136,22 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     setValue("topic", value);
   };
 
-  // QUESTION DATA HANDLING
   // HANDLE QUESTION TYPE CHANGE
   const handleQuestionTypeChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setValue("questionType", value);
 
     if (value === "2" && fields.length === 0) {
-      reset({
-        language: "en-US",
-        localeData: {
-          "en-US": { ask: "" },
-        },
-        questionType: "2",
-      });
+      // reset({
+      //   language: "en-US",
+      //   localeData: {
+      //     "en-US": { ask: "" },
+      //   },
+      //   questionType: 2,
+      // });
       append({ leftColumn: "", rightColumn: "" });
     }
-
+    console.log("is this get called?");
     reset({
       language: "en-US",
       localeData: {
@@ -278,20 +175,65 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     setValue("answer", value);
   };
 
+  // FETCH QUESTION DATA IF UPDATE FORM
+  useEffect(() => {
+    const updateForm = async () => {
+      try {
+        if (typeOfForm === "update" && questionData) {
+          console.log("Updating form with questionData:", questionData);
+          // map data
+
+          questionData.countryId = questionData.countryId._id;
+          questionData.topicId = questionData.topicId._id;
+          questionData.questionType = questionData.questionType.toString();
+          console.log("question type", questionData.questionType);
+
+          if (questionData.questionType === "3") {
+            console.log("abcxyz", language);
+            for (const locale in questionData.localeData) {
+              questionData.localeData[locale].answer =
+                questionData.localeData[locale].answer.join("\n");
+            }
+          } else if (questionData.questionType === "1") {
+            questionData[`answer-type-${questionData.questionType}`] =
+              questionData.answer.toString();
+          } else {
+            questionData[`answer-type-${questionData.questionType}`] =
+              questionData.answer;
+          }
+
+          reset({ ...defaultFormValues, ...questionData });
+        }
+      } catch (error) {
+        console.error(error);
+        toast("Fetching data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    updateForm();
+  }, [questionData]);
+
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
     console.log(data);
-    const status = data.status === "active" ? 1 : 0;
+
     let baseBody = {
       countryId: data.countryId,
       topicId: data.topicId,
       ask: data.localeData["en-US"].ask,
       questionType: Number(data.questionType),
-      //   status: status,
       answer: data.answer,
       localeData: data.localeData,
     };
 
+    if (Number(data.questionType) === 0) {
+      baseBody["options"] = data.localeData["en-US"].options;
+    }
+
+    // if (Number(data.questionType) === 1) {
+    //   }
     if (Number(data.questionType) === 3) {
       baseBody.answer = data.localeData["en-US"].answer.split("\n");
       for (const [locale, localeEntry] of Object.entries(baseBody.localeData)) {
@@ -307,12 +249,23 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     }
 
     console.log(baseBody, "baseBody updated");
+    
     try {
-      const response = await createQuestion(baseBody);
-      console.log(response);
-      if (response.data.success) {
-        toast.success(t("toast.createSuccess"));
-        navigate("/question");
+      if (typeOfForm === "create") {
+        const response = await createQuestion(baseBody);
+        console.log(response);
+        if (response.data.success) {
+          toast.success(t("toast.createSuccess"));
+          navigate("/question");
+        }
+      } else if (typeOfForm === "update" && questionData) {
+        const response = await updateQuestion(questionData?.id, baseBody);
+        if (response.data.success) {
+          toast.success(t("toast.updateSuccess"));
+          navigate("/question");
+        } else {
+          toast.error(t("toast.error"));
+        }
       }
     } catch (error) {
       console.error("An error occurred:", error);
@@ -321,13 +274,25 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingForm />;
   }
 
+  const handleRemove = (index: number) => {
+    // Clear the fields for the specific index
+    console.log("Removing index:", index);
+    console.log("Current fields:", fields);
+
+    // Remove the pair
+    remove(index);
+  };
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? "Create a" : "Update"} question</h1>
+      <h1>
+        {typeOfForm === "create"
+          ? t("createQuestion.createQuestion")
+          : t("createQuestion.updateQuestion")}
+      </h1>
       <Grid
         container
         spacing={3}
@@ -337,7 +302,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       >
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="question-select" required>
-            Question type (choose one only)
+            {t("createQuestion.inputFields.questionType")}
           </FormLabel>
           <SelectInputField
             control={control}
@@ -345,14 +310,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             name="questionType"
             label="Question type"
             options={questionTypes}
-            disabled={typeOfForm === "update"}
+            // disabled={typeOfForm === "update"}
             onChange={handleQuestionTypeChange}
           />
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="language-select" required>
-            Language
+            {t("language")}
           </FormLabel>
           <SelectInputField
             control={control}
@@ -366,27 +331,26 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="country-select" required>
-            Country
+            {t("country")}
           </FormLabel>
           <SelectInputField
             control={control}
             errors={errors}
             name="countryId"
-            label="Country"
+            label={t("country")}
             options={countryNames}
-            // onChange={handleCountryChange}
           />
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="topic-select" required>
-            Topic
+            {t("topic")}
           </FormLabel>
           <SelectInputField
             control={control}
             errors={errors}
             name="topicId"
-            label="Topic"
+            label={t("topic")}
             options={topicNames}
             onChange={handleTopicChange}
             disabled={!countryId}
@@ -395,12 +359,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="ask" required>
-            Question
+            {t("question")}
           </FormLabel>
           <LocaleTextInputField
             property={"ask"}
             language={language}
-            name="Question ask"
+            label={t("question")}
             control={control}
             errors={errors}
             length={500}
@@ -411,7 +375,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
-            Status
+            {t("status")}
           </FormLabel>
           <SelectStatusInputField
             control={control}
@@ -420,7 +384,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           />
         </FormGrid>
 
-       
         {questionType === "0" && (
           <>
             <MCQQuestionText
@@ -430,7 +393,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             />
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="answer-type-0" required>
-                Multiple Choice Answer
+                {t("createQuestion.inputFields.correct")}
               </FormLabel>
               <MultipleChoiceAnswer
                 control={control}
@@ -448,7 +411,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           <>
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="answer-type-1" required>
-                True/False answer
+              {t("createQuestion.inputFields.correct")}
               </FormLabel>
               <TrueFalseInputField
                 control={control}
@@ -466,6 +429,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
               <React.Fragment key={item.id}>
                 <FormGrid item xs={12} md={12}>
                   <MatchingPair
+                    key={item.id}
+                    passedKey={item.id}
                     index={index}
                     language={language}
                     control={control}
@@ -477,7 +442,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                     variant="outlined"
                     color="primary"
                     type="button"
-                    onClick={() => remove(index)}
+                    onClick={() => handleRemove(index)}
                   >
                     Delete
                   </Button>
@@ -502,12 +467,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           <>
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="answer-type-3" required>
-                Answer
+              {t("createQuestion.inputFields.correct")}
               </FormLabel>
               <LocaleTextInputField
                 property={"answer"}
                 language={language}
-                name="Answer"
+                label="Answer"
                 control={control}
                 errors={errors}
                 length={500}
@@ -520,10 +485,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         )}
 
         <FormGrid item>
-          <CreateButtonGroup
-            nagivateTo={"/question"}
-            typeOfForm={typeOfForm}
-          />
+          <CreateButtonGroup nagivateTo={"/question"} typeOfForm={typeOfForm} />
         </FormGrid>
       </Grid>
     </ThemeProvider>

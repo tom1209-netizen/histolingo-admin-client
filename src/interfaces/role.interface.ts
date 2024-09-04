@@ -1,6 +1,6 @@
 export interface FormValues {
   roleName: string;
-  status: string;
+  status: number;
   privilege: string[];
 }
 

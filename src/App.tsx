@@ -77,10 +77,10 @@ const App: React.FC = () => {
 
           <Route path="/testplay/:testId" element={<TestPlay />} />
           <Route path="/result" element={<Result />} />
+          
 
           <Route path="/learner" element={<Learner />} />
           <Route path="/feedback" element={<Feedback />} />
-          {/* <Route path="/feedback/:feedbackId" element={<FeedbackDialog />} /> */}
 
           <Route path="/learner" element={<Learner />} />
           <Route path="/account" element={<MyAccount />} />

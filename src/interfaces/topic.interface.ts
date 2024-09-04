@@ -4,7 +4,7 @@ export interface TopicFormProps {
     name: string;
     description: string;
     id: string;
-    status: string;
+    status: number;
     image: string;
     localeData: {
       "en-US": { name: string; description: string };
@@ -18,6 +18,7 @@ export interface TopicFormProps {
 export interface FormValues {
   name: string;
   description: string;
+  status: number;
   image: string;
   country: string;
   localeData: {

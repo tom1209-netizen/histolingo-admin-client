@@ -8,7 +8,7 @@ export interface DocumentationFormProps {
     topic: string;
     image: string;
     id: string;
-    status: string;
+    status: number;
     localeData: {
       "en-US": { name: string; content: string };
       "ja-JP": { name: string; content: string };

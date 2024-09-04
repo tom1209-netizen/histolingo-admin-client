@@ -30,7 +30,6 @@ export default function DataTable({
   selectedRows,
   onSelectionModelChange,
 }: DataTableProps) {
-  const [page, setPage] = React.useState<number>(0);
   return (
     <ThemeProvider theme={theme}>
       <div style={{ height: auto, width: "100%" }}>
@@ -43,7 +42,6 @@ export default function DataTable({
           sx={{
             "& .MuiDataGrid-cell": {
               display: "-webkit-box",
-              // alignItems: "center",
               WebkitBoxOrient: "vertical",
               WebkitLineClamp: 3,
               overflow: "hidden",

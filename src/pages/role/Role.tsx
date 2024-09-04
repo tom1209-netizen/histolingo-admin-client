@@ -33,6 +33,7 @@ const Role = () => {
     Map<string, number>
   >(new Map());
   const [loading, setLoading] = useState<boolean>(true);
+  const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchRoleQuery: any = convertSearchParamsToObj(searchParams);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -46,24 +47,25 @@ const Role = () => {
     console.log(response);
     if (response.status === 200) {
       toast.success(t("toast.switchStatusSuccess"));
+      fetchRoles(paginationModel.page, paginationModel.pageSize);
     } else {
       toast.error(t("toast.switchStatusFail"));
     }
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Role name", flex: 1, sortable: false },
+    { field: "name", headerName: t("roleDashboard.table.roleName"), flex: 1, sortable: false },
     {
       field: "permissions",
-      headerName: "Permissions",
+      headerName: t("roleDashboard.table.permission"),
       flex: 4,
       sortable: false,
     },
-    { field: "createdAt", headerName: "Created At", flex: 1, sortable: false },
-    { field: "updatedAt", headerName: "Updated At", flex: 1, sortable: false },
+    { field: "createdAt", headerName: t("roleDashboard.table.createdAt"), flex: 1, sortable: false },
+    { field: "updatedAt", headerName: t("roleDashboard.table.updatedAt"), flex: 1, sortable: false },
     {
       field: "status",
-      headerName: "Status",
+      headerName: t("roleDashboard.table.status"),
       flex: 0,
       sortable: false,
       description:
@@ -73,14 +75,14 @@ const Role = () => {
         <Switch
           defaultChecked={params.row.status == 1}
           onChange={() =>
-            handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+            handleStatusChange(params.row._id, params.row.status === 1 ? 0 : 1)
           }
         />
       ),
     },
     {
       field: "edit",
-      headerName: "Edit role",
+      headerName: t("roleDashboard.table.edit"),
       width: 90,
       align: "center",
       flex: 0,
@@ -120,6 +122,7 @@ const Role = () => {
   }, []);
 
   const fetchRoles = async (page: number, pageSize: number) => {
+    setIsTableLoading(true);
     if (permissionMap.size === 0) return;
     try {
       const rolesResponse = await getRoles({
@@ -144,6 +147,7 @@ const Role = () => {
       console.log(error);
     } finally {
       setLoading(false);
+      setIsTableLoading(false);
     }
   };
 
@@ -162,7 +166,7 @@ const Role = () => {
 
   return (
     <>
-      <h1>Role Dashboard</h1>
+      <h1>{t("roleDashboard.title")}</h1>
       <Box
         sx={{
           display: "flex",
@@ -179,16 +183,17 @@ const Role = () => {
             value={searchRoleQuery.status || ""}
           />
           <SearchField
-            label="Search role"
+            label={`${t("search")} ${t("roleDashboard.role")}`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchRoleQuery, search: value.trim() })
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createrole" importPath="/" />
+        <CreateImportButtonGroup createPath="/createrole" />
       </Box>
       <DataTable
+       isLoading={isTableLoading}
         columns={columns}
         rows={roles}
         getRowId={(row) => row._id}

@@ -28,3 +28,102 @@ export const LoadingTable = () => {
     </Stack>
   );
 };
+
+export const LoadingForm = () => {
+  return (
+    <Stack spacing={3}>
+      <Skeleton variant="rounded" animation="wave" width={"30%"} height={60}  />
+
+      <Stack direction="row" spacing={2} justifyContent={"space-between"}>
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+      </Stack>
+
+      <Stack direction="row" spacing={2} justifyContent={"space-between"}>
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+      </Stack>
+
+      <Stack direction="row" spacing={2} justifyContent={"space-between"}>
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+      </Stack>
+
+      <Stack direction="row" spacing={2} justifyContent={"space-between"}>
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+      </Stack>
+
+      <Stack direction="row" spacing={2} justifyContent={"space-between"}>
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+      </Stack>
+
+      <Stack direction="row" spacing={2} justifyContent={"space-between"}>
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+        <Skeleton
+          variant="rounded"
+          animation="wave"
+          width={"50%"}
+          height={60}
+        />
+      </Stack>
+
+    </Stack>
+  );
+};

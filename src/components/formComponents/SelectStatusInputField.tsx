@@ -1,35 +1,36 @@
+import { FormControl, FormHelperText, MenuItem, Select } from "@mui/material";
 import React from "react";
-import { Control, FieldErrors } from "react-hook-form";
-import { Controller } from "react-hook-form";
-import { Select } from "@mui/material";
-import { MenuItem } from "@mui/material";
-import { FormHelperText } from "@mui/material";
-import { FormControl } from "@mui/material";
-import { InputLabel } from "@mui/material";
+import { Control, Controller, FieldErrors } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+
 interface SelectStatusProps {
   control: Control<any>;
   errors: FieldErrors<any>;
   activeCompulsory: boolean;
 }
 
-const statusOptions = [
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
-];
+const SelectStatusInputField: React.FC<SelectStatusProps> = ({
+  control,
+  errors,
+  activeCompulsory,
+}) => {
+  const { t } = useTranslation();
 
-const SelectStatusInputField: React.FC<SelectStatusProps> = ({ control, errors, activeCompulsory}) => {
+  const statusOptions = [
+    { value: 1, label: t("selectStatus.active") },
+    { value: 0, label: t("selectStatus.inactive") },
+  ];
   return (
     <FormControl fullWidth margin="normal" required error={!!errors.status}>
       <Controller
         name="status"
         control={control}
-        defaultValue="active" 
+        defaultValue={1}
         render={({ field }) => (
           <Select
             {...field}
-            placeholder="Select status"
             onChange={(event) => field.onChange(event.target.value)}
-            value={field.value || "active"} 
+            value={field.value ?? 1}
             disabled={activeCompulsory}
           >
             {statusOptions.map((option) => (
