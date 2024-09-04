@@ -18,6 +18,10 @@ function Result() {
         navigate('/testplay');
     };
 
+    const handleGoBack = () => {
+        navigate('/playertest');
+    }
+
     const convertTime = (timeTaken: number) => {
         const minutes = Math.floor(timeTaken / 60);
         const seconds = timeTaken % 60;
@@ -40,6 +44,9 @@ function Result() {
                 <Box sx={{ marginTop: 4 }}>
                     <Button variant="contained" color="primary" onClick={handleRetakeTest}>
                         Retake Test
+                    </Button>
+                    <Button variant="contained" color="primary" sx={{ marginLeft: 2 }} onClick={handleGoBack}>
+                        Go Back to test page
                     </Button>
                 </Box>
             </Paper>

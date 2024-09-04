@@ -265,7 +265,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
     console.log(data, "form data");
-    const status = data.status === "active" ? 1 : 0;
 
     const selectedQuestionCount = selectedRows.length;
 
