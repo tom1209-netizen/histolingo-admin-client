@@ -232,7 +232,7 @@ export default {
   },
   selectInputField: {
     validation: {
-      required: "is required",
+      required: "là bắt buộc",
     },
   },
   selectStatus: {
@@ -273,8 +273,9 @@ export default {
     updateSuccess: "Cập nhật thành công",
     switchStatusSuccess: "Thay đổi trạng thái thành công",
     switchStatusFail: "Thay đổi trạng thái không thành công",
-    uploadSuccess: "Tải ảnh lên thành công",
     error: "Có lỗi xảy ra. Xin thử lại sau",
     enUS: "Vui lòng điền các trường cho ngôn ngữ tiếng Anh",
+    uploadSuccess: "Tải ảnh lên thành công",
+    uploadFail: "Tải ảnh lên không thành công",
   },
 };

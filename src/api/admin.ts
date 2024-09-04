@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
+import api from "./interceptor";
 
 interface AdminData {
   adminName: string;
@@ -18,7 +19,11 @@ export const getAdmins = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/admins`, {
+    // const response = await axios.get(`${domain_api}/admins`, {
+    //   headers: { Authorization: `Bearer ${accessToken}` },
+    //   params: query,
+    // });
+    const response = await api.get('/admins', {
       headers: { Authorization: `Bearer ${accessToken}` },
       params: query,
     });

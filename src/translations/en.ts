@@ -157,7 +157,7 @@ export default {
     },
   },
   documentationDashboard: {
-    documentation: "documentation",
+    documentation: "document",
     title: "Documentation Dashboard",
     table: {
       documentName: "Document name",
@@ -165,7 +165,7 @@ export default {
     },
   },
   createDocumentation: {
-    documentation: "documentation",
+    documentation: "document",
     createDocumentation: "Create a documentation",
     updateDocumentation: "Update documentation",
     inputFields: {

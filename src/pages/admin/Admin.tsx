@@ -30,16 +30,22 @@ const Admin = () => {
     pageSize: 10,
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
-    const response = await switchAdminStatus(id, status);
-    console.log(response, "response");
-    console.log(response);
-    if (response.status === 200) {
-      toast.success(t("toast.switchStatusSuccess"));
-      fetchAdmins(paginationModel.page, paginationModel.pageSize);
-    } else {
+    setLoadingStatus(true);
+    try {
+      const response = await switchAdminStatus(id, status);
+      if (response.status === 200) {
+        toast.success(t("toast.switchStatusSuccess"));
+        fetchAdmins(paginationModel.page, paginationModel.pageSize);
+      } else {
+        toast.error(t("toast.switchStatusFail"));
+      }
+    } catch (error) {
       toast.error(t("toast.switchStatusFail"));
+    } finally {
+      setLoadingStatus(false); 
     }
   };
 
@@ -89,6 +95,7 @@ const Admin = () => {
         return (
           <Switch
             defaultChecked={params.row.status == 1}
+            disabled={loadingStatus} 
             onChange={() => {
               console.log(params.row.status, "current status");
               handleStatusChange(
