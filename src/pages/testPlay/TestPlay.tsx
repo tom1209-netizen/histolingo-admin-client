@@ -13,11 +13,11 @@ import {
     TextField
 } from '@mui/material';
 
-import { getIndividualTest, startTest, checkAnswer } from "../../api/test";
+import { startTest, checkAnswer } from "../../api/test";
 import { styled, keyframes } from '@mui/system';
 import correctAudio from '../../assets/audio/correct.mp3';
 import wrongAudio from '../../assets/audio/wrong.mp3';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 
 const colors = [
     '#f48fb1',
@@ -228,7 +228,7 @@ function MatchingQuestion({ questionsData, onAnswerChange, selectedAnswer, disab
     );
 }
 
-function TestPlay(props: any) {
+function TestPlay() {
     const [questionsList, setQuestionsList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -240,14 +240,12 @@ function TestPlay(props: any) {
     const [startTime, setStartTime] = useState<Date | null>(null);
     const [endTime, setEndTime] = useState<Date | null>(null);
     const navigate = useNavigate();
-
-    // FIXME: Dummy test ID for testing purposes
-    const dummyId = '66c09a692c5f7b45260f8006';
+    const { testId } = useParams()
 
     useEffect(() => {
         const startTestSession = async () => {
             const body = {
-                "testId": dummyId
+                "testId": testId
             }
 
             try {
@@ -263,7 +261,7 @@ function TestPlay(props: any) {
         };
 
         startTestSession();
-    }, [dummyId]);
+    }, [testId]);
 
     if (loading) {
         return (
