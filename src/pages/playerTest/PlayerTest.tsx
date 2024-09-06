@@ -31,13 +31,22 @@ const PlayerTest = () => {
     pageSize: 10,
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
-    const response = await switchTestStatus(id, status);
-    if (response.status === 200) {
-      toast.error(t("toast.switchStatusSuccess"));
-    } else {
+    setLoadingStatus(true);
+    try {
+      const response = await switchTestStatus(id, status);
+      if (response.status === 200) {
+        toast.success(t("toast.switchStatusSuccess"));
+        fetchTests(paginationModel.page, paginationModel.pageSize);
+      } else {
+        toast.error(t("toast.switchStatusFail"));
+      }
+    } catch (error) {
       toast.error(t("toast.switchStatusFail"));
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
@@ -102,6 +111,7 @@ const PlayerTest = () => {
         console.log(params);
         return (
           <Switch
+            disabled={loadingStatus}
             defaultChecked={params.row.status == 1}
             onChange={() =>
               handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)

@@ -2,25 +2,16 @@ import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
+import { CountryData } from "../interfaces/country.interface";
+import api from "./interceptor";
+// const domain_api = import.meta.env.VITE_DOMAIN_API;
 
-const domain_api = import.meta.env.VITE_DOMAIN_API;
-
-interface CountryData {
-  name: string;
-  description: string;
-  image: string;
-  localeData: {
-    "en-US": { name: string; description: string };
-    "ja-JP": { name: string; description: string };
-    "vi-VN": { name: string; description: string };
-  };
-}
 export const createCountry = async (
   body: CountryData
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.post(`${domain_api}/countries`, body, {
+    const response = await api.post(`/countries`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -38,7 +29,7 @@ export const getCountries = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/countries`, {
+    const response = await api.get(`/countries`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       params: query,
     });
@@ -58,7 +49,7 @@ export const updateCountry = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(`${domain_api}/countries/${id}`, body, {
+    const response = await api.patch(`/countries/${id}`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -76,7 +67,7 @@ export const getIndividualCountry = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/countries/${id}`, {
+    const response = await api.get(`/countries/${id}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -96,10 +87,9 @@ export const switchCountryStatus = async (
   status: number
 ): Promise<AxiosResponse<any>> => {
   try {
-    console.log(status, "new status");
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(
-      `${domain_api}/countries/${id}`,
+    const response = await api.patch(
+      `/countries/${id}`,
       { status },
       {
         headers: { Authorization: `Bearer ${accessToken}` },

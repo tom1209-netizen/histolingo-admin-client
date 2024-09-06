@@ -1,19 +1,19 @@
 import axios, { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
+import api from "./interceptor";
 
-const domain_api = import.meta.env.VITE_DOMAIN_API;
+// const domain_api = import.meta.env.VITE_DOMAIN_API;
 
 export const uploadFile = async (file: File): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
     const formData = new FormData();
     formData.append("image", file);
-    const response = await axios.post(`${domain_api}/upload`, formData, {
+    const response = await api.post(`/upload`, formData, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(response)
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {

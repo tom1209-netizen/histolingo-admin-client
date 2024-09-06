@@ -30,15 +30,22 @@ const Feedback = () => {
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [open, setOpen] = useState(false);
-
-  const navigate = useNavigate();
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
-    const response = await switchFeedbackStatus(id, status);
-    if (response.status === 200) {
-      toast.success(t("toast.switchStatusSuccess"));
-    } else {
+    setLoadingStatus(true);
+    try {
+      const response = await switchFeedbackStatus(id, status);
+      if (response.status === 200) {
+        toast.success(t("toast.switchStatusSuccess"));
+        fetchFeedbacks(paginationModel.page, paginationModel.pageSize);
+      } else {
+        toast.error(t("toast.switchStatusFail"));
+      }
+    } catch (error) {
       toast.error(t("toast.switchStatusFail"));
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
@@ -64,9 +71,10 @@ const Feedback = () => {
       renderCell: (params) => {
         return (
           <Switch
+            disabled={loadingStatus}
             defaultChecked={params.row.status == 1}
             onChange={() =>
-              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+              handleStatusChange(params.row._id, params.row.status === 1 ? 0 : 1)
             }
           />
         );
@@ -145,7 +153,7 @@ const Feedback = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchFeedbackQuery, status: value })
             }
-            value={searchFeedbackQuery.status || ""}
+            value={searchFeedbackQuery.status}
           />
           <SearchField
             label={`${t("search")} feedback`}

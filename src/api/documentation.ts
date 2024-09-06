@@ -2,19 +2,19 @@ import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
+import api from "./interceptor";
 
-const domain_api = import.meta.env.VITE_DOMAIN_API;
+// const domain_api = import.meta.env.VITE_DOMAIN_API;
 
 export const getDocuments = async (
   query: SearchQuery = {}
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/documentations`, {
+    const response = await api.get(`/documentations`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       params: query,
     });
-    console.log(response)
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -30,7 +30,7 @@ export const createDocument = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.post(`${domain_api}/documentations`, body, {
+    const response = await api.post(`/documentations`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -49,8 +49,8 @@ export const updateDocument = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(
-      `${domain_api}/documentations/${id}`,
+    const response = await api.patch(
+      `/documentations/${id}`,
       body,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -71,7 +71,7 @@ export const getIndividualDocument = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/documentations/${id}`, {
+    const response = await api.get(`/documentations/${id}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -92,8 +92,8 @@ export const switchDocumentStatus = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(
-      `${domain_api}/documentations/${id}`,
+    const response = await api.patch(
+      `/documentations/${id}`,
       { status },
       {
         headers: { Authorization: `Bearer ${accessToken}` },

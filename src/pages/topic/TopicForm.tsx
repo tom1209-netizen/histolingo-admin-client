@@ -111,15 +111,14 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].description.trim()
     ) {
-      toast.error(
-        "Please fill in the name and description for English language."
-      );
+      toast.error(t("toast.enUS"));
       return;
     }
 
+    let image = topicData?.image || "";
+    console.log(data.image, "data.image");
     try {
-      console.log(image, "image");
-      if (data.image) {
+      if (data.image instanceof File) {
         console.log("data.image:", data.image);
         const response = await uploadFile(data.image);
         image = response.data.data.fileUrl;
@@ -134,6 +133,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
       description: data.localeData["en-US"].description,
       localeData: data.localeData,
       countryId: data.country,
+      status: 1,
     };
     console.log("Topic form submitted with data:", body);
 
@@ -147,6 +147,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
           toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && topicData) {
+        body["status"] = data.status;
         const response = await updateTopic(topicData?.id, body);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -201,7 +202,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
             control={control}
             errors={errors}
             name="countryId"
-            label="Country"
+            label={t("country")}
             options={countryNames}
             onChange={handleCountryChange}
           />

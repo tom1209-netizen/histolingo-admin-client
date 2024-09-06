@@ -20,7 +20,7 @@ const Documentation = () => {
   const { t } = useTranslation();
   const { handleEditRow } = useRowActions();
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchDocumentationQuery = convertSearchParamsToObj(searchParams);
+  const searchDocumentationQuery: any = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
   const [documents, setDocuments] = useState<any[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -29,13 +29,22 @@ const Documentation = () => {
     pageSize: 10,
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
-    const response = await switchDocumentStatus(id, status);
-    if (response.status === 200) {
-      toast.success(t("toast.switchStatusSuccess"));
-    } else {
+    setLoadingStatus(true);
+    try {
+      const response = await switchDocumentStatus(id, status);
+      if (response.status === 200) {
+        toast.success(t("toast.switchStatusSuccess"));
+        fetchDocuments(paginationModel.page, paginationModel.pageSize);
+      } else {
+        toast.error(t("toast.switchStatusFail"));
+      }
+    } catch (error) {
       toast.error(t("toast.switchStatusFail"));
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
@@ -102,6 +111,7 @@ const Documentation = () => {
         console.log(params);
         return (
           <Switch
+            disabled={loadingStatus}
             defaultChecked={params.row.status == 1}
             onChange={() =>
               handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
@@ -182,7 +192,7 @@ const Documentation = () => {
             onChange={(value: any) =>
               setSearchParams({ ...searchDocumentationQuery, status: value })
             }
-            value=""
+            value={searchDocumentationQuery.status}
           />
           <SearchField
             label={`${t("search")} ${t("documentationDashboard.documentation")}`}

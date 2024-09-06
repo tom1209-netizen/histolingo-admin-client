@@ -60,11 +60,9 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   });
 
   const { t } = useTranslation();
-
   const navigate = useNavigate();
-  // const country = watch("country");
   const localeData = watch("localeData");
-  const countryId = watch("countryId");
+  const country = watch("country");
   const activeCompulsory = typeOfForm === "create";
   const [loading, setLoading] = useState<boolean>(true);
   const [countryNames, setCountryNames] = useState<any[]>([]);
@@ -73,6 +71,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   const language = watch("language");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [documentationArray, setDocumentationArray] = useState<any[]>([]);
+
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
@@ -88,15 +87,14 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         reset({
           ...defaultFormValues,
           ...testData,
-          countryId: testData.countryId._id,
-          topicId: testData.topicId._id,
+          country: testData.country,
+          topic: testData.topic,
           documentationsId: testData.documentationsId.map((doc) => doc._id),
         });
       }
     };
-
     fetchData();
-  }, [testData, typeOfForm]);
+  }, [testData]);
 
   // HANDLE SELECTION CHANGE
   const handleSelectionChange = (rowSelectionModel: GridRowSelectionModel) => {
@@ -104,7 +102,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   };
 
   // FETCH DOCUMENTATIONS
-
   useEffect(() => {
     const fetchDocumentations = async () => {
       try {
@@ -116,7 +113,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           label: doc.name,
         }));
         setDocumentationArray(documentationArray);
-
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -147,11 +143,12 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     fetchCountries();
   }, []);
 
+  // FETCH TOPICS
+
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const topics = await getTopicsByCountry(countryId);
-        console.log(topics, "filtered topics");
+        const topics = await getTopicsByCountry(country);
         const topicNames = topics.map((topic: any) => ({
           value: topic._id,
           label: topic.name,
@@ -163,10 +160,10 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
       }
     };
 
-    if (countryId) {
+    if (country) {
       fetchTopics();
     }
-  }, [countryId]);
+  }, [country]);
 
   // HANDLE TOPIC CHANGE
   const handleTopicChange = (event: SelectChangeEvent<string>) => {
@@ -192,7 +189,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
       headerName: t("topic"),
       width: 180,
       valueGetter: (value, row) => {
-        if (row.topicId) return row.topicId.name;
+        if (row.topicId) return row.topic.name;
         return "No topic";
       },
     },
@@ -201,8 +198,8 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
       headerName: t("country"),
       width: 130,
       valueGetter: (value, row) => {
-        if (row.countryId) return row.countryId.name;
-        return "No country";
+        if (row.countryId) return row.country.name;
+        return "N/A";
       },
     },
     {
@@ -228,6 +225,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     { field: "updatedAt", headerName: t("updatedAt"), width: 130 },
   ];
 
+  // FETCH QUESTIONS IN TABLE
   const fetchQuestions = async (page: number, pageSize: number) => {
     setIsTableLoading(true);
     try {
@@ -265,27 +263,30 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
     console.log(data, "form data");
-
     const selectedQuestionCount = selectedRows.length;
-
     if (selectedQuestionCount < minimumQuestionsOnTest) {
       toast.error(
-        `You must select at least ${minimumQuestionsOnTest} questions.`
+        `${t("createTest.validation.selectMin")} ${minimumQuestionsOnTest} ${t(
+          "createTest.validation.question"
+        )}`
       );
       return;
     } else if (selectedQuestionCount > maximumQuestionsOnTest) {
       toast.error(
-        `You must select at most ${maximumQuestionsOnTest} questions.`
+        `${t("createTest.validation.selectMax")} ${maximumQuestionsOnTest} ${t(
+          "createTest.validation.question"
+        )}`
       );
       return;
     }
 
     const body = {
-      topicId: data.topicId,
-      countryId: data.countryId,
+      topicId: data.topic,
+      countryId: data.country,
       questionsId: selectedRows.map((row) => row.toString()),
       name: data.localeData["en-US"].name,
       localeData: data.localeData,
+      status: 1,
       documentationsId: data.documentationsId,
     };
     console.log(body, "body");
@@ -300,8 +301,8 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         } else {
           toast.error(t("toast.error"));
         }
-      } else {
-        // UPDATE TEST
+      } else if (typeOfForm === "update" && testData) {
+        body["status"] = data.status
         const response = await updatePlayerTest(testData?.id || "", body);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -323,7 +324,11 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <h1>{typeOfForm === "create" ? t("createTest.createTest") : t("createTest.updateTest")}</h1>
+      <h1>
+        {typeOfForm === "create"
+          ? t("createTest.createTest")
+          : t("createTest.updateTest")}
+      </h1>
       <Grid
         container
         spacing={3}
@@ -368,7 +373,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           <SelectInputField
             control={control}
             errors={errors}
-            name="countryId"
+            name="country"
             label={t("country")}
             options={countryNames}
           />
@@ -381,17 +386,17 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           <SelectInputField
             control={control}
             errors={errors}
-            name="topicId"
+            name="topic"
             label={t("topic")}
             options={topicNames}
             onChange={handleTopicChange}
-            disabled={!countryId}
+            disabled={!country}
           />
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
-           {t("status")}
+            {t("status")}
           </FormLabel>
           <SelectStatusInputField
             control={control}
@@ -401,7 +406,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="documentation" required>
+          <FormLabel htmlFor="documentation">
             {t("documentation")}
           </FormLabel>
           <MultiSelect2

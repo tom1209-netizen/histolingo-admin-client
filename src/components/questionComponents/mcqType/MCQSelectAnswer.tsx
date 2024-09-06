@@ -21,14 +21,20 @@ const MultipleChoiceAnswer: React.FC<SelectProps> = ({
   errors,
   onChange,
 }) => {
+  const { t } = useTranslation();
   return (
-    <FormControl fullWidth margin="normal" required error={!!errors["answer-type-0"]}>
+    <FormControl
+      fullWidth
+      margin="normal"
+      required
+      error={!!errors["answer-type-0"]}
+    >
       <Controller
         name="answer-type-0"
         control={control}
         defaultValue=""
         rules={{
-          required: `Answer is required`,
+          required: t("answerRequired"),
         }}
         render={({ field }) => (
           <Select
@@ -38,13 +44,12 @@ const MultipleChoiceAnswer: React.FC<SelectProps> = ({
               field.onChange(e);
               onChange(e);
             }}
-            value={field.value || undefined}
+            value={field.value}
           >
             <MenuItem value={0}>A</MenuItem>
             <MenuItem value={1}>B</MenuItem>
             <MenuItem value={2}>C</MenuItem>
             <MenuItem value={3}>D</MenuItem>
-            
           </Select>
         )}
       />

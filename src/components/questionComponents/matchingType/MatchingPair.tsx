@@ -10,7 +10,6 @@ interface InputFieldProps {
   errors: FieldErrors<any>;
   language: string;
   index?: number;
-  passedKey: string;
 }
 
 const MatchingPair: React.FC<InputFieldProps> = ({
@@ -18,9 +17,8 @@ const MatchingPair: React.FC<InputFieldProps> = ({
   control,
   errors,
   index,
-  passedKey,
 }) => {
-  console.log(passedKey, "key in Matching Pair ");
+  console.log(language, "what's the language")
   return (
     <div style={{ display: "flex", gap: "24px" }}>
       <FormGrid item xs={12} md={6}>
@@ -28,8 +26,6 @@ const MatchingPair: React.FC<InputFieldProps> = ({
           Left Column
         </FormLabel>
         <PairText
-          key={passedKey}
-          passedKey={passedKey}
           position="leftColumn"
           property="answer"
           index={index}
@@ -46,8 +42,6 @@ const MatchingPair: React.FC<InputFieldProps> = ({
           Right Column
         </FormLabel>
         <PairText
-          key={passedKey}
-          passedKey={passedKey}
           index={index}
           position="rightColumn"
           property="answer"

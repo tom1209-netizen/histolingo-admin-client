@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-const domain_api = import.meta.env.VITE_DOMAIN_API
+import api from './interceptor';
+// const domain_api = import.meta.env.VITE_DOMAIN_API
 
 interface RoleData {
   name: string;
@@ -8,14 +9,10 @@ interface RoleData {
 
 export const login = async (email: string, password: string): Promise<AxiosResponse<any>> => {
   try {
-    const response = await axios.post(`${domain_api}/admins/login`, {
+    const response = await api.post(`/admins/login`, {
       email,
       password,
     });
-
-    console.log(response, 'in api');
-    console.log(response.data, 'in api');
-
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -29,10 +26,9 @@ export const login = async (email: string, password: string): Promise<AxiosRespo
 
 export const forgetPassword = async (email: string): Promise<AxiosResponse<any>> => {
   try {
-    const response = await axios.post(`${domain_api}/password/forgot-password`, {
+    const response = await api.post(`/password/forgot-password`, {
       email,
     });
-
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -49,10 +45,9 @@ export const resetPassword = async (newPassword: string, confirmPassword: string
       throw new Error('Passwords do not match');
     }
 
-    const response = await axios.post(`${domain_api}/password/reset-password`, {
+    const response = await api.post(`/password/reset-password`, {
       newPassword, token, userId
     });
-
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {

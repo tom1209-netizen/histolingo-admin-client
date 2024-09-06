@@ -1,26 +1,24 @@
-import { Box } from "@mui/material";
-import React, { useState } from "react";
-import NavTabs from "../../components/reusable/NavTabs";
-import SearchField from "../../components/reusable/SearchField";
-import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
-import DataTable from "../../components/reusable/Table";
-import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
-import { Switch } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
 import { EditOutlined } from "@mui/icons-material";
-import { useRowActions } from "../../hooks/useRowActions";
+import { Box, Switch } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   getRolePermissions,
   getRoles,
   switchRoleStatus,
 } from "../../api/roles";
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { convertSearchParamsToObj } from "../../utils/common";
+import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
 import { LoadingTable } from "../../components/reusable/Loading";
-import { toast } from "react-toastify";
+import NavTabs from "../../components/reusable/NavTabs";
+import SearchField from "../../components/reusable/SearchField";
+import DataTable from "../../components/reusable/Table";
+import { useRowActions } from "../../hooks/useRowActions";
+import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
-import { useTranslation } from "react-i18next";
 
 const Role = () => {
   const { t } = useTranslation();
@@ -34,6 +32,7 @@ const Role = () => {
   >(new Map());
   const [loading, setLoading] = useState<boolean>(true);
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchRoleQuery: any = convertSearchParamsToObj(searchParams);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -43,29 +42,50 @@ const Role = () => {
   });
 
   const handleStatusChange = async (id: any, status: any) => {
-    const response = await switchRoleStatus(id, status);
-    console.log(response);
-    if (response.status === 200) {
-      toast.success(t("toast.switchStatusSuccess"));
-      fetchRoles(paginationModel.page, paginationModel.pageSize);
-    } else {
+    setLoadingStatus(true);
+    try {
+      const response = await switchRoleStatus(id, status);
+      if (response.status === 200) {
+        toast.success(t("toast.switchStatusSuccess"));
+        fetchRoles(paginationModel.page, paginationModel.pageSize);
+      } else {
+        toast.error(t("toast.switchStatusFail"));
+      }
+    } catch (error) {
       toast.error(t("toast.switchStatusFail"));
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: t("roleDashboard.table.roleName"), flex: 1, sortable: false },
+    {
+      field: "name",
+      headerName: t("roleDashboard.table.roleName"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "permissions",
       headerName: t("roleDashboard.table.permission"),
       flex: 4,
       sortable: false,
     },
-    { field: "createdAt", headerName: t("roleDashboard.table.createdAt"), flex: 1, sortable: false },
-    { field: "updatedAt", headerName: t("roleDashboard.table.updatedAt"), flex: 1, sortable: false },
+    {
+      field: "createdAt",
+      headerName: t("createdAt"),
+      flex: 1,
+      sortable: false,
+    },
+    {
+      field: "updatedAt",
+      headerName: t("updatedAt"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "status",
-      headerName: t("roleDashboard.table.status"),
+      headerName: t("status"),
       flex: 0,
       sortable: false,
       description:
@@ -73,6 +93,7 @@ const Role = () => {
       width: 100,
       renderCell: (params) => (
         <Switch
+          disabled={loadingStatus}
           defaultChecked={params.row.status == 1}
           onChange={() =>
             handleStatusChange(params.row._id, params.row.status === 1 ? 0 : 1)
@@ -82,7 +103,7 @@ const Role = () => {
     },
     {
       field: "edit",
-      headerName: t("roleDashboard.table.edit"),
+      headerName: t("edit"),
       width: 90,
       align: "center",
       flex: 0,
@@ -193,7 +214,7 @@ const Role = () => {
         <CreateImportButtonGroup createPath="/createrole" />
       </Box>
       <DataTable
-       isLoading={isTableLoading}
+        isLoading={isTableLoading}
         columns={columns}
         rows={roles}
         getRowId={(row) => row._id}

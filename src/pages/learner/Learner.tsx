@@ -23,21 +23,38 @@ const Learner = () => {
     pageSize: 10,
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
-
-  const navigate = useNavigate();
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
-    const response = await switchLearnerStatus(id, status);
-    if (response.status === 200) {
-      toast.success(t("toast.switchStatusSuccess"));
-    } else {
+    setLoadingStatus(true);
+    try {
+      const response = await switchLearnerStatus(id, status);
+      if (response.status === 200) {
+        toast.success(t("toast.switchStatusSuccess"));
+        fetchLearners(paginationModel.page, paginationModel.pageSize);
+      } else {
+        toast.error(t("toast.switchStatusFail"));
+      }
+    } catch (error) {
       toast.error(t("toast.switchStatusFail"));
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
   const columns: GridColDef[] = [
-    { field: "userName", headerName: t("learnerDashboard.table.username"), flex: 1, sortable: false },
-    { field: "rank", headerName: t("learnerDashboard.table.ranking"), flex: 1, sortable: false },
+    {
+      field: "userName",
+      headerName: t("learnerDashboard.table.username"),
+      flex: 1,
+      sortable: false,
+    },
+    {
+      field: "rank",
+      headerName: t("learnerDashboard.table.ranking"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "email",
       headerName: "Email",
@@ -66,17 +83,22 @@ const Learner = () => {
     {
       field: "status",
       flex: 0,
-      headerName: t("learnerDashboard.table.status"),
+      headerName: t("status"),
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
       renderCell: (params) => {
         return (
           <Switch
+            disabled={loadingStatus}
             defaultChecked={params.row.status == 1}
-            onChange={() =>
-              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
-            }
+            onChange={() => {
+              console.log(params.row.status, "current status");
+              handleStatusChange(
+                params.row._id,
+                params.row.status === 1 ? 0 : 1
+              );
+            }}
           />
         );
       },
@@ -132,7 +154,7 @@ const Learner = () => {
             value={searchLearnerQuery.status || ""}
           />
           <SearchField
-            label={`${t("search")} ${t( "learnerDashboard.learner")}`}
+            label={`${t("search")} ${t("learnerDashboard.learner")}`}
             delay={1500}
             onChange={(value: any) =>
               setSearchParams({ ...searchLearnerQuery, search: value.trim() })

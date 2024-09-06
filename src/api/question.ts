@@ -2,15 +2,16 @@ import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
+import api from "./interceptor";
 
-const domain_api = import.meta.env.VITE_DOMAIN_API;
+// const domain_api = import.meta.env.VITE_DOMAIN_API;
 
 export const getQuestions = async (
   query: SearchQuery = {}
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/questions`, {
+    const response = await api.get(`/questions`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       params: query,
     });
@@ -29,7 +30,7 @@ export const createQuestion = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.post(`${domain_api}/questions`, body, {
+    const response = await api.post(`/questions`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -48,7 +49,7 @@ export const updateQuestion = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(`${domain_api}/questions/${id}`, body, {
+    const response = await api.patch(`/questions/${id}`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -66,7 +67,7 @@ export const getIndividualQuestion = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/questions/${id}`, {
+    const response = await api.get(`/questions/${id}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -82,10 +83,11 @@ export const getIndividualQuestion = async (
 };
 
 export const switchQuestionStatus = async (id: string, status: string) => {
+  console.log(status, "new status");
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(
-      `${domain_api}/questions/${id}`,
+    const response = await api.patch(
+      `/questions/${id}`,
       { status },
       {
         headers: { Authorization: `Bearer ${accessToken}` },

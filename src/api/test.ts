@@ -2,13 +2,14 @@ import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
+import api from "./interceptor";
 
-const domain_api = import.meta.env.VITE_DOMAIN_API;
+// const domain_api = import.meta.env.VITE_DOMAIN_API;
 
 export const getIndividualTest = async (id: string) : Promise<AxiosResponse<any>> => {
     try {
         const accessToken = Cookies.get("accessToken");
-        const response = await axios.get(`${domain_api}/tests/${id}`, {
+        const response = await api.get(`/tests/${id}`, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
 
@@ -25,7 +26,7 @@ export const getIndividualTest = async (id: string) : Promise<AxiosResponse<any>
 export const getTests = async (query: SearchQuery = {}): Promise<AxiosResponse<any>> => {
     try {
         const accessToken = Cookies.get("accessToken");
-        const response = await axios.get(`${domain_api}/tests`, {
+        const response = await api.get(`/tests`, {
             headers: { Authorization: `Bearer ${accessToken}` },
             params: query,
         });
@@ -42,7 +43,7 @@ export const getTests = async (query: SearchQuery = {}): Promise<AxiosResponse<a
 export const createTest = async (body: any): Promise<AxiosResponse<any>> => {
     try {
         const accessToken = Cookies.get("accessToken");
-        const response = await axios.post(`${domain_api}/tests`, body, {
+        const response = await api.post(`/tests`, body, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
         return response;
@@ -58,7 +59,7 @@ export const createTest = async (body: any): Promise<AxiosResponse<any>> => {
 export const updateTest = async (id: string, body: any): Promise<AxiosResponse<any>> => {
     try {
         const accessToken = Cookies.get("accessToken");
-        const response = await axios.put(`${domain_api}/tests/${id}`, body, {
+        const response = await api.put(`/tests/${id}`, body, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
         return response;
@@ -74,7 +75,7 @@ export const updateTest = async (id: string, body: any): Promise<AxiosResponse<a
 export const startTest = async (body: any): Promise<AxiosResponse<any>> => {
     try {
         const accessToken = Cookies.get("accessToken");
-        const response = await axios.post(`${domain_api}/tests/startDemo`, body, {
+        const response = await api.post(`/tests/startDemo`, body, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
         return response;
@@ -90,7 +91,7 @@ export const startTest = async (body: any): Promise<AxiosResponse<any>> => {
 export const checkAnswer = async (body: any): Promise<AxiosResponse<any>> => {
     try {
         const accessToken = Cookies.get("accessToken");
-        const response = await axios.post(`${domain_api}/tests/checkAnswer`, body, {
+        const response = await api.post(`/tests/checkAnswer`, body, {
             headers: { Authorization: `Bearer ${accessToken}` },
         });
         return response;

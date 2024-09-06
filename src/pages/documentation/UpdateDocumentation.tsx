@@ -29,7 +29,7 @@ const UpdateDocumentation = () => {
     content: documentation?.content || "",
     id: documentationId || "",
     localeData: documentation?.localeData || {},
-    status: documentation?.status === 1 ? "active" : "inactive",
+    status: documentation?.status,
     source: documentation?.source || "",
     country: documentation?.countryId._id || "",
     topic: documentation?.topicId._id || "",

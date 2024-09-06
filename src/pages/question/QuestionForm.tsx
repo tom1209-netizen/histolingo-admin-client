@@ -67,17 +67,15 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   const navigate = useNavigate();
   const activeCompulsory = typeOfForm === "create";
   const { t } = useTranslation();
-
   const language = watch("language");
   const countryId = watch("countryId");
   const questionType = watch("questionType");
-
+  const localeData = watch("localeData");
   const [selectedLanguage, setSelectedLanguage] = useState(""); // Change language
   const [loading, setLoading] = useState<boolean>(true); // Set loading
   const [countryNames, setCountryNames] = useState<any[]>([]); // Set country names
   const [topicNames, setTopicNames] = useState<any[]>([]); // Set topic names
-  console.log(getValues("questionType"), "get value");
-
+  
   // FETCH COUNTRIES
   useEffect(() => {
     const fetchCountries = async () => {
@@ -137,21 +135,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   };
 
   // HANDLE QUESTION TYPE CHANGE
-  const handleQuestionTypeChange = (event: SelectChangeEvent<string>) => {
+  const handleQuestionTypeChange = (event: any) => {
     const value = event.target.value;
+    console.log(value, "value");
     setValue("questionType", value);
-
-    if (value === "2" && fields.length === 0) {
-      // reset({
-      //   language: "en-US",
-      //   localeData: {
-      //     "en-US": { ask: "" },
-      //   },
-      //   questionType: 2,
-      // });
+    if (value === 2 && fields.length === 0) {
       append({ leftColumn: "", rightColumn: "" });
+      console.log("is this get called?");
     }
-    console.log("is this get called?");
     reset({
       language: "en-US",
       localeData: {
@@ -183,18 +174,15 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           console.log("Updating form with questionData:", questionData);
           // map data
 
-          questionData.countryId = questionData.countryId._id;
-          questionData.topicId = questionData.topicId._id;
-          questionData.questionType = questionData.questionType.toString();
+          console.log("after", questionData);
           console.log("question type", questionData.questionType);
 
-          if (questionData.questionType === "3") {
-            console.log("abcxyz", language);
+          if (questionData.questionType === 3) {
             for (const locale in questionData.localeData) {
               questionData.localeData[locale].answer =
                 questionData.localeData[locale].answer.join("\n");
             }
-          } else if (questionData.questionType === "1") {
+          } else if (questionData.questionType === 1) {
             questionData[`answer-type-${questionData.questionType}`] =
               questionData.answer.toString();
           } else {
@@ -217,7 +205,48 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
+
     console.log(data);
+    // CHECK IF ENGLISH FIELDS ARE FILLED
+    if (data.questionType === 0) {
+      console.log("is this called?");
+      console.log(localeData["en-US"].options);
+      const optionsFilledOrNot = localeData["en-US"].options.every((option) => {
+        return option !== null && option !== undefined && option !== "";
+      });
+      if (!localeData["en-US"].ask.trim() || !optionsFilledOrNot) {
+        toast.error(t("toast.enUS"));
+        return;
+      }
+    } else if (data.questionType === 1) {
+      if (!localeData["en-US"].ask.trim()) {
+        toast.error(t("toast.enUS"));
+        return;
+      }
+    } else if (data.questionType === 2) {
+      const pairsFilledOrNot =
+        Array.isArray(localeData["en-US"].answer) &&
+        localeData["en-US"].answer.every((leftColumn, index) => {
+          return (
+            leftColumn !== null &&
+            leftColumn !== undefined &&
+            leftColumn !== "" &&
+            localeData["en-US"].answer[index].rightColumn !== null &&
+            localeData["en-US"].answer[index].rightColumn !== undefined &&
+            localeData["en-US"].answer[index].rightColumn !== ""
+          );
+        });
+      if (!localeData["en-US"].ask.trim() || !pairsFilledOrNot) {
+        toast.error(t("toast.enUS"));
+        return;
+      }
+    } else if (data.questionType === 3) {
+      const filledOrNot = localeData["en-US"].answer !== null && localeData["en-US"].answer !== undefined && localeData["en-US"].answer !== "";
+      if (!localeData["en-US"].ask.trim() || !filledOrNot) {
+        toast.error(t("toast.enUS"));
+        return;
+      }
+    }
 
     let baseBody = {
       countryId: data.countryId,
@@ -232,8 +261,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       baseBody["options"] = data.localeData["en-US"].options;
     }
 
-    // if (Number(data.questionType) === 1) {
-    //   }
     if (Number(data.questionType) === 3) {
       baseBody.answer = data.localeData["en-US"].answer.split("\n");
       for (const [locale, localeEntry] of Object.entries(baseBody.localeData)) {
@@ -249,7 +276,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     }
 
     console.log(baseBody, "baseBody updated");
-    
+
     try {
       if (typeOfForm === "create") {
         const response = await createQuestion(baseBody);
@@ -259,6 +286,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           navigate("/question");
         }
       } else if (typeOfForm === "update" && questionData) {
+        baseBody["status"] = data.status
         const response = await updateQuestion(questionData?.id, baseBody);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -284,6 +312,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
     // Remove the pair
     remove(index);
+    console.log("After fields:", fields);
   };
   return (
     <ThemeProvider theme={theme}>
@@ -308,9 +337,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             control={control}
             errors={errors}
             name="questionType"
-            label="Question type"
+            label={t("createQuestion.inputFields.questionType")}
             options={questionTypes}
-            // disabled={typeOfForm === "update"}
+            // disabled={fixQuestionType}
             onChange={handleQuestionTypeChange}
           />
         </FormGrid>
@@ -384,7 +413,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           />
         </FormGrid>
 
-        {questionType === "0" && (
+        {questionType === 0 && (
           <>
             <MCQQuestionText
               language={language}
@@ -407,11 +436,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           </>
         )}
 
-        {questionType === "1" && (
+        {questionType === 1 && (
           <>
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="answer-type-1" required>
-              {t("createQuestion.inputFields.correct")}
+                {t("createQuestion.inputFields.correct")}
               </FormLabel>
               <TrueFalseInputField
                 control={control}
@@ -423,14 +452,13 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           </>
         )}
 
-        {questionType === "2" && (
+        {questionType === 2 && (
           <>
             {fields.map((item, index) => (
               <React.Fragment key={item.id}>
                 <FormGrid item xs={12} md={12}>
                   <MatchingPair
                     key={item.id}
-                    passedKey={item.id}
                     index={index}
                     language={language}
                     control={control}
@@ -463,11 +491,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           </>
         )}
 
-        {questionType === "3" && (
+        {questionType === 3 && (
           <>
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="answer-type-3" required>
-              {t("createQuestion.inputFields.correct")}
+                {t("createQuestion.inputFields.correct")}
               </FormLabel>
               <LocaleTextInputField
                 property={"answer"}
@@ -493,3 +521,4 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 };
 
 export default QuestionForm;
+

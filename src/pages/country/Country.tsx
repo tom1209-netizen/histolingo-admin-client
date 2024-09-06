@@ -31,14 +31,22 @@ const Country = () => {
   });
 
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
-    const response = await switchCountryStatus(id, status);
-    if (response.status === 200) {
-      toast.success(t("toast.switchStatusSuccess"));
-      fetchCountries(paginationModel.page, paginationModel.pageSize);
-    } else {
+    setLoadingStatus(true);
+    try {
+      const response = await switchCountryStatus(id, status);
+      if (response.status === 200) {
+        toast.success(t("toast.switchStatusSuccess"));
+        fetchCountries(paginationModel.page, paginationModel.pageSize);
+      } else {
+        toast.error(t("toast.switchStatusFail"));
+      }
+    } catch (error) {
       toast.error(t("toast.switchStatusFail"));
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
@@ -98,6 +106,7 @@ const Country = () => {
         console.log(params);
         return (
           <Switch
+            disabled={loadingStatus}
             defaultChecked={params.row.status == 1}
             onChange={() => {
               handleStatusChange(
@@ -143,7 +152,6 @@ const Country = () => {
         updatedAt: formatTimestamp(country.updatedAt),
       }));
       const totalRows = response.data.data.totalCount;
-      console.log(countriesData);
       setCountries(formattedCountries);
       setRowCount(totalRows);
     } catch (error) {

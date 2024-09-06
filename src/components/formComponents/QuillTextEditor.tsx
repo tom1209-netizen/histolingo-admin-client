@@ -26,7 +26,8 @@ const QuillModules = {
   },
 };
 
-const QuillTextEditor = ({ language, control, errors, name, property }) => {
+const QuillTextEditor = ({ language, control, errors, label, property }) => {
+  console.log(label, "label");
   const fieldName = `localeData[${language}][${property}]`;
   const fieldError = errors?.localeData?.[language]?.[property];
   const { t } = useTranslation();
@@ -37,7 +38,7 @@ const QuillTextEditor = ({ language, control, errors, name, property }) => {
       control={control}
       defaultValue=""
       rules={{
-        required: `${name} ${t("localeInputField.validation.required")}`,
+        required: `${label} ${t("localeInputField.validation.required")}`,
       }}
       render={({ field }) => (
         <div style={{ margin: "16px 0" }}>
@@ -45,7 +46,6 @@ const QuillTextEditor = ({ language, control, errors, name, property }) => {
             {...field}
             value={field.value || ""}
             onChange={(value) => field.onChange(value)}
-            placeholder={`Enter ${name}`}
             style={{
               height: "312px",
               marginBottom: "48px",

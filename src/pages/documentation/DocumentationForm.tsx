@@ -132,17 +132,15 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].content.trim()
     ) {
-      toast.error(
-        "Please fill in the name and description for English language."
-      );
+      toast.error(t("toast.enUS"));
       return;
     }
 
     console.log(data);
 
-    let image;
+    let image = documentationData?.image || "";
     try {
-      if (data.image) {
+      if (data.image instanceof File) {
         console.log("data.image:", data.image);
         const response = await uploadFile(data.image);
         image = response.data.data.fileUrl;
@@ -152,7 +150,6 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       toast.error(t("toast.uploadFail"));
     }
 
-    const status = data.status === "active" ? 1 : 0;
     const body = {
       countryId: data.country,
       topicId: data.topic,
@@ -161,6 +158,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       source: data.source,
       localeData: data.localeData,
       image: image,
+      status: 1,
     };
     console.log("Documents form submitted with data:", body);
 
@@ -175,7 +173,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
           toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && documentationData) {
-        body["status"] = status;
+        body["status"] = data.status;
         const response = await updateDocument(documentationData?.id, body);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -301,10 +299,9 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
           <QuillTextEditor
             property={"content"}
             language={language}
-            name="Content"
+            label={t("createDocumentation.inputFields.content")}
             control={control}
             errors={errors}
-            // length={5000}
           />
         </FormGrid>
 

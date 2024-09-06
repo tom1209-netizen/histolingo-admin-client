@@ -11,7 +11,6 @@ interface InputFieldProps {
   index?: number;
   property?: string;
   position: string;
-  passedKey: string;
 }
 
 const PairText: React.FC<InputFieldProps> = ({
@@ -23,17 +22,15 @@ const PairText: React.FC<InputFieldProps> = ({
   index,
   property,
   position,
-  passedKey,
 }) => {
   const fieldName = `localeData[${language}][${property}][${index}][${position}]`;
   const fieldError =
     errors?.localeData?.[language]?.[property]?.[index]?.[position];
-  console.log(passedKey, "key in Pair Text ");
-
+  console.log(fieldName, "what's the field name");
   return (
     <Controller
       name={fieldName}
-      key={passedKey}
+      key={fieldName}
       control={control}
       defaultValue=""
       rules={{

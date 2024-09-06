@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
-const domain_api = import.meta.env.VITE_DOMAIN_API;
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
+import api from "./interceptor";
 
 interface AdminData {
   adminName: string;
@@ -18,11 +18,10 @@ export const getAdmins = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/admins`, {
+    const response = await api.get('/admins', {
       headers: { Authorization: `Bearer ${accessToken}` },
       params: query,
     });
-    console.log(response);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -36,10 +35,9 @@ export const getAdmins = async (
 export const createAdmin = async (body: any): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.post(`${domain_api}/admins`, body, {
+    const response = await api.post(`/admins`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    console.log(response);
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -56,7 +54,7 @@ export const updateAdmin = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(`${domain_api}/admins/${id}`, body, {
+    const response = await api.patch(`/admins/${id}`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -74,7 +72,7 @@ export const getIndividualAdmin = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/admins/${id}`, {
+    const response = await api.get(`/admins/${id}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -94,10 +92,9 @@ export const switchAdminStatus = async (
   status: string
 ): Promise<AxiosResponse<any>> => {
   try {
-    console.log(status, "new status");
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(
-      `${domain_api}/admins/${id}`,
+    const response = await api.patch(
+      `/admins/${id}`,
       { status },
       {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -120,7 +117,7 @@ export const getRolesBypassAuthorization = async (): Promise<
 > => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/admins/getRoles`, {
+    const response = await api.get(`/admins/getRoles`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -136,7 +133,7 @@ export const getRolesBypassAuthorization = async (): Promise<
 export const getProfile = async (): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/admins/me`, {
+    const response = await api.get(`/admins/me`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
