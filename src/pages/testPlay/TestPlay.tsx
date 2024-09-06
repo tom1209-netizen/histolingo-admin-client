@@ -374,6 +374,7 @@ function TestPlay() {
       ).length;
       navigate("/result", {
         state: {
+          testId,
           correctAnswersCount,
           totalQuestions: questionsList.length,
           timeTaken,

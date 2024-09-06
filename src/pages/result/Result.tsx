@@ -8,14 +8,14 @@ function Result() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { correctAnswersCount, totalQuestions, timeTaken } = location.state || {
+  const { testId, correctAnswersCount, totalQuestions, timeTaken } = location.state || {
     correctAnswersCount: 0,
     totalQuestions: 0,
     timeTaken: 0,
   };
 
   const handleRetakeTest = () => {
-    navigate("/testplay");
+    navigate(`/testplay/${testId}`);
   };
 
   const handleGoBack = () => {
