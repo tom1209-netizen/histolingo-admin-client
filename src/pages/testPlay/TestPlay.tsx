@@ -131,6 +131,10 @@ function FillInTheBlankQuestion({
   const [fillInAnswer, setFillInAnswer] = useState(selectedAnswer || []);
   const count = (questionsData["ask"].match(/___/g) || []).length;
 
+  useEffect(() => {
+    setFillInAnswer(selectedAnswer || []);
+  }, [questionsData]);
+
   const handleChange = (value, index) => {
     const updatedAnswers = [
       ...fillInAnswer.slice(0, index),
