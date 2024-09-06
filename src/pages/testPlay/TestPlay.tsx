@@ -197,6 +197,7 @@ function MatchingQuestion({
   };
 
   const handleMatch = (left, right) => {
+    const questionId = questionsData._id;
     const newMatch = {
       leftColumn: left,
       rightColumn: right,
@@ -206,10 +207,11 @@ function MatchingQuestion({
     setMatches(newMatches);
 
     const color = colors[newMatches.length % colors.length];
+
     setMatchColors((prevColors) => ({
       ...prevColors,
-      [left]: color,
-      [right]: color,
+      [`${questionId}-${left}`]: color,
+      [`${questionId}-${right}`]: color,
     }));
 
     setSelectedLeftColumn(null);
@@ -218,23 +220,29 @@ function MatchingQuestion({
   };
 
   const getLeftColumnColor = (left) => {
+    const questionId = questionsData._id;
     return (
-      matchColors[left] || (selectedLeftColumn === left ? "lightgray" : null)
+      matchColors[`${questionId}-${left}`] ||
+      (selectedLeftColumn === left ? "lightgray" : null)
     );
   };
 
   const getRightColumnColor = (right) => {
+    const questionId = questionsData._id;
     return (
-      matchColors[right] || (selectedRightColumn === right ? "lightgray" : null)
+      matchColors[`${questionId}-${right}`] ||
+      (selectedRightColumn === right ? "lightgray" : null)
     );
   };
 
   const isLeftColumnDisabled = (left) => {
-    return matches.some((match) => match.leftColumn === left);
+    const questionId = questionsData._id;
+    return Boolean(matchColors[`${questionId}-${left}`]);
   };
 
   const isRightColumnDisabled = (right) => {
-    return matches.some((match) => match.rightColumn === right);
+    const questionId = questionsData._id;
+    return Boolean(matchColors[`${questionId}-${right}`]);
   };
 
   return (
@@ -420,6 +428,7 @@ function TestPlay() {
           isCorrect: isCorrect,
         },
       }));
+      console.log(submittedAnswers)
     } catch (error) {
       console.error("Error submitting answer:", error);
     }
