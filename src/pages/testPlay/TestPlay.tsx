@@ -12,6 +12,7 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
+import DOMPurify from 'dompurify';
 
 import { startTest, checkAnswer } from "../../api/test";
 import { styled, keyframes } from "@mui/system";
@@ -101,6 +102,12 @@ function MultipleChoiceQuestion({
   disabled,
   isCorrect,
 }) {
+
+  const renderHTML = (html) => {
+    const cleanHTML = DOMPurify.sanitize(html); 
+    return { __html: cleanHTML };
+  };
+
   return (
     <AnimatedPaper isCorrect={isCorrect}>
       <Typography variant="h5">{questionsData.ask}</Typography>
@@ -113,7 +120,7 @@ function MultipleChoiceQuestion({
             key={index}
             value={index}
             control={<Radio disabled={disabled} />}
-            label={option}
+            label={<span dangerouslySetInnerHTML={renderHTML(option)}/>}
           />
         ))}
       </RadioGroup>
@@ -249,6 +256,11 @@ function MatchingQuestion({
     return Boolean(matchColors[`${questionId}-${right}`]);
   };
 
+  const renderHTML = (html) => {
+    const cleanHTML = DOMPurify.sanitize(html);
+    return { __html: cleanHTML };
+  };
+
   return (
     <AnimatedPaper isCorrect={isCorrect}>
       <Container sx={{ marginTop: 4 }}>
@@ -273,8 +285,8 @@ function MatchingQuestion({
                   !isLeftColumnDisabled(item) &&
                   handleSelectLeftColumn(item)
                 }
+                dangerouslySetInnerHTML={renderHTML(item)}
               >
-                {item}
               </Paper>
             ))}
           </Grid>
@@ -297,8 +309,8 @@ function MatchingQuestion({
                   !isRightColumnDisabled(item) &&
                   handleSelectRightColumn(item)
                 }
+                dangerouslySetInnerHTML={renderHTML(item)}
               >
-                {item}
               </Paper>
             ))}
           </Grid>
