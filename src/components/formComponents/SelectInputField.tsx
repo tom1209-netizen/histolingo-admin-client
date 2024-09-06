@@ -46,7 +46,8 @@ const SelectInputField: React.FC<SelectProps> = ({
               field.onChange(e);
               onChange && onChange(e);
             }}
-            value={field.value || ""}
+            // value={field.value || ""}
+            value={field.value}
           >
             {options.map((option) => (
               <MenuItem key={option.value} value={option.value}>

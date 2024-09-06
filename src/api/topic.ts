@@ -2,27 +2,17 @@ import axios from "axios";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
+import { TopicData } from "../interfaces/topic.interface";
+import api from "./interceptor";
+// const domain_api = import.meta.env.VITE_DOMAIN_API;
 
-const domain_api = import.meta.env.VITE_DOMAIN_API;
-
-interface TopicData {
-  name: string;
-  description: string;
-  image: string;
-  countryId: string;
-  localeData: {
-    "en-US": { name: string; description: string };
-    "ja-JP": { name: string; description: string };
-    "vi-VN": { name: string; description: string };
-  };
-}
 
 export const createTopic = async (
   body: TopicData
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.post(`${domain_api}/topics`, body, {
+    const response = await api.post(`/topics`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -40,7 +30,7 @@ export const getTopics = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/topics`, {
+    const response = await api.get(`/topics`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       params: query,
     });
@@ -60,7 +50,7 @@ export const updateTopic = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(`${domain_api}/topics/${id}`, body, {
+    const response = await api.patch(`/topics/${id}`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -78,7 +68,7 @@ export const getIndividualTopic = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/topics/${id}`, {
+    const response = await api.get(`/topics/${id}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -98,14 +88,13 @@ export const getTopicsByCountry = async (
 ): Promise<string[]> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/topics`, {
+    const response = await api.get(`/topics`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     const allTopics = response.data.data.topics;
     const filteredTopics = allTopics.filter(
       (topic: any) => topic.countryId === countryId
     );
-    console.log(filteredTopics);
     return filteredTopics;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -121,8 +110,8 @@ export const getTopicsByCountry = async (
 export const switchTopicStatus = async (id: string, status: string) => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(
-      `${domain_api}/topics/${id}`,
+    const response = await api.patch(
+      `/topics/${id}`,
       { status },
       {
         headers: { Authorization: `Bearer ${accessToken}` },

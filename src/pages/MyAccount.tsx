@@ -2,9 +2,9 @@ import { MilitaryTech } from "@mui/icons-material";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import BadgeIcon from "@mui/icons-material/Badge";
 import SpokeIcon from "@mui/icons-material/Spoke";
-import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import {
   Avatar,
   List,
@@ -27,11 +27,9 @@ const MyAccount = () => {
     const fetchProfile = async () => {
       try {
         const response = await getProfile();
-        console.log(response);
         setProfile(response.data.data);
         setLoading(false);
       } catch (error) {
-        console.log(error);
         toast.error(t("toast.error"));
       }
     };
@@ -86,7 +84,7 @@ const MyAccount = () => {
             </Avatar>
           </ListItemAvatar>
           <ListItemText
-            primary={profile.roles}
+            primary={profile.roles.map((role: any) => role.name).join(", ")}
             secondary={t("profile.roles")}
           />
         </ListItem>
@@ -110,7 +108,7 @@ const MyAccount = () => {
             </Avatar>
           </ListItemAvatar>
           <ListItemText
-            primary={profile.supervisorId}
+            primary={profile.supervisorId.adminName}
             secondary={t("profile.supervisor")}
           />
         </ListItem>

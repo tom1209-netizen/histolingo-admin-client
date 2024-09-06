@@ -30,15 +30,22 @@ const Question = () => {
     pageSize: 10,
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
+  const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
   const handleStatusChange = async (id: any, status: any) => {
-    const response = await switchQuestionStatus(id, status);
-    console.log(response);
-    if (response.status === 200) {
-      console.log("hello?");
-      toast.success(t("toast.switchStatusSuccess"));
-    } else {
+    setLoadingStatus(true);
+    try {
+      const response = await switchQuestionStatus(id, status);
+      if (response.status === 200) {
+        toast.success(t("toast.switchStatusSuccess"));
+        fetchQuestions(paginationModel.page, paginationModel.pageSize);
+      } else {
+        toast.error(t("toast.switchStatusFail"));
+      }
+    } catch (error) {
       toast.error(t("toast.switchStatusFail"));
+    } finally {
+      setLoadingStatus(false);
     }
   };
 
@@ -85,9 +92,10 @@ const Question = () => {
       width: 90,
       renderCell: (params) => (
         <Switch
+          disabled={loadingStatus}
           defaultChecked={params.row.status == 1}
           onChange={() =>
-            handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
+            handleStatusChange(params.row._id, params.row.status === 1 ? 0 : 1)
           }
         />
       ),
@@ -134,13 +142,13 @@ const Question = () => {
       setIsTableLoading(false);
     }
   };
+
   useEffect(() => {
     fetchQuestions(paginationModel.page, paginationModel.pageSize);
   }, [paginationModel, searchParams]);
 
   const handlePageChange = (model: GridPaginationModel) => {
     setPaginationModel(model);
-    fetchQuestions(model.page, model.pageSize);
   };
 
   if (loading) {

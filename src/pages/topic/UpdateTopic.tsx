@@ -22,6 +22,8 @@ const UpdateTopic = () => {
     }
   }, [topicId]);
 
+  console.log(topic, "topic");
+
   const topicData = {
     image: topic?.image || "",
     name: topic?.name || "",
@@ -31,6 +33,8 @@ const UpdateTopic = () => {
     countryId: topic?.countryId,
     status: topic?.status
   };
+
+  console.log(topicData, "data passed in");
 
   return <TopicForm typeOfForm="update" topicData={topicData} />;
 };

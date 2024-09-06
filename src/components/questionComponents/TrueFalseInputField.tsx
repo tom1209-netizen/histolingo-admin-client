@@ -8,6 +8,7 @@ import {
   FormHelperText,
   SelectChangeEvent,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface SelectProps {
   control: Control<any>;
@@ -20,6 +21,7 @@ const TrueFalseInputField: React.FC<SelectProps> = ({
   errors,
   onChange,
 }) => {
+  const { t } = useTranslation();
   return (
     <FormControl fullWidth margin="normal" required error={!!errors["answer-type-1"]}>
       <Controller
@@ -27,7 +29,7 @@ const TrueFalseInputField: React.FC<SelectProps> = ({
         control={control}
         defaultValue=""
         rules={{
-          required: `Answer is required`,
+          required: t("answerRequired"),
         }}
         render={({ field }) => (
           <Select
@@ -39,8 +41,8 @@ const TrueFalseInputField: React.FC<SelectProps> = ({
             }}
             value={field.value || ""}
           >
-            <MenuItem value="true">True</MenuItem>
-            <MenuItem value="false">False</MenuItem>
+            <MenuItem value="true">{t("selectTF.true")}</MenuItem>
+            <MenuItem value="false">{t("selectTF.false")}</MenuItem>
           </Select>
         )}
       />

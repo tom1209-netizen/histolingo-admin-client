@@ -26,13 +26,13 @@ const UpdateQuestion = () => {
 
   const questionData = {
     ask: question?.ask || "",
-    topicId: question?.topicId || {},
-    countryId: question?.countryId || {},
+    topicId: question?.topicId._id || {},
+    countryId: question?.countryId._id || {},
     answer: question?.answer,
-    questionType: question?.questionType || null,
+    questionType: Number(question?.questionType),
     localeData: question?.localeData || {},
     id: questionId || "",
-    status: question?.status || null
+    status: question?.status,
   };
 
   console.log(questionData, "data passed in");

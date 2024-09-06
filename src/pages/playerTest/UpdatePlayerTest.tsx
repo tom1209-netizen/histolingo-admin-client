@@ -22,18 +22,19 @@ const UpdatePlayerTest = () => {
       fetchTest();
     }
   }, [testId]);
+  console.log(test, "test");
 
   const testData = {
     name: test?.name || "",
-    status: test?.status === 1 ? "active" : "inactive",
-    countryId: test?.countryId || {},
-    questionsId: test?.questionsId || [],
-    topicId: test?.topicId || {},
+    status: test?.status,
+    country: test?.countryId._id || "",
+    topic: test?.topicId._id || "",
+    questionsId: test?.questionsId,
     documentationsId: test?.documentationsId || [],
     id: testId || "",
     localeData: test?.localeData || {},
   };
-
+ console.log(testData, "testData passed in");
   return <PlayerTestForm typeOfForm="update" testData={testData} />;
 };
 

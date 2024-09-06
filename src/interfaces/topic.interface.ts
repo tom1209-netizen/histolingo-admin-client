@@ -27,3 +27,15 @@ export interface FormValues {
     "vi-VN": { name: string; description: string };
   };
 }
+
+export interface TopicData {
+  name: string;
+  description: string;
+  image: string;
+  countryId: string;
+  localeData: {
+    "en-US": { name: string; description: string };
+    "ja-JP": { name: string; description: string };
+    "vi-VN": { name: string; description: string };
+  };
+}

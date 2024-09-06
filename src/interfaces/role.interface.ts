@@ -12,3 +12,11 @@ export interface FlattenedPermission {
   [key: string]: number;
 }
 
+export interface RoleActions {
+  [action: string]: number;
+}
+
+export interface RoleData {
+  name: string;
+  permissions: number[];
+}

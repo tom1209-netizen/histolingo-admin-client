@@ -2,20 +2,14 @@ import axios, { AxiosResponse } from "axios";
 const domain_api = import.meta.env.VITE_DOMAIN_API;
 import Cookies from "js-cookie";
 import { SearchQuery } from "../schemas/schema";
-
-interface RoleActions {
-  [action: string]: number;
-}
-
-interface RoleData {
-  name: string;
-  permissions: number[];
-}
+import { RoleActions } from "../interfaces/role.interface";
+import { RoleData } from "../interfaces/role.interface";
+import api from "./interceptor";
 
 export const getRolePermissions = async (): Promise<any[]> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/roles/permissions`, {
+    const response = await api.get(`/roles/permissions`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -43,7 +37,7 @@ export const createRole = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.post(`${domain_api}/roles`, body, {
+    const response = await api.post(`/roles`, body, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -63,7 +57,7 @@ export const getRoles = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/roles`, {
+    const response = await api.get(`/roles`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       params: query,
     });
@@ -83,7 +77,7 @@ export const getIndividualRole = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.get(`${domain_api}/roles/${id}`, {
+    const response = await api.get(`/roles/${id}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -102,7 +96,7 @@ export const updateRole = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(`${domain_api}/roles/${id}`, body, {
+    const response = await api.patch(`/roles/${id}`, body, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response;
@@ -121,8 +115,8 @@ export const switchRoleStatus = async (
 ): Promise<AxiosResponse<any>> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await axios.patch(
-      `${domain_api}/roles/${id}`,
+    const response = await api.patch(
+      `/roles/${id}`,
       { status },
       {
         headers: { Authorization: `Bearer ${accessToken}` },

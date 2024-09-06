@@ -25,3 +25,14 @@ export interface CountryFormProps {
     id: string;
   };
 }
+
+export interface CountryData {
+  name: string;
+  description: string;
+  image: string;
+  localeData: {
+    "en-US": { name: string; description: string };
+    "ja-JP": { name: string; description: string };
+    "vi-VN": { name: string; description: string };
+  };
+}

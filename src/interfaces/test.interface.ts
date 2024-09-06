@@ -1,9 +1,9 @@
 export interface FormValues {
   name: string;
   status: number;
-  questionsId: any[];
-  countryId: string;
-  topicId: string;
+  questions: any[];
+  country: string;
+  topic: string;
   documentationsId: string[];
   localeData: {
     name: string;
@@ -15,8 +15,8 @@ export interface TestFormProps {
   testData?: {
     name: string;
     id: string;
-    countryId: { _id: string; name: string };
-    topicId: { _id: string; name: string };
+    country: { _id: string; name: string };
+    topic: { _id: string; name: string };
     questionsId: {
       _id: string;
     }[];

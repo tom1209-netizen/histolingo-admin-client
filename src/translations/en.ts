@@ -47,7 +47,7 @@ export default {
   createRole: {
     role: "role",
     createRole: "Create a role",
-    updateAdmin: "Update role",
+    updateRole: "Update role",
     selectPrivileges: "Select privileges (Multiselect)",
     inputFields: {
       roleName: "Role name",
@@ -143,7 +143,7 @@ export default {
     table: {
       testName: "Test name",
       creator: "Creator",
-      numberOfQuestions: "Number of questions",
+      numberOfQuestions: "No. of questions",
       play: "Play test",
     },
   },
@@ -154,6 +154,11 @@ export default {
     inputFields: {
       testName: "Test name",
       select: "Select questions (min 5 questions and max 15 questions)",
+    },
+    validation: {
+      selectMin: "Please select at least",
+      selectMax: "Please select at most",
+      question: "question",
     },
   },
   documentationDashboard: {
@@ -174,13 +179,28 @@ export default {
       content: "Content",
     },
   },
+  testPlay: {
+    testPlay: "Test Play",
+    next: "Next",
+    previous: "Previous",
+    submit: "Submit",
+  },
+  testResult: {
+    testResult: "Test Result",
+    youAnswered: "You answered",
+    correct: "correctly",
+    time: "Time taken:",
+    retake: "Retake Test",
+    back: "Go back to test dashboard",
+  },
+
   feedbackDashboard: {
     feedback: "feedback",
     title: "Feedback Dashboard",
     table: {
       playerName: "Player name",
       test: "Test",
-      detail: "See detail"
+      detail: "See detail",
     },
   },
   feedbackDialog: {
@@ -202,6 +222,10 @@ export default {
     supervisor: "Supervisor",
     createdAt: "Created At",
   },
+  notFound: {
+    title: "404 Not Found",
+    backToHome: "Back to home",
+  },
 
   // FORM COMPONENTS
   status: "Status",
@@ -217,6 +241,7 @@ export default {
   createdAt: "Created At",
   updatedAt: "Updated At",
   edit: "Edit",
+  answerRequired: "Answer is required",
   emailInputField: {
     placeholder: "Enter email",
     validation: {
@@ -260,6 +285,10 @@ export default {
   selectStatus: {
     active: "Active",
     inactive: "Inactive",
+  },
+  selectTF: {
+    true: "True",
+    false: "False",
   },
   dropzone: {
     required: "Image is equired",

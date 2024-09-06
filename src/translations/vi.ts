@@ -47,7 +47,7 @@ export default {
   createRole: {
     role: "vai trò",
     createRole: "Tạo vai trò",
-    updateAdmin: "Cập nhật vai trò",
+    updateRole: "Cập nhật vai trò",
     selectPrivileges: "Chọn ít nhất một quyền",
     inputFields: {
       roleName: "Tên vai trò",
@@ -143,6 +143,11 @@ export default {
       testName: "Tên bài kiểm tra",
       select: "Chọn câu hỏi (ít nhất 5 câu và nhiều nhất 15 câu)",
     },
+    validation: {
+      selectMin: "Vui lòng chọn ít nhất",
+      selectMax: "Vui lòng chọn nhiều nhất",
+      question: "câu hỏi",
+  }
   },
   documentationDashboard: {
     documentation: "tài liệu",
@@ -161,6 +166,20 @@ export default {
       source: "Nguồn",
       content: "Nội dung",
     },
+  },
+  testPlay: {
+    testPlay: "Chơi thử",
+    next: "Câu tiếp",
+    previous: "Câu tiếp",
+    submit: "Xác nhận",
+  },
+  testResult: {
+    testResult: "Kết quả bài kiểm tra",
+    youAnswered: "Bạn đã trả lời",
+    correct: "câu đúng",
+    time: "Thời gian:",
+    retake: "Chơi lại",
+    back: "Quay về",
   },
   feedbackDashboard: {
     feedback: "feedback",
@@ -181,6 +200,19 @@ export default {
       replyContent: "Trả lời feedback",
     },
   },
+  profile: {
+    title: "Thông tin cá nhân",
+    fullName: "Họ và tên",
+    adminName: "Tên admin",
+    roles: "Vai trò",
+    status: "Trạng thái",
+    supervisor: "Người giám sát",
+    createdAt: "Ngày tạo",
+  },
+  notFound: {
+    title: "Không tìm thấy trang",
+    backToHome: "Back to home",
+  },
   // FORM COMPONENTS
   status: "Trạng thái",
   search: "Tìm kiếm",
@@ -195,6 +227,7 @@ export default {
   createdAt: "Ngày tạo",
   updatedAt: "Ngày sửa cuối",
   edit: "Sửa",
+  answerRequired: "Câu trả lời là bắt buộc",
   emailInputField: {
     placeholder: "Điền email",
     validation: {
@@ -239,6 +272,11 @@ export default {
     active: "Hoạt động",
     inactive: "Không hoạt động",
   },
+  selectTF: {
+    true: "Đúng",
+    false: "Sai",
+  },
+  
   dropzone: {
     required: "Ảnh là bắt buộc",
     instruction: "Thả file vào đây hoặc click để chọn file",
@@ -266,6 +304,11 @@ export default {
     all: "Tất cả",
     active: "Đang hoạt động",
     inactive: "Không hoạt động",
+  },
+   // AVATAR MENu
+   avatarMenu: {
+    profile: "Hồ sơ",
+    logout: "Đăng xuất",
   },
   // TOAST
   toast: {
