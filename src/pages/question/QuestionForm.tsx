@@ -208,7 +208,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
     setSubmitting(true);
-    console.log(data);
     // CHECK IF ENGLISH FIELDS ARE FILLED
     if (data.questionType === 0) {
       console.log("is this called?");
@@ -313,15 +312,35 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     return <LoadingForm />;
   }
 
-  const handleRemove = (index: number) => {
+  const handleAppendPair = (value: any) => {
+    // add new pair to locale data
+    for (const locale in localeData) {
+      const oldAnswer = localeData[locale].answer ?? [];
+      localeData[locale].answer = [...oldAnswer, value];
+    }
+    setValue("localeData", localeData);
+    append(value);
+  };
+
+  const handleRemovePair = (index: number) => {
     // Clear the fields for the specific index
-    console.log("Removing index:", index);
-    console.log("Current fields:", fields);
+    // console.log("Removing index:", index);
+    // console.log("Current fields:", fields);
+
+    // remove the pair in locale data
+    for (const locale in localeData) {
+      const oldAnswer = localeData[locale].answer ?? [];
+      localeData[locale].answer = oldAnswer.filter(
+        (item: any, i: any) => i !== index
+      );
+    }
+    setValue("localeData", localeData);
 
     // Remove the pair
     remove(index);
     console.log("After fields:", fields);
   };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -478,7 +497,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                     variant="outlined"
                     color="primary"
                     type="button"
-                    onClick={() => handleRemove(index)}
+                    onClick={() => handleRemovePair(index)}
                   >
                     Delete
                   </Button>
@@ -490,7 +509,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                 variant="contained"
                 color="primary"
                 type="button"
-                onClick={() => append({ leftColumn: "", rightColumn: "" })}
+                onClick={() =>
+                  handleAppendPair({ leftColumn: "", rightColumn: "" })
+                }
               >
                 Add Pair
               </Button>
