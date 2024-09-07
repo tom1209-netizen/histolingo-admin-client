@@ -45,6 +45,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   const { roleId } = useParams<{ roleId?: string }>();
   const activeCompulsory = typeOfForm === "create";
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchRolePermissions = async () => {
@@ -88,6 +89,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
   }, []);
 
   const onSubmit = async (data: FormValues) => {
+    setSubmitting(true);
     const permissions: number[] = data.privilege.map((privilege) => {
       const code = privilegesMap.get(privilege);
       if (code === undefined) {
@@ -101,7 +103,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
       name: data.roleName,
       status: 1,
     };
-    console.log(body, "body");
+
     try {
       if (typeOfForm === "create") {
         const response = await createRole(body);
@@ -123,6 +125,8 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
     } catch (error) {
       console.error("Failed to submit role:", error);
       toast.error(t("toast.error"));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -182,7 +186,11 @@ const RoleForm: React.FC<RoleFormProps> = ({ typeOfForm }) => {
         </FormGrid>
         <FormGrid item xs={12} md={6}></FormGrid>
         <FormGrid item>
-          <CreateButtonGroup nagivateTo={"/role"} typeOfForm={typeOfForm} />
+          <CreateButtonGroup
+            nagivateTo={"/role"}
+            typeOfForm={typeOfForm}
+            isLoading={submitting}
+          />
         </FormGrid>
       </Grid>
     </ThemeProvider>

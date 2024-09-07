@@ -71,6 +71,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   const language = watch("language");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [documentationArray, setDocumentationArray] = useState<any[]>([]);
+  const [submitting, setSubmitting] = useState(false);
 
   // HANDLE LANGUAGE CHANGE
   const handleLanguageChange = (event: SelectChangeEvent<string>) => {
@@ -262,6 +263,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
+    setSubmitting(true);
     console.log(data, "form data");
     const selectedQuestionCount = selectedRows.length;
     if (selectedQuestionCount < minimumQuestionsOnTest) {
@@ -314,6 +316,8 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     } catch (error) {
       console.error("Failed to submit test:", error);
       toast.error(t("toast.error"));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -454,6 +458,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           <CreateButtonGroup
             nagivateTo={"/playertest"}
             typeOfForm={typeOfForm}
+            isLoading={submitting}
           />
         </FormGrid>
       </Grid>

@@ -63,6 +63,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [countryNames, setCountryNames] = useState<any[]>([]);
   const [topicNames, setTopicNames] = useState<any[]>([]);
+  const [submitting, setSubmitting] = useState(false);
 
   // FETCH COUNTRIES
   useEffect(() => {
@@ -128,6 +129,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
+    setSubmitting(true);
     if (
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].content.trim()
@@ -160,7 +162,6 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       image: image,
       status: 1,
     };
-    console.log("Documents form submitted with data:", body);
 
     try {
       if (typeOfForm === "create") {
@@ -186,6 +187,8 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
     } catch (error) {
       console.error("Failed to submit question:", error);
       toast.error(t("toast.error"));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -320,6 +323,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
           <CreateButtonGroup
             nagivateTo={"/documentation"}
             typeOfForm={typeOfForm}
+            isLoading={submitting}
           />
         </FormGrid>
       </Grid>

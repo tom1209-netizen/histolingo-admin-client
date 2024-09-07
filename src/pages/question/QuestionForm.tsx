@@ -31,6 +31,7 @@ import {
 import theme from "../../theme/GlobalCustomTheme";
 import { useTranslation } from "react-i18next";
 import { LoadingForm } from "../../components/reusable/Loading";
+import { set } from "mongoose";
 
 const defaultFormValues = {
   language: "en-US",
@@ -71,11 +72,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   const countryId = watch("countryId");
   const questionType = watch("questionType");
   const localeData = watch("localeData");
-  const [selectedLanguage, setSelectedLanguage] = useState(""); // Change language
-  const [loading, setLoading] = useState<boolean>(true); // Set loading
-  const [countryNames, setCountryNames] = useState<any[]>([]); // Set country names
-  const [topicNames, setTopicNames] = useState<any[]>([]); // Set topic names
-  
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [countryNames, setCountryNames] = useState<any[]>([]);
+  const [topicNames, setTopicNames] = useState<any[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+
   // FETCH COUNTRIES
   useEffect(() => {
     const fetchCountries = async () => {
@@ -205,7 +207,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
-
+    setSubmitting(true);
     console.log(data);
     // CHECK IF ENGLISH FIELDS ARE FILLED
     if (data.questionType === 0) {
@@ -241,7 +243,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         return;
       }
     } else if (data.questionType === 3) {
-      const filledOrNot = localeData["en-US"].answer !== null && localeData["en-US"].answer !== undefined && localeData["en-US"].answer !== "";
+      const filledOrNot =
+        localeData["en-US"].answer !== null &&
+        localeData["en-US"].answer !== undefined &&
+        localeData["en-US"].answer !== "";
       if (!localeData["en-US"].ask.trim() || !filledOrNot) {
         toast.error(t("toast.enUS"));
         return;
@@ -286,7 +291,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           navigate("/question");
         }
       } else if (typeOfForm === "update" && questionData) {
-        baseBody["status"] = data.status
+        baseBody["status"] = data.status;
         const response = await updateQuestion(questionData?.id, baseBody);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -298,6 +303,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     } catch (error) {
       console.error("An error occurred:", error);
       toast.error(t("toast.error"));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -513,7 +520,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         )}
 
         <FormGrid item>
-          <CreateButtonGroup nagivateTo={"/question"} typeOfForm={typeOfForm} />
+          <CreateButtonGroup
+            nagivateTo={"/question"}
+            typeOfForm={typeOfForm}
+            isLoading={submitting}
+          />
         </FormGrid>
       </Grid>
     </ThemeProvider>
@@ -521,4 +532,3 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 };
 
 export default QuestionForm;
-
