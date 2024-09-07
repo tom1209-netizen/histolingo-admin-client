@@ -54,6 +54,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
   const activeCompulsory = typeOfForm === "create" ? true : false;
   const [countryNames, setCountryNames] = useState<any[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
     useState<boolean>(true);
 
@@ -107,6 +108,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
 
   // HANDLE FORM SUBMISSION
   const onSubmit = async (data: any) => {
+    setSubmitting(true);
     if (
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].description.trim()
@@ -159,6 +161,8 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
     } catch (error) {
       console.error("An error occurred:", error);
       toast.error(t("toast.error"));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -226,7 +230,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="status" required>
-           {t("status")}
+            {t("status")}
           </FormLabel>
           <SelectStatusInputField
             control={control}
@@ -263,7 +267,11 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
         </FormGrid>
 
         <FormGrid item>
-          <CreateButtonGroup nagivateTo={"/topic"} typeOfForm={typeOfForm} />
+          <CreateButtonGroup
+            nagivateTo={"/topic"}
+            typeOfForm={typeOfForm}
+            isLoading={submitting}
+          />
         </FormGrid>
       </Grid>
     </ThemeProvider>

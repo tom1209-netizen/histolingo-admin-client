@@ -53,6 +53,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
   const language = watch("language");
   const localeData = watch("localeData");
   const activeCompulsory = typeOfForm === "create";
+  const [submitting, setSubmitting] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [isEnglishFieldsFilled, setIsEnglishFieldsFilled] =
     useState<boolean>(true);
@@ -80,6 +81,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
+    setSubmitting(true);
     if (
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].description.trim()
@@ -107,7 +109,6 @@ const CountryForm: React.FC<CountryFormProps> = ({
       description: data.localeData["en-US"].description,
       localeData: data.localeData,
     };
-    console.log("Country form submitted with data:", body);
 
     try {
       if (typeOfForm === "create") {
@@ -133,6 +134,8 @@ const CountryForm: React.FC<CountryFormProps> = ({
     } catch (error) {
       console.error("An error occurred:", error);
       toast.error(t("toast.error"));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -222,7 +225,11 @@ const CountryForm: React.FC<CountryFormProps> = ({
         <FormGrid item xs={12} md={6}></FormGrid>
 
         <FormGrid item>
-          <CreateButtonGroup nagivateTo={"/country"} typeOfForm={typeOfForm} />
+          <CreateButtonGroup
+            nagivateTo={"/country"}
+            typeOfForm={typeOfForm}
+            isLoading={submitting}
+          />
         </FormGrid>
       </Grid>
     </ThemeProvider>

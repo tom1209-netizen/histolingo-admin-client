@@ -214,7 +214,7 @@ export default {
     },
   },
   profile: {
-    title: "My profile",
+    title: "Welcome to Histolingo Admin",
     fullName: "Full Name",
     adminName: "Admin Name",
     roles: "Roles",

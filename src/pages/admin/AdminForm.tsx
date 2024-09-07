@@ -33,7 +33,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const activeCompulsory = typeOfForm === "create";
-
+  const [submitting, setSubmitting] = useState(false);
   const [roles, setRoles] = useState<string[]>([]);
   const [roleOptions, setRoleOptions] = useState<
     { value: string; label: string }[]
@@ -77,8 +77,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
 
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
-    console.log(data, "data");
-    console.log(roleOptions, "roleOptions");
+    setSubmitting(true);
     const roleIds = data.roles
       .map((name) => {
         const role = roleOptions.find((option) => option.label === name);
@@ -120,6 +119,8 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
     } catch (error) {
       console.error("An error occurred:", error);
       toast.error(t("toast.error"));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -211,7 +212,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
           />
         </FormGrid>
 
-        {typeOfForm === "create" && (
+        {/* {typeOfForm === "create" && (
           <>
             <FormGrid item xs={12} md={6}>
               <FormLabel htmlFor="password" required>
@@ -221,10 +222,10 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
             </FormGrid>
             <FormGrid item xs={12} md={6}></FormGrid>
           </>
-        )}
+        )} */}
 
         <FormGrid item>
-          <CreateButtonGroup nagivateTo={"/admin"} typeOfForm={typeOfForm} />
+          <CreateButtonGroup nagivateTo={"/admin"} typeOfForm={typeOfForm} isLoading={submitting}/>
         </FormGrid>
       </Grid>
     </ThemeProvider>

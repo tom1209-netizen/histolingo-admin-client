@@ -15,16 +15,17 @@ import { useTranslation } from 'react-i18next';
 
 export default function UnstyledSelectIntroduction() {
   const { i18n } = useTranslation();
-
+  const storedLanguage = localStorage.getItem('language') || 'en';
   const handleChange = (event: React.SyntheticEvent<Element, Event> | null, value: unknown) => {
     if (event !== null) {
       const language = value as string;
       i18n.changeLanguage(language);
+      localStorage.setItem('language', language);
     }
   };
 
   return (
-    <Select onChange={handleChange} defaultValue="en">
+    <Select onChange={handleChange} defaultValue={storedLanguage}>
       <Option value="en">🇺🇸 English</Option>
       <Option value="vi">🇻🇳 Tiếng Việt</Option>
     </Select>

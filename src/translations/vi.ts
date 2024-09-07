@@ -201,7 +201,7 @@ export default {
     },
   },
   profile: {
-    title: "Thông tin cá nhân",
+    title: "Chào mừng tới Histolingo Admin",
     fullName: "Họ và tên",
     adminName: "Tên admin",
     roles: "Vai trò",
