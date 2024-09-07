@@ -26,7 +26,6 @@ const PairText: React.FC<InputFieldProps> = ({
   const fieldName = `localeData[${language}][${property}][${index}][${position}]`;
   const fieldError =
     errors?.localeData?.[language]?.[property]?.[index]?.[position];
-  console.log(fieldName, "what's the field name");
   return (
     <Controller
       name={fieldName}
