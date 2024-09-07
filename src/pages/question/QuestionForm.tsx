@@ -141,10 +141,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     const value = event.target.value;
     console.log(value, "value");
     setValue("questionType", value);
-    if (value === 2 && fields.length === 0) {
-      append({ leftColumn: "", rightColumn: "" });
-      console.log("is this get called?");
-    }
+    // if (value === 2 && fields.length === 0) {
+    //   append({ leftColumn: "", rightColumn: "" });
+    //   console.log("is this get called?");
+    // }
     reset({
       language: "en-US",
       localeData: {
@@ -217,17 +217,24 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       });
       if (!localeData["en-US"].ask.trim() || !optionsFilledOrNot) {
         toast.error(t("toast.enUS"));
+        setSubmitting(false);
         return;
       }
     } else if (data.questionType === 1) {
       if (!localeData["en-US"].ask.trim()) {
         toast.error(t("toast.enUS"));
+        setSubmitting(false);
         return;
       }
     } else if (data.questionType === 2) {
-      const pairsFilledOrNot =
-        Array.isArray(localeData["en-US"].answer) &&
-        localeData["en-US"].answer.every((leftColumn, index) => {
+      console.log(localeData["en-US"].answer, "localeData en-US");
+      if (!localeData["en-US"].answer) {
+        toast.error(t("toast.atLeastOnePair"));
+        setSubmitting(false);
+        return;
+      }
+      const pairsFilledOrNot = localeData["en-US"].answer.every(
+        (leftColumn, index) => {
           return (
             leftColumn !== null &&
             leftColumn !== undefined &&
@@ -236,7 +243,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             localeData["en-US"].answer[index].rightColumn !== undefined &&
             localeData["en-US"].answer[index].rightColumn !== ""
           );
-        });
+        }
+      );
       if (!localeData["en-US"].ask.trim() || !pairsFilledOrNot) {
         toast.error(t("toast.enUS"));
         setSubmitting(false);
@@ -249,6 +257,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         localeData["en-US"].answer !== "";
       if (!localeData["en-US"].ask.trim() || !filledOrNot) {
         toast.error(t("toast.enUS"));
+        setSubmitting(false);
         return;
       }
     }
@@ -499,7 +508,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                     type="button"
                     onClick={() => handleRemovePair(index)}
                   >
-                    Delete
+                    {t("createQuestion.inputFields.deletePair")}
                   </Button>
                 </FormGrid>
               </React.Fragment>
@@ -513,7 +522,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                   handleAppendPair({ leftColumn: "", rightColumn: "" })
                 }
               >
-                Add Pair
+                {t("createQuestion.inputFields.addPair")}
               </Button>
             </FormGrid>
             <FormGrid item xs={12} md={12}></FormGrid>

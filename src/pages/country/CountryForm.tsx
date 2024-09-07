@@ -86,6 +86,7 @@ const CountryForm: React.FC<CountryFormProps> = ({
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].description.trim()
     ) {
+      setSubmitting(false);
       toast.error(t("toast.enUS"));
       return;
     }

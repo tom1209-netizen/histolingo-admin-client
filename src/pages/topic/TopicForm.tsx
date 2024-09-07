@@ -113,6 +113,7 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].description.trim()
     ) {
+      setSubmitting(false);
       toast.error(t("toast.enUS"));
       return;
     }

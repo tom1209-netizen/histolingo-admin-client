@@ -135,6 +135,8 @@ export default {
       correct: "Correct answer",
       leftColumn: "Left column",
       rightColumn: "Right column",
+      addPair: "Add pair",
+      deletePair: "Delete pair",
     },
   },
   testDashboard: {
@@ -329,8 +331,9 @@ export default {
     switchStatusSuccess: "Switch status success",
     switchStatusFail: "Switch status failed",
     error: "An error occured. Please try again",
-    enUS: "Please fill in the name and description for English language.",
+    enUS: "Please fill information for English language.",
     uploadSuccess: "Upload image successfully",
     uploadFail: "Upload image failed",
+    atLeastOnePair: "Please create at least one pair",
   },
 };

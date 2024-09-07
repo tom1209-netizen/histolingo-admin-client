@@ -264,9 +264,9 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   // SUBMIT FORM
   const onSubmit = async (data: FormValues) => {
     setSubmitting(true);
-    console.log(data, "form data");
     const selectedQuestionCount = selectedRows.length;
     if (selectedQuestionCount < minimumQuestionsOnTest) {
+      setSubmitting(false);
       toast.error(
         `${t("createTest.validation.selectMin")} ${minimumQuestionsOnTest} ${t(
           "createTest.validation.question"
@@ -274,6 +274,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
       );
       return;
     } else if (selectedQuestionCount > maximumQuestionsOnTest) {
+      setSubmitting(false);
       toast.error(
         `${t("createTest.validation.selectMax")} ${maximumQuestionsOnTest} ${t(
           "createTest.validation.question"
@@ -304,7 +305,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && testData) {
-        body["status"] = data.status
+        body["status"] = data.status;
         const response = await updatePlayerTest(testData?.id || "", body);
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
@@ -410,9 +411,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         </FormGrid>
 
         <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="documentation">
-            {t("documentation")}
-          </FormLabel>
+          <FormLabel htmlFor="documentation">{t("documentation")}</FormLabel>
           <MultiSelect2
             control={control}
             errors={errors}
