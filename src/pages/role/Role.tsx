@@ -178,7 +178,6 @@ const Role = () => {
 
   const handlePageChange = (model: GridPaginationModel) => {
     setPaginationModel(model);
-    fetchRoles(model.page, model.pageSize);
   };
 
   if (loading) {

@@ -3,8 +3,6 @@ import { TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-// This field is used to input text in multiple languages
-
 const LocaleTextInputField = ({
   label,
   language,
