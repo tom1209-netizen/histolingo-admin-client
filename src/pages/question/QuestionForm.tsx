@@ -240,6 +240,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         });
       if (!localeData["en-US"].ask.trim() || !pairsFilledOrNot) {
         toast.error(t("toast.enUS"));
+        setSubmitting(false);
         return;
       }
     } else if (data.questionType === 3) {
