@@ -18,7 +18,6 @@ const MatchingPair: React.FC<InputFieldProps> = ({
   errors,
   index,
 }) => {
-  console.log(language, "what's the language")
   return (
     <div style={{ display: "flex", gap: "24px" }}>
       <FormGrid item xs={12} md={6}>
