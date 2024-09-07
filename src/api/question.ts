@@ -82,13 +82,12 @@ export const getIndividualQuestion = async (
   }
 };
 
-export const switchQuestionStatus = async (id: string, status: string) => {
-  console.log(status, "new status");
+export const switchQuestionStatus = async (id: string, status: string, questionType: string) => {
   try {
     const accessToken = Cookies.get("accessToken");
     const response = await api.patch(
       `/questions/${id}`,
-      { status },
+      { status, questionType },
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }

@@ -1,5 +1,6 @@
 import React from "react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 interface InputFieldProps {
@@ -23,6 +24,7 @@ const PairText: React.FC<InputFieldProps> = ({
   property,
   position,
 }) => {
+  const { t } = useTranslation();
   const fieldName = `localeData[${language}][${property}][${index}][${position}]`;
   const fieldError =
     errors?.localeData?.[language]?.[property]?.[index]?.[position];
@@ -33,16 +35,16 @@ const PairText: React.FC<InputFieldProps> = ({
       control={control}
       defaultValue=""
       rules={{
-        required: `${name} is required`,
+        required: `${name} ${t("localeInputField.validation.required")}`,
         maxLength: {
           value: length,
-          message: `${name} must be less than 500 characters`,
+          message: `${name} ${t("localeInputField.validation.maxLength1")} ${length} ${t("localeInputField.validation.maxLength2")}`,
         },
         validate: {
           notEmptyOrWhitespace: (value) => {
             const textContent = value.replace(/<[^>]*>/g, "").trim();
             if (!textContent) {
-              return "Cannot be empty or whitespace only";
+              return t("localeInputField.validation.emptyOrWhitespace");
             }
             return true;
           },

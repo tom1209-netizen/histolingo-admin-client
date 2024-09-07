@@ -157,8 +157,6 @@ const Topic = () => {
     setPaginationModel(model);
   };
 
-  
-
   if (loading) {
     return <LoadingTable />;
   }

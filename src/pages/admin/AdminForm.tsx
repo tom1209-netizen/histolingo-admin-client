@@ -102,8 +102,6 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
         if (response.data.success) {
           toast.success(t("toast.createSuccess"));
           navigate("/admin");
-        } else {
-          toast.error(t("toast.error"));
         }
       } else if (typeOfForm === "update" && adminData) {
         body["status"] = data.status;
@@ -112,13 +110,16 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
         if (response.data.success) {
           toast.success(t("toast.updateSuccess"));
           navigate("/admin");
-        } else {
-          toast.error(t("toast.error"));
-        }
+        } 
       }
     } catch (error) {
-      console.error("An error occurred:", error);
-      toast.error(t("toast.error"));
+
+      if (error.toString().includes("Admin is already existed")) {
+        console.log("is this called????")
+        toast.error("Admin name already exists");
+      } else {
+        toast.error(t("toast.error"));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -225,7 +226,11 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
         )} */}
 
         <FormGrid item>
-          <CreateButtonGroup nagivateTo={"/admin"} typeOfForm={typeOfForm} isLoading={submitting}/>
+          <CreateButtonGroup
+            nagivateTo={"/admin"}
+            typeOfForm={typeOfForm}
+            isLoading={submitting}
+          />
         </FormGrid>
       </Grid>
     </ThemeProvider>
