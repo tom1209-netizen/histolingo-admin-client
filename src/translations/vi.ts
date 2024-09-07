@@ -123,6 +123,8 @@ export default {
       correct: "Đáp án đúng",
       leftColumn: "Cột trái",
       rightColumn: "Cột phải",
+      addPair: "Thêm cặp",
+      deletePair: "Xoá cặp",
     },
   },
   testDashboard: {
@@ -320,5 +322,6 @@ export default {
     enUS: "Vui lòng điền các trường cho ngôn ngữ tiếng Anh",
     uploadSuccess: "Tải ảnh lên thành công",
     uploadFail: "Tải ảnh lên không thành công",
+    atLeastOnePair: "Vui lòng tạo ít nhất một cặp",
   },
 };

@@ -4,6 +4,7 @@ import { Control, FieldErrors } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
 import { FormGrid } from "../../../constant/FormGrid";
 import PairText from "./PairText";
+import { useTranslation } from "react-i18next";
 
 interface InputFieldProps {
   control: Control<any>;
@@ -18,11 +19,12 @@ const MatchingPair: React.FC<InputFieldProps> = ({
   errors,
   index,
 }) => {
+  const { t } = useTranslation();
   return (
     <div style={{ display: "flex", gap: "24px" }}>
       <FormGrid item xs={12} md={6}>
         <FormLabel htmlFor="leftColumn" required>
-          Left Column
+          {t("createQuestion.inputFields.leftColumn")}
         </FormLabel>
         <PairText
           position="leftColumn"
@@ -38,7 +40,7 @@ const MatchingPair: React.FC<InputFieldProps> = ({
 
       <FormGrid item xs={12} md={6}>
         <FormLabel htmlFor="rightColumn" required>
-          Right Column
+        {t("createQuestion.inputFields.rightColumn")}
         </FormLabel>
         <PairText
           index={index}

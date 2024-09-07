@@ -134,6 +134,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
       !localeData["en-US"].name.trim() ||
       !localeData["en-US"].content.trim()
     ) {
+      setSubmitting(false);
       toast.error(t("toast.enUS"));
       return;
     }

@@ -30,7 +30,7 @@ function Copyright(props: any) {
     >
       {"Copyright © "}
       <Link color="inherit" href="">
-        Histolingo
+        Histolingo-Admin
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
