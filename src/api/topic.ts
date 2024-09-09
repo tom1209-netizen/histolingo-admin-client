@@ -83,19 +83,41 @@ export const getIndividualTopic = async (
   }
 };
 
+// export const getTopicsByCountry = async (
+//   countryId: string
+// ): Promise<string[]> => {
+//   try {
+//     const accessToken = Cookies.get("accessToken");
+//     const response = await api.get(`/topics`, {
+//       headers: { Authorization: `Bearer ${accessToken}` },
+//     });
+//     const allTopics = response.data.data.topics;
+//     const filteredTopics = allTopics.filter(
+//       (topic: any) => topic.countryId === countryId
+//     );
+//     return filteredTopics;
+//   } catch (error) {
+//     if (axios.isAxiosError(error)) {
+//       throw new Error(
+//         error.response?.data.message || "Get topics by country failed"
+//       );
+//     } else {
+//       throw error;
+//     }
+//   }
+// };
+
+// BYPASS AUTHORIZATION
 export const getTopicsByCountry = async (
   countryId: string
 ): Promise<string[]> => {
   try {
     const accessToken = Cookies.get("accessToken");
-    const response = await api.get(`/topics`, {
+    const response = await api.get(`/tests/getTopics`, {
       headers: { Authorization: `Bearer ${accessToken}` },
+      params: { countryId },
     });
-    const allTopics = response.data.data.topics;
-    const filteredTopics = allTopics.filter(
-      (topic: any) => topic.countryId === countryId
-    );
-    return filteredTopics;
+    return response.data.data;   
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(

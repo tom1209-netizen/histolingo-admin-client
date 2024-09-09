@@ -86,6 +86,28 @@ export const getIndividualDocument = async (
   }
 };
 
+export const getDocumentationsByCountryAndTopic = async (
+  countryId: string,
+  topicId: string
+): Promise<string[]> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await api.get(`/tests/getDocumentations`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      params: { countryId, topicId },
+    });
+    return response.data.data;   
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data.message || "Get documentations by country and topic failed"
+      );
+    } else {
+      throw error;
+    }
+  }
+};
+
 export const switchDocumentStatus = async (
   id: string,
   status: number

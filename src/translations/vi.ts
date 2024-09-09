@@ -29,7 +29,7 @@ export default {
       supervisor: "Giám sát",
       role: "Vai trò",
       status: "Trạng thái",
-      edit: "Sửa admin",
+      edit: "Sửa",
     },
   },
   createAdmin: {

@@ -15,8 +15,14 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getCountries } from "../../api/country";
-import { getDocuments } from "../../api/documentation";
+import {
+  getCountries,
+  getCountriesByPassAuthorization,
+} from "../../api/country";
+import {
+  getDocumentationsByCountryAndTopic,
+  getDocuments,
+} from "../../api/documentation";
 import { createPlayerTest, updatePlayerTest } from "../../api/playerTest";
 import { getQuestions } from "../../api/question";
 import { getTopicsByCountry } from "../../api/topic";
@@ -63,6 +69,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   const navigate = useNavigate();
   const localeData = watch("localeData");
   const country = watch("country");
+  const topic = watch("topic");
   const activeCompulsory = typeOfForm === "create";
   const [loading, setLoading] = useState<boolean>(true);
   const [countryNames, setCountryNames] = useState<any[]>([]);
@@ -107,8 +114,12 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     const fetchDocumentations = async () => {
       try {
         const query = { status: 1 };
-        const response = await getDocuments(query);
-        const documentations = response.data.data.documentations;
+
+        const documentations = await getDocumentationsByCountryAndTopic(
+          country,
+          topic
+        );
+        // const documentations = response.data.data.documentations;
         const documentationArray = documentations.map((doc: any) => ({
           value: doc._id,
           label: doc.name,
@@ -120,16 +131,18 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         toast.error("Failed to fetch documentations");
       }
     };
-    fetchDocumentations();
-  }, []);
+    if (country && topic) {
+      fetchDocumentations();
+    }
+  }, [country, topic]);
 
   // FETCH COUNTRIES
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const query = { status: 1 };
-        const response = await getCountries(query);
-        const countries = response.data.data.countries;
+        const response = await getCountriesByPassAuthorization();
+        console.log(response, "response");
+        const countries = response.data.data;
         const countryNames = countries.map((country: any) => ({
           value: country._id,
           label: country.name,
@@ -145,7 +158,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   }, []);
 
   // FETCH TOPICS
-
   useEffect(() => {
     const fetchTopics = async () => {
       try {
@@ -154,7 +166,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           value: topic._id,
           label: topic.name,
         }));
-        console.log("hellooooo")
+        console.log("hellooooo");
         console.log(topics, "topics");
         setTopicNames(topicNames);
       } catch (error) {
@@ -420,6 +432,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
             required={false}
             name="documentationsId"
             options={documentationArray}
+            disabled={!country || !topic}
           />
         </FormGrid>
 

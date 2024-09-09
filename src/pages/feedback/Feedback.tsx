@@ -15,9 +15,12 @@ import { LoadingTable } from "../../components/reusable/Loading";
 import { toast } from "react-toastify";
 import FeedbackDialog from "./FeedbackDialog";
 import { useTranslation } from "react-i18next";
+import { DataContext } from "../../components/layouts/ProfileContext";
+import { permission } from "process";
+import { rolePrivileges } from "../../constant/rolePrivileges";
 
 const Feedback = () => {
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchFeedbackQuery: any = convertSearchParamsToObj(searchParams);
   const [loading, setLoading] = useState<boolean>(true);
@@ -31,6 +34,12 @@ const Feedback = () => {
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [open, setOpen] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
+
+  const context = React.useContext(DataContext);
+  if (context === undefined) {
+    throw new Error("Component must be used within a DataProvider");
+  }
+  const { profileData } = context;
 
   const handleStatusChange = async (id: any, status: any) => {
     setLoadingStatus(true);
@@ -50,53 +59,53 @@ const Feedback = () => {
   };
 
   const handleViewDetail = (row) => {
-    console.log(row)
+    console.log(row);
     setOpen(true);
     setSelectedFeedback(row);
   };
 
   const columns: GridColDef[] = [
-    { field: "createdBy", headerName: t("feedbackDashboard.table.playerName"), flex: 1, sortable: false },
+    {
+      field: "createdBy",
+      headerName: t("feedbackDashboard.table.playerName"),
+      valueGetter: (value, row) => row.player.fullName,
+      flex: 1,
+      sortable: false,
+    },
     { field: "content", headerName: "Feedback", flex: 3, sortable: false },
-    { field: "testId", headerName: t("feedbackDashboard.table.test"), flex: 1, sortable: false },
-    { field: "createdAt", headerName: t("createdAt"), flex: 1, sortable: false },
     {
-      field: "status",
-      flex: 0,
+      field: "testId",
+      headerName: t("feedbackDashboard.table.test"),
+      flex: 1,
+      valueGetter: (value, row) => row.test.name,
       sortable: false,
-      headerName: t("status"),
-      description:
-        "This column allows users to switch the status of the data (aka soft delete).",
-      width: 90,
-      renderCell: (params) => {
-        return (
-          <Switch
-            disabled={loadingStatus}
-            defaultChecked={params.row.status == 1}
-            onChange={() =>
-              handleStatusChange(params.row._id, params.row.status === 1 ? 0 : 1)
-            }
-          />
-        );
-      },
     },
     {
-      field: "edit",
-      headerName: t("feedbackDashboard.table.detail"),
-      width: 100,
-      flex: 0,
-      align: "center",
+      field: "createdAt",
+      headerName: t("createdAt"),
+      flex: 1,
       sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleViewDetail(params.row)}
-          color="primary"
-          aria-label="delete"
-        >
-          <PreviewOutlined />
-        </IconButton>
-      ),
     },
+    ...(profileData?.permissions.includes(rolePrivileges.feedback.update)
+      ? [
+          {
+            field: "detail",
+            headerName: t("feedbackDashboard.table.detail"),
+            width: 100,
+            flex: 0,
+            sortable: false,
+            renderCell: (params) => (
+              <IconButton
+                onClick={() => handleViewDetail(params.row)}
+                color="primary"
+                aria-label="delete"
+              >
+                <PreviewOutlined />
+              </IconButton>
+            ),
+          },
+        ]
+      : []),
   ];
 
   const fetchFeedbacks = async (page: number, pageSize: number) => {

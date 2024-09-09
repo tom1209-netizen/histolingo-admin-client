@@ -207,8 +207,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     setSubmitting(true);
     // CHECK IF ENGLISH FIELDS ARE FILLED
     if (data.questionType === 0) {
-      console.log("is this called?");
-      console.log(localeData["en-US"].options);
       const optionsFilledOrNot = localeData["en-US"].options.every((option) => {
         return option !== null && option !== undefined && option !== "";
       });
@@ -224,7 +222,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         return;
       }
     } else if (data.questionType === 2) {
-      console.log(localeData["en-US"].answer, "localeData en-US");
       if (!localeData["en-US"].answer) {
         toast.error(t("toast.atLeastOnePair"));
         setSubmitting(false);

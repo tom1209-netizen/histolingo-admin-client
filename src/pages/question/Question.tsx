@@ -16,6 +16,8 @@ import { getQuestions, switchQuestionStatus } from "../../api/question";
 import { LoadingTable } from "../../components/reusable/Loading";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { DataContext } from "../../components/layouts/ProfileContext";
+import { rolePrivileges } from "../../constant/rolePrivileges";
 
 const Question = () => {
   const { t } = useTranslation();
@@ -32,11 +34,21 @@ const Question = () => {
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
-  const handleStatusChange = async (id: any, status: any, questionType: number) => {
+  const context = React.useContext(DataContext);
+  if (context === undefined) {
+    throw new Error("Component must be used within a DataProvider");
+  }
+  const { profileData } = context;
+
+  const handleStatusChange = async (
+    id: any,
+    status: any,
+    questionType: number
+  ) => {
     setLoadingStatus(true);
     try {
       const response = await switchQuestionStatus(id, status, questionType);
-      console.log(response)
+      console.log(response);
       if (response.status === 200) {
         toast.success(t("toast.switchStatusSuccess"));
         fetchQuestions(paginationModel.page, paginationModel.pageSize);
@@ -85,37 +97,49 @@ const Question = () => {
     },
     { field: "createdAt", headerName: t("createdAt"), width: 130 },
     { field: "updatedAt", headerName: t("updatedAt"), width: 130 },
-    {
-      field: "status",
-      headerName: t("status"),
-      description:
-        "This column allows users to switch the status of the data (aka soft delete).",
-      width: 90,
-      renderCell: (params) => (
-        <Switch
-          disabled={loadingStatus}
-          defaultChecked={params.row.status == 1}
-          onChange={() =>
-            handleStatusChange(params.row._id, params.row.status === 1 ? 0 : 1, params.row.questionType)
-          }
-        />
-      ),
-    },
-    {
-      field: "edit",
-      headerName: t("edit"),
-      width: 50,
-      sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleEditRow(params.id.toString(), "question")}
-          color="primary"
-          aria-label="delete"
-        >
-          <EditOutlined />
-        </IconButton>
-      ),
-    },
+    ...(profileData?.permissions.includes(rolePrivileges.question.update)
+      ? [
+          {
+            field: "status",
+            headerName: t("status"),
+            description:
+              "This column allows users to switch the status of the data (aka soft delete).",
+            width: 90,
+            renderCell: (params) => (
+              <Switch
+                disabled={loadingStatus}
+                defaultChecked={params.row.status == 1}
+                onChange={() =>
+                  handleStatusChange(
+                    params.row._id,
+                    params.row.status === 1 ? 0 : 1,
+                    params.row.questionType
+                  )
+                }
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(profileData?.permissions.includes(rolePrivileges.question.update)
+      ? [
+          {
+            field: "edit",
+            headerName: t("edit"),
+            width: 50,
+            sortable: false,
+            renderCell: (params) => (
+              <IconButton
+                onClick={() => handleEditRow(params.id.toString(), "question")}
+                color="primary"
+                aria-label="delete"
+              >
+                <EditOutlined />
+              </IconButton>
+            ),
+          },
+        ]
+      : []),
   ];
 
   const fetchQuestions = async (page: number, pageSize: number) => {
@@ -181,7 +205,9 @@ const Question = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createquestion" />
+        {profileData?.permissions.includes(rolePrivileges.question.create) && (
+          <CreateImportButtonGroup createPath="/createquestion" />
+        )}
       </Box>
       <DataTable
         isLoading={isTableLoading}

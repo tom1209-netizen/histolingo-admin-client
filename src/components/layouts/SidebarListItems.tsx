@@ -15,29 +15,36 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { getProfile } from "../../api/admin";
 import { rolePrivileges } from "../../constant/rolePrivileges";
+import { DataContext } from "./ProfileContext";
 const MainListItems = () => {
   const { t } = useTranslation();
-  const [permissions, setPermissions] = React.useState<number[]>([]);
-  React.useEffect(() => {
-    const fetchPermissions = async () => {
-      try {
-        const response = await getProfile();
-        const fetchedPermissions = response.data.data.roles
-          .map((role) => role.permissions)
-          .flat();
-        console.log(fetchedPermissions, "fetchedPermissions");
-        setPermissions(fetchedPermissions);
-        console.log(permissions);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchPermissions();
-  }, []);
+  // const [permissions, setPermissions] = React.useState<number[]>([]);
+  // React.useEffect(() => {
+  //   const fetchPermissions = async () => {
+  //     try {
+  //       const response = await getProfile();
+  //       const fetchedPermissions = response.data.data.roles
+  //         .map((role) => role.permissions)
+  //         .flat();
+  //       console.log(fetchedPermissions, "fetchedPermissions");
+  //       setPermissions(fetchedPermissions);
+  //       console.log(permissions);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchPermissions();
+  // }, []);
+
+  const context = React.useContext(DataContext);
+  if (context === undefined) {
+    throw new Error("Component must be used within a DataProvider");
+  }
+  const { profileData } = context;
 
   return (
     <React.Fragment>
-      {permissions.includes(rolePrivileges.admin.read) && (
+      {profileData?.permissions.includes(rolePrivileges.admin.read) && (
         <ListItemButton component={Link} to="/admin">
           <ListItemIcon>
             <PersonOutlineOutlinedIcon />
@@ -52,7 +59,7 @@ const MainListItems = () => {
         </ListItemIcon>
         <ListItemText primary={t("sidebar.admin")} />
       </ListItemButton> */}
-      {permissions.includes(rolePrivileges.role.read) && (
+      {profileData?.permissions.includes(rolePrivileges.role.read) && (
         <ListItemButton component={Link} to="/role">
           <ListItemIcon>
             <MilitaryTechOutlinedIcon />
@@ -61,7 +68,7 @@ const MainListItems = () => {
         </ListItemButton>
       )}
 
-      {permissions.includes(rolePrivileges.player.read) && (
+      {profileData?.permissions.includes(rolePrivileges.player.read) && (
         <ListItemButton component={Link} to="/learner">
           <ListItemIcon>
             <LocalLibraryOutlinedIcon />
@@ -69,7 +76,7 @@ const MainListItems = () => {
           <ListItemText primary={t("sidebar.learner")} />
         </ListItemButton>
       )}
-      {permissions.includes(rolePrivileges.country.read) && (
+      {profileData?.permissions.includes(rolePrivileges.country.read) && (
         <ListItemButton component={Link} to="/country">
           <ListItemIcon>
             <PublicOutlinedIcon />
@@ -77,7 +84,7 @@ const MainListItems = () => {
           <ListItemText primary={t("sidebar.country")} />
         </ListItemButton>
       )}
-      {permissions.includes(rolePrivileges.topic.read) && (
+      {profileData?.permissions.includes(rolePrivileges.topic.read) && (
         <ListItemButton component={Link} to="/topic">
           <ListItemIcon>
             <SchoolOutlinedIcon />
@@ -85,7 +92,7 @@ const MainListItems = () => {
           <ListItemText primary={t("sidebar.topic")} />
         </ListItemButton>
       )}
-      {permissions.includes(rolePrivileges.question.read) && (
+      {profileData?.permissions.includes(rolePrivileges.question.read) && (
         <ListItemButton component={Link} to="/question">
           <ListItemIcon>
             <LightbulbOutlinedIcon />
@@ -94,7 +101,7 @@ const MainListItems = () => {
         </ListItemButton>
       )}
 
-      {permissions.includes(rolePrivileges.test.read) && (
+      {profileData?.permissions.includes(rolePrivileges.test.read) && (
         <ListItemButton component={Link} to="/playertest">
           <ListItemIcon>
             <EmojiEventsOutlinedIcon />
@@ -102,7 +109,7 @@ const MainListItems = () => {
           <ListItemText primary={t("sidebar.test")} />
         </ListItemButton>
       )}
-      {permissions.includes(rolePrivileges.documentation.read) && (
+      {profileData?.permissions.includes(rolePrivileges.documentation.read) && (
         <ListItemButton component={Link} to="/documentation">
           <ListItemIcon>
             <ArticleOutlinedIcon />
@@ -110,7 +117,7 @@ const MainListItems = () => {
           <ListItemText primary={t("sidebar.documentation")} />
         </ListItemButton>
       )}
-      {permissions.includes(rolePrivileges.feedback.read) && (
+      {profileData?.permissions.includes(rolePrivileges.feedback.read) && (
         <ListItemButton component={Link} to="/feedback">
           <ListItemIcon>
             <ThumbUpAltOutlinedIcon />
