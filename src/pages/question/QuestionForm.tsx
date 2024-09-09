@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getCountries } from "../../api/country";
+import { getCountries, getCountriesByPassAuthorization } from "../../api/country";
 import { createQuestion, updateQuestion } from "../../api/question";
 import { getTopicsByCountry } from "../../api/topic";
 import SelectInputField from "../../components/formComponents/SelectInputField";
@@ -82,9 +82,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const query = { status: 1 };
-        const response = await getCountries(query);
-        const countries = response.data.data.countries;
+        const response = await getCountriesByPassAuthorization();
+        const countries = response.data.data;
         const countryNames = countries.map((country: any) => ({
           value: country._id,
           label: country.name,
@@ -141,10 +140,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     const value = event.target.value;
     console.log(value, "value");
     setValue("questionType", value);
-    // if (value === 2 && fields.length === 0) {
-    //   append({ leftColumn: "", rightColumn: "" });
-    //   console.log("is this get called?");
-    // }
     reset({
       language: "en-US",
       localeData: {
@@ -193,6 +188,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           }
 
           reset({ ...defaultFormValues, ...questionData });
+          setValue("questionTypeDisabled", questionData.questionType);
+          
         }
       } catch (error) {
         console.error(error);
@@ -332,11 +329,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   };
 
   const handleRemovePair = (index: number) => {
-    // Clear the fields for the specific index
-    // console.log("Removing index:", index);
-    // console.log("Current fields:", fields);
-
-    // remove the pair in locale data
     for (const locale in localeData) {
       const oldAnswer = localeData[locale].answer ?? [];
       localeData[locale].answer = oldAnswer.filter(
@@ -344,10 +336,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       );
     }
     setValue("localeData", localeData);
-
-    // Remove the pair
     remove(index);
-    console.log("After fields:", fields);
   };
 
   return (
@@ -365,20 +354,37 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
         onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
-        <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="question-select" required>
-            {t("createQuestion.inputFields.questionType")}
-          </FormLabel>
-          <SelectInputField
-            control={control}
-            errors={errors}
-            name="questionType"
-            label={t("createQuestion.inputFields.questionType")}
-            options={questionTypes}
-            // disabled={fixQuestionType}
-            onChange={handleQuestionTypeChange}
-          />
-        </FormGrid>
+        {typeOfForm === "create" && (
+          <FormGrid item xs={12} md={6}>
+            <FormLabel htmlFor="question-select" required>
+              {t("createQuestion.inputFields.questionType")}
+            </FormLabel>
+            <SelectInputField
+              control={control}
+              errors={errors}
+              name="questionType"
+              label={t("createQuestion.inputFields.questionType")}
+              options={questionTypes}
+              onChange={handleQuestionTypeChange}
+            />
+          </FormGrid>
+        )}
+
+        {typeOfForm === "update" && (
+          <FormGrid item xs={12} md={6}>
+            <FormLabel htmlFor="question-select" required>
+              {t("createQuestion.inputFields.questionType")}
+            </FormLabel>
+            <SelectInputField
+              control={control}
+              errors={errors}
+              name="questionTypeDisabled"
+              label={t("createQuestion.inputFields.questionType")}
+              options={questionTypes}
+              disabled={true}
+            />
+          </FormGrid>
+        )}
 
         <FormGrid item xs={12} md={6}>
           <FormLabel htmlFor="language-select" required>

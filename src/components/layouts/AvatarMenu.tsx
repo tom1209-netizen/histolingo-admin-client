@@ -10,15 +10,14 @@ import Cookies from "js-cookie";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { getProfile } from "../../api/admin";
 import { DataContext } from "./ProfileContext";
 
 export default function AvatarMenu() {
   const context = React.useContext(DataContext);
   if (context === undefined) {
-    throw new Error('YourComponent must be used within a DataProvider');
+    throw new Error('Component must be used within a DataProvider');
   }
-  const { data, loading, error } = context;
+  const { profileData, loading, error } = context;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -36,24 +35,6 @@ export default function AvatarMenu() {
     Cookies.remove("refreshToken");
     navigate("/login");
   };
-  
-
-  // React.useEffect(() => {
-  //   const fetchName = async () => {
-  //     try {
-  //       const response = await getProfile();
-  //       const firstNameInitial = response.data.data.firstName[0];
-  //       const lastNameInitial = response.data.data.lastName[0];
-  //       setNameInitial(firstNameInitial + lastNameInitial);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchName();
-  // }, []);
-
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error}</p>;
 
   return (
     <React.Fragment>
@@ -66,7 +47,7 @@ export default function AvatarMenu() {
         aria-expanded={open ? "true" : undefined}
       >
         <Avatar sx={{ bgcolor: grey[100], color: grey[800] }}>
-          {data?.nameInitial}
+          {profileData?.nameInitial}
         </Avatar>
       </IconButton>
 

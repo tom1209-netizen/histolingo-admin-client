@@ -31,7 +31,7 @@ const MatchingPair: React.FC<InputFieldProps> = ({
           property="answer"
           index={index}
           language={language}
-          name="Left Column"
+          label={t("createQuestion.inputFields.leftColumn")}
           control={control}
           errors={errors}
           length={500}
@@ -48,7 +48,7 @@ const MatchingPair: React.FC<InputFieldProps> = ({
           property="answer"
           language={language}
           length={500}
-          name="Right column"
+          label={t("createQuestion.inputFields.rightColumn")}
           control={control}
           errors={errors}
         />

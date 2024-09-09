@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getCountries } from "../../api/country";
+import { getCountries, getCountriesByPassAuthorization } from "../../api/country";
 import { createTopic, updateTopic } from "../../api/topic";
 import { uploadFile } from "../../api/upload";
 import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
@@ -76,9 +76,9 @@ const TopicForm: React.FC<TopicFormProps> = ({ typeOfForm, topicData }) => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const query = { status: 1 };
-        const response = await getCountries(query);
-        const countries = response.data.data.countries;
+        const response = await getCountriesByPassAuthorization();
+        const countries = response.data.data;
+        
         const countryNames = countries.map((country: any) => ({
           value: country._id,
           label: country.name,
