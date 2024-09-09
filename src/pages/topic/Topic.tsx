@@ -17,6 +17,8 @@ import { LoadingTable } from "../../components/reusable/Loading";
 import { no_img } from "../../constant/image";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { DataContext } from "../../components/layouts/ProfileContext";
+import { rolePrivileges } from "../../constant/rolePrivileges";
 
 const Topic = () => {
   const { t } = useTranslation();
@@ -32,6 +34,11 @@ const Topic = () => {
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
+  const context = React.useContext(DataContext);
+  if (context === undefined) {
+    throw new Error("Component must be used within a DataProvider");
+  }
+  const { profileData } = context;
 
   const handleStatusChange = async (id: any, status: any) => {
     setLoadingStatus(true);
@@ -51,7 +58,12 @@ const Topic = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: t("topicDashboard.table.topicName"), flex: 1, sortable: false },
+    {
+      field: "name",
+      headerName: t("topicDashboard.table.topicName"),
+      flex: 1,
+      sortable: false,
+    },
     {
       field: "description",
       headerName: t("description"),
@@ -84,43 +96,63 @@ const Topic = () => {
         />
       ),
     },
-    { field: "createdAt", headerName: t("createdAt"), flex: 1, sortable: false },
-    { field: "updatedAt", headerName: t("updatedAt"), flex: 1, sortable: false },
     {
-      field: "status",
-      headerName: t("status"),
-      flex: 0,
+      field: "createdAt",
+      headerName: t("createdAt"),
+      flex: 1,
       sortable: false,
-      description:
-        "This column allows users to switch the status of the data (aka soft delete).",
-      width: 90,
-      renderCell: (params) => (
-        <Switch
-          disabled={loadingStatus}
-          defaultChecked={params.row.status == 1}
-          onChange={() =>
-            handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
-          }
-        />
-      ),
     },
     {
-      field: "edit",
-      headerName: t("edit"),
-      flex: 0,
-      width: 100,
-      align: "center",
+      field: "updatedAt",
+      headerName: t("updatedAt"),
+      flex: 1,
       sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleEditRow(params.id.toString(), "topic")}
-          color="primary"
-          aria-label="delete"
-        >
-          <EditOutlined />
-        </IconButton>
-      ),
     },
+    ...(profileData?.permissions.includes(rolePrivileges.topic.update)
+      ? [
+          {
+            field: "status",
+            headerName: t("status"),
+            flex: 0,
+            sortable: false,
+            description:
+              "This column allows users to switch the status of the data (aka soft delete).",
+            width: 90,
+            renderCell: (params) => (
+              <Switch
+                disabled={loadingStatus}
+                defaultChecked={params.row.status == 1}
+                onChange={() =>
+                  handleStatusChange(
+                    params.row._id,
+                    params.row.status == 1 ? 0 : 1
+                  )
+                }
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(profileData?.permissions.includes(rolePrivileges.topic.update)
+      ? [
+          {
+            field: "edit",
+            headerName: t("edit"),
+            flex: 0,
+            width: 100,
+            sortable: false,
+            renderCell: (params) => (
+              <IconButton
+                onClick={() => handleEditRow(params.id.toString(), "topic")}
+                color="primary"
+                aria-label="delete"
+              >
+                <EditOutlined />
+              </IconButton>
+            ),
+          },
+        ]
+      : []),
   ];
 
   const fetchTopics = async (page: number, pageSize: number) => {
@@ -187,7 +219,9 @@ const Topic = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createtopic" />
+        {profileData?.permissions.includes(rolePrivileges.topic.create) && (
+          <CreateImportButtonGroup createPath="/createtopic" />
+        )}
       </Box>
       <DataTable
         isLoading={isTableLoading}

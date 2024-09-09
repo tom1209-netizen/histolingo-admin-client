@@ -17,6 +17,8 @@ import DataTable from "../../components/reusable/Table";
 import { useRowActions } from "../../hooks/useRowActions";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
+import { DataContext } from "../../components/layouts/ProfileContext";
+import { rolePrivileges } from "../../constant/rolePrivileges";
 
 const PlayerTest = () => {
   const { t } = useTranslation();
@@ -32,6 +34,11 @@ const PlayerTest = () => {
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
+  const context = React.useContext(DataContext);
+  if (context === undefined) {
+    throw new Error("Component must be used within a DataProvider");
+  }
+  const { profileData } = context;
 
   const handleStatusChange = async (id: any, status: any) => {
     setLoadingStatus(true);
@@ -99,61 +106,76 @@ const PlayerTest = () => {
       flex: 1,
       sortable: false,
     },
-    {
-      field: "status",
-      flex: 0,
-      sortable: false,
-      headerName: t("status"),
-      description:
-        "This column allows users to switch the status of the data (aka soft delete).",
-      width: 90,
-      renderCell: (params) => {
-        console.log(params);
-        return (
-          <Switch
-            disabled={loadingStatus}
-            defaultChecked={params.row.status == 1}
-            onChange={() =>
-              handleStatusChange(params.row._id, params.row.status == 1 ? 0 : 1)
-            }
-          />
-        );
-      },
-    },
-    {
-      field: "play",
-      headerName: t("testDashboard.table.play"),
-      width: 100,
-      flex: 0,
-      align: "center",
-      sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleEditRow(params.id.toString(), "testplay")}
-          color="primary"
-          aria-label="delete"
-        >
-          <PlayCircleIcon />
-        </IconButton>
-      ),
-    },
-    {
-      field: "edit",
-      headerName: t("edit"),
-      width: 100,
-      flex: 0,
-      align: "center",
-      sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleEditRow(params.id.toString(), "playertest")}
-          color="primary"
-          aria-label="delete"
-        >
-          <EditOutlined />
-        </IconButton>
-      ),
-    },
+    ...(profileData?.permissions.includes(rolePrivileges.test.update)
+      ? [
+          {
+            field: "status",
+            flex: 0,
+            sortable: false,
+            headerName: t("status"),
+            description:
+              "This column allows users to switch the status of the data (aka soft delete).",
+            width: 90,
+            renderCell: (params) => {
+              console.log(params);
+              return (
+                <Switch
+                  disabled={loadingStatus}
+                  defaultChecked={params.row.status == 1}
+                  onChange={() =>
+                    handleStatusChange(
+                      params.row._id,
+                      params.row.status == 1 ? 0 : 1
+                    )
+                  }
+                />
+              );
+            },
+          },
+        ]
+      : []),
+    ...(profileData?.permissions.includes(rolePrivileges.test.play)
+      ? [
+          {
+            field: "play",
+            headerName: t("testDashboard.table.play"),
+            width: 100,
+            flex: 0,
+            sortable: false,
+            renderCell: (params) => (
+              <IconButton
+                onClick={() => handleEditRow(params.id.toString(), "testplay")}
+                color="primary"
+                aria-label="delete"
+              >
+                <PlayCircleIcon />
+              </IconButton>
+            ),
+          },
+        ]
+      : []),
+    ...(profileData?.permissions.includes(rolePrivileges.test.update)
+      ? [
+          {
+            field: "edit",
+            headerName: t("edit"),
+            width: 100,
+            flex: 0,
+            sortable: false,
+            renderCell: (params) => (
+              <IconButton
+                onClick={() =>
+                  handleEditRow(params.id.toString(), "playertest")
+                }
+                color="primary"
+                aria-label="delete"
+              >
+                <EditOutlined />
+              </IconButton>
+            ),
+          },
+        ]
+      : []),
   ];
 
   const fetchTests = async (page: number, pageSize: number) => {
@@ -220,7 +242,9 @@ const PlayerTest = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createtest" />
+        {profileData?.permissions.includes(rolePrivileges.test.create) && (
+          <CreateImportButtonGroup createPath="/createtest" />
+        )}
       </Box>
       <DataTable
         isLoading={isTableLoading}

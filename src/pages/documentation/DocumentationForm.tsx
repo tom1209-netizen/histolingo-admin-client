@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getCountries } from "../../api/country";
+import { getCountries, getCountriesByPassAuthorization } from "../../api/country";
 import { createDocument, updateDocument } from "../../api/documentation";
 import { getTopicsByCountry } from "../../api/topic";
 import { uploadFile } from "../../api/upload";
@@ -69,8 +69,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const query = { status: 1 };
-        const response = await getCountries(query);
+        const response = await getCountriesByPassAuthorization();
         const countries = response.data.data.countries;
         console.log(countries);
         const countryNames = countries.map((country: any) => ({
@@ -87,11 +86,11 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
     fetchCountries();
   }, []);
 
+  // FETCH TOPICS
   useEffect(() => {
     const fetchTopics = async () => {
       try {
         const topics = await getTopicsByCountry(country);
-        console.log(topics, "filtered topics");
         const topicNames = topics.map((topic: any) => ({
           value: topic._id,
           label: topic.name,

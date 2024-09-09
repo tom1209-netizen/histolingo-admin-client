@@ -3,18 +3,20 @@ import { Box, Switch } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import { GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { getAdmins, switchAdminStatus } from "../../api/admin";
+import { DataContext } from "../../components/layouts/ProfileContext";
 import CreateImportButtonGroup from "../../components/reusable/CreateImportButtonGroup";
+import { LoadingTable } from "../../components/reusable/Loading";
 import NavTabs from "../../components/reusable/NavTabs";
 import SearchField from "../../components/reusable/SearchField";
 import DataTable from "../../components/reusable/Table";
+import { rolePrivileges } from "../../constant/rolePrivileges";
 import { useRowActions } from "../../hooks/useRowActions";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
-import { LoadingTable } from "../../components/reusable/Loading";
-import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
 
 const Admin = () => {
   const { t } = useTranslation();
@@ -32,6 +34,12 @@ const Admin = () => {
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [loadingStatus, setLoadingStatus] = useState<boolean>(false);
 
+  const context = React.useContext(DataContext);
+  if (context === undefined) {
+    throw new Error("Component must be used within a DataProvider");
+  }
+  const { profileData } = context;
+
   const handleStatusChange = async (id: any, status: any) => {
     setLoadingStatus(true);
     try {
@@ -45,7 +53,7 @@ const Admin = () => {
     } catch (error) {
       toast.error(t("toast.switchStatusFail"));
     } finally {
-      setLoadingStatus(false); 
+      setLoadingStatus(false);
     }
   };
 
@@ -83,47 +91,54 @@ const Admin = () => {
       flex: 1,
       sortable: false,
     },
-    {
-      field: "status",
-      flex: 0,
-      headerName: t("adminDashboard.table.status"),
-      description:
-        "This column allows users to switch the status of the data (aka soft delete).",
-      width: 90,
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <Switch
-            defaultChecked={params.row.status == 1}
-            disabled={loadingStatus} 
-            onChange={() => {
-              console.log(params.row.status, "current status");
-              handleStatusChange(
-                params.row._id,
-                params.row.status === 1 ? 0 : 1
+    ...(profileData?.permissions.includes(rolePrivileges.admin.update)
+      ? [
+          {
+            field: "status",
+            flex: 0,
+            headerName: t("adminDashboard.table.status"),
+            description:
+              "This column allows users to switch the status of the data (aka soft delete).",
+            width: 90,
+            sortable: false,
+            renderCell: (params) => {
+              return (
+                <Switch
+                  defaultChecked={params.row.status == 1}
+                  disabled={loadingStatus}
+                  onChange={() => {
+                    console.log(params.row.status, "current status");
+                    handleStatusChange(
+                      params.row._id,
+                      params.row.status === 1 ? 0 : 1
+                    );
+                  }}
+                />
               );
-            }}
-          />
-        );
-      },
-    },
-    {
-      field: "edit",
-      headerName: t("adminDashboard.table.edit"),
-      width: 100,
-      sortable: false,
-      flex: 0,
-      align: "center",
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleEditRow(params.id.toString(), "admin")}
-          color="primary"
-          aria-label="delete"
-        >
-          <EditOutlined />
-        </IconButton>
-      ),
-    },
+            },
+          },
+        ]
+      : []),
+    ...(profileData?.permissions.includes(rolePrivileges.admin.update)
+      ? [
+          {
+            field: "edit",
+            headerName: t("adminDashboard.table.edit"),
+            width: 100,
+            sortable: false,
+            flex: 0,
+            renderCell: (params) => (
+              <IconButton
+                onClick={() => handleEditRow(params.id.toString(), "admin")}
+                color="primary"
+                aria-label="delete"
+              >
+                <EditOutlined />
+              </IconButton>
+            ),
+          },
+        ]
+      : []),
   ];
 
   const fetchAdmins = async (page: number, pageSize: number) => {
@@ -191,7 +206,9 @@ const Admin = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createadmin" />
+        {profileData?.permissions.includes(rolePrivileges.admin.create) && (
+          <CreateImportButtonGroup createPath="/createadmin" />
+        )}
       </Box>
       <DataTable
         isLoading={isTableLoading}

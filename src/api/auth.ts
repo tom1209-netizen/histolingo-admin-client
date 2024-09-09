@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
 import api from './interceptor';
-// const domain_api = import.meta.env.VITE_DOMAIN_API
 
 interface RoleData {
   name: string;

@@ -102,46 +102,54 @@ const Country = () => {
       flex: 1,
       sortable: false,
     },
-    {
-      field: "status",
-      flex: 0,
-      sortable: false,
-      headerName: t("status"),
-      description:
-        "This column allows users to switch the status of the data (aka soft delete).",
-      width: 90,
-      renderCell: (params) =>
-        profileData?.permissions.includes(rolePrivileges.country.delete) ? (
-          <Switch
-            disabled={loadingStatus}
-            defaultChecked={params.row.status == 1}
-            onChange={() => {
-              handleStatusChange(
-                params.row._id,
-                params.row.status === 1 ? 0 : 1
-              );
-            }}
-          />
-        ) : null,
-    },
-    {
-      field: "edit",
-      headerName: t("edit"),
-      width: 100,
-      flex: 0,
-      align: "center",
-      sortable: false,
-      renderCell: (params) =>
-        profileData?.permissions.includes(rolePrivileges.country.update) ? (
-          <IconButton
-            onClick={() => handleEditRow(params.id.toString(), "country")}
-            color="primary"
-            aria-label="delete"
-          >
-            <EditOutlined />
-          </IconButton>
-        ) : null,
-    },
+    ...(profileData?.permissions.includes(rolePrivileges.country.update)
+      ? [
+          {
+            field: "status",
+            flex: 0,
+            sortable: false,
+            headerName: t("status"),
+            description:
+              "This column allows users to switch the status of the data (aka soft delete).",
+            width: 90,
+            renderCell: (params) =>
+              profileData?.permissions.includes(
+                rolePrivileges.country.update
+              ) ? (
+                <Switch
+                  disabled={loadingStatus}
+                  defaultChecked={params.row.status == 1}
+                  onChange={() => {
+                    handleStatusChange(
+                      params.row._id,
+                      params.row.status === 1 ? 0 : 1
+                    );
+                  }}
+                />
+              ) : null,
+          },
+        ]
+      : []),
+    ...(profileData?.permissions.includes(rolePrivileges.country.update)
+      ? [
+          {
+            field: "edit",
+            headerName: t("edit"),
+            width: 100,
+            flex: 0,
+            sortable: false,
+            renderCell: (params) => (
+              <IconButton
+                onClick={() => handleEditRow(params.id.toString(), "country")}
+                color="primary"
+                aria-label="edit"
+              >
+                <EditOutlined />
+              </IconButton>
+            ),
+          },
+        ]
+      : []),
   ];
 
   const fetchCountries = async (page: number, pageSize: number) => {

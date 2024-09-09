@@ -100,7 +100,7 @@ const Role = () => {
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 100,
       renderCell: (params) =>
-        profileData?.permissions.includes(rolePrivileges.role.delete) ? (
+        profileData?.permissions.includes(rolePrivileges.role.update) ? (
           <Switch
             disabled={loadingStatus}
             defaultChecked={params.row.status == 1}

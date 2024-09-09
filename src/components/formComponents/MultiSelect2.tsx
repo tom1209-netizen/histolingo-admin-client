@@ -22,6 +22,7 @@ interface MultiSelectInputFieldProps {
     label: string | number;
   }[];
   required?: boolean;
+  disabled?: boolean;
 }
 
 const ITEM_HEIGHT = 48;
@@ -54,6 +55,7 @@ const MultiSelect2: React.FC<MultiSelectInputFieldProps> = ({
   name,
   required = true,
   options,
+  disabled
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -64,6 +66,7 @@ const MultiSelect2: React.FC<MultiSelectInputFieldProps> = ({
       <Controller
         name={name}
         control={control}
+        disabled={disabled}
         defaultValue={[]}
         rules={
           required
