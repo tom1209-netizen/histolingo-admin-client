@@ -19,6 +19,8 @@ import DataTable from "../../components/reusable/Table";
 import { useRowActions } from "../../hooks/useRowActions";
 import { convertSearchParamsToObj } from "../../utils/common";
 import { formatTimestamp } from "../../utils/formatTime";
+import { DataContext } from "../../components/layouts/ProfileContext";
+import { rolePrivileges } from "../../constant/rolePrivileges";
 
 const Role = () => {
   const { t } = useTranslation();
@@ -40,6 +42,12 @@ const Role = () => {
     page: 0,
     pageSize: 10,
   });
+
+  const context = React.useContext(DataContext);
+  if (context === undefined) {
+    throw new Error("Component must be used within a DataProvider");
+  }
+  const { profileData } = context;
 
   const handleStatusChange = async (id: any, status: any) => {
     setLoadingStatus(true);
@@ -91,15 +99,19 @@ const Role = () => {
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 100,
-      renderCell: (params) => (
-        <Switch
-          disabled={loadingStatus}
-          defaultChecked={params.row.status == 1}
-          onChange={() =>
-            handleStatusChange(params.row._id, params.row.status === 1 ? 0 : 1)
-          }
-        />
-      ),
+      renderCell: (params) =>
+        profileData?.permissions.includes(rolePrivileges.role.delete) ? (
+          <Switch
+            disabled={loadingStatus}
+            defaultChecked={params.row.status == 1}
+            onChange={() =>
+              handleStatusChange(
+                params.row._id,
+                params.row.status === 1 ? 0 : 1
+              )
+            }
+          />
+        ) : null,
     },
     {
       field: "edit",
@@ -108,15 +120,16 @@ const Role = () => {
       align: "center",
       flex: 0,
       sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleEditRow(params.id.toString(), "role")}
-          color="primary"
-          aria-label="delete"
-        >
-          <EditOutlined />
-        </IconButton>
-      ),
+      renderCell: (params) =>
+        profileData?.permissions.includes(rolePrivileges.role.update) ? (
+          <IconButton
+            onClick={() => handleEditRow(params.id.toString(), "role")}
+            color="primary"
+            aria-label="edit"
+          >
+            <EditOutlined />
+          </IconButton>
+        ) : null,
     },
   ];
 
@@ -210,7 +223,9 @@ const Role = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createrole" />
+        {profileData?.permissions.includes(rolePrivileges.role.create) && (
+          <CreateImportButtonGroup createPath="/createrole" />
+        )}
       </Box>
       <DataTable
         isLoading={isTableLoading}

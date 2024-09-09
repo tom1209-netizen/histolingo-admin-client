@@ -154,6 +154,8 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           value: topic._id,
           label: topic.name,
         }));
+        console.log("hellooooo")
+        console.log(topics, "topics");
         setTopicNames(topicNames);
       } catch (error) {
         console.error(error);

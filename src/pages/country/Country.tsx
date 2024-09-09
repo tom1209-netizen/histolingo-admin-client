@@ -16,6 +16,8 @@ import { LoadingTable } from "../../components/reusable/Loading";
 import { toast } from "react-toastify";
 import { no_img } from "../../constant/image";
 import { useTranslation } from "react-i18next";
+import { DataContext } from "../../components/layouts/ProfileContext";
+import { rolePrivileges } from "../../constant/rolePrivileges";
 
 const Country = () => {
   const { t } = useTranslation();
@@ -49,6 +51,12 @@ const Country = () => {
       setLoadingStatus(false);
     }
   };
+
+  const context = React.useContext(DataContext);
+  if (context === undefined) {
+    throw new Error("Component must be used within a DataProvider");
+  }
+  const { profileData } = context;
 
   const columns: GridColDef[] = [
     {
@@ -102,9 +110,8 @@ const Country = () => {
       description:
         "This column allows users to switch the status of the data (aka soft delete).",
       width: 90,
-      renderCell: (params) => {
-        console.log(params);
-        return (
+      renderCell: (params) =>
+        profileData?.permissions.includes(rolePrivileges.country.delete) ? (
           <Switch
             disabled={loadingStatus}
             defaultChecked={params.row.status == 1}
@@ -115,8 +122,7 @@ const Country = () => {
               );
             }}
           />
-        );
-      },
+        ) : null,
     },
     {
       field: "edit",
@@ -125,15 +131,16 @@ const Country = () => {
       flex: 0,
       align: "center",
       sortable: false,
-      renderCell: (params) => (
-        <IconButton
-          onClick={() => handleEditRow(params.id.toString(), "country")}
-          color="primary"
-          aria-label="delete"
-        >
-          <EditOutlined />
-        </IconButton>
-      ),
+      renderCell: (params) =>
+        profileData?.permissions.includes(rolePrivileges.country.update) ? (
+          <IconButton
+            onClick={() => handleEditRow(params.id.toString(), "country")}
+            color="primary"
+            aria-label="delete"
+          >
+            <EditOutlined />
+          </IconButton>
+        ) : null,
     },
   ];
 
@@ -200,7 +207,9 @@ const Country = () => {
             }
           />
         </Box>
-        <CreateImportButtonGroup createPath="/createcountry" />
+        {profileData?.permissions.includes(rolePrivileges.country.create) && (
+          <CreateImportButtonGroup createPath="/createcountry" />
+        )}
       </Box>
       <DataTable
         isLoading={isTableLoading}

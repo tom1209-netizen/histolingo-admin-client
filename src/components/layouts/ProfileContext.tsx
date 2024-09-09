@@ -7,7 +7,7 @@ interface Data {
 }
 
 interface DataContextType {
-  data: Data | null;
+  profileData: Data | null;
   loading: boolean;
   error: string | null;
 }
@@ -15,7 +15,7 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [data, setData] = useState<Data | null>(null);
+  const [profileData, setData] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,10 +23,13 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const fetchData = async () => {
       try {
         const response = await getProfile();
+        console.log(response, "response");
+        const permissions = response.data.data.roles.flatMap(role => role.permissions)
+        console.log(permissions, "permissions")
         const data = {
           nameInitial:
             response.data.data.firstName[0] + response.data.data.lastName[0],
-          permissions: response.data.data.roles,
+          permissions: permissions
         };
         setData(data);
       } catch (err) {
@@ -39,7 +42,7 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   return (
-    <DataContext.Provider value={{ data, loading, error }}>
+    <DataContext.Provider value={{ profileData, loading, error }}>
       {children}
     </DataContext.Provider>
   );

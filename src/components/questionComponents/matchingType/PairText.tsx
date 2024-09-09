@@ -6,7 +6,7 @@ import "react-quill/dist/quill.snow.css";
 interface InputFieldProps {
   control: Control<any>;
   errors: FieldErrors<any>;
-  name: string;
+  label: string;
   language: string;
   length: number;
   index?: number;
@@ -17,7 +17,7 @@ interface InputFieldProps {
 const PairText: React.FC<InputFieldProps> = ({
   control,
   errors,
-  name,
+  label,
   length,
   language,
   index,
@@ -35,10 +35,10 @@ const PairText: React.FC<InputFieldProps> = ({
       control={control}
       defaultValue=""
       rules={{
-        required: `${name} ${t("localeInputField.validation.required")}`,
+        required: `${label} ${t("localeInputField.validation.required")}`,
         maxLength: {
           value: length,
-          message: `${name} ${t("localeInputField.validation.maxLength1")} ${length} ${t("localeInputField.validation.maxLength2")}`,
+          message: `${label} ${t("localeInputField.validation.maxLength1")} ${length} ${t("localeInputField.validation.maxLength2")}`,
         },
         validate: {
           notEmptyOrWhitespace: (value) => {
@@ -56,7 +56,7 @@ const PairText: React.FC<InputFieldProps> = ({
             {...field}
             value={field.value || ""}
             onChange={(value) => field.onChange(value)}
-            placeholder={`Enter ${name}`}
+            placeholder={`${t("localeInputField.placeholder")} ${label}`}
             modules={{
               toolbar: [
                 [{ header: "1" }, { header: "2" }],

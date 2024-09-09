@@ -82,7 +82,8 @@ export const getIndividualQuestion = async (
   }
 };
 
-export const switchQuestionStatus = async (id: string, status: string, questionType: string) => {
+export const switchQuestionStatus = async (id: string, status: string, questionType: number) => {
+  console.log(status, questionType, "status, questionType");
   try {
     const accessToken = Cookies.get("accessToken");
     const response = await api.patch(

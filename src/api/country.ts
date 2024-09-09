@@ -43,6 +43,24 @@ export const getCountries = async (
   }
 };
 
+export const getCountriesByPassAuthorization = async (
+  query: SearchQuery = {}
+): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await api.get(`/tests/getcountries`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "Get countries failed");
+    } else {
+      throw error;
+    }
+  }
+};
+
 export const updateCountry = async (
   id: string,
   body: CountryData
