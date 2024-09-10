@@ -18,6 +18,7 @@ import PasswordInputField from "../../components/formComponents/PasswordInputFie
 import Copyright from "../../components/reusable/Copyright";
 import LanguageSelect from "../../components/layouts/LanguageSelect";
 import { login } from "../../api/auth";
+import { set } from "mongoose";
 
 interface FormValues {
   email: string;
@@ -33,25 +34,25 @@ export default function Login() {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
-
+  const [customError, setCustomError] = React.useState<string | null>(null);
   const onSubmit = async (data: FormValues) => {
     try {
       const response = await login(data.email, data.password);
-      if (response.status === 200) {
-        console.log(response.data, "in result");
-        if (response.data.success) {
-          document.cookie = `accessToken=${response.data.data.accessToken};path=/`;
-          document.cookie = `refreshToken=${response.data.data.refreshToken};path=/`;
-          navigate("/");
-        } else {
-          alert(`Login failed: ${response.data.message}`);
-        }
-      } else {
-        alert("An error occurred. Please try again.");
+      console.log(response.data, "in result");
+      if (response.data.success) {
+        document.cookie = `accessToken=${response.data.data.accessToken};path=/`;
+        document.cookie = `refreshToken=${response.data.data.refreshToken};path=/`;
+        navigate("/");
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      alert("An error occurred. Please try again.");
+      if (error.status === 401) {
+        setCustomError(t("login.validation.invalid"));
+      } else if (error.status === 404) {
+        setCustomError(t("login.validation.inactive"));
+      } else {
+        setCustomError(t("login.validation.unexpectedError"));
+      }
     }
   };
 
@@ -84,6 +85,11 @@ export default function Login() {
           >
             <EmailInputField control={control} errors={errors} />
             <PasswordInputField control={control} errors={errors} />
+            {customError && (
+              <Typography color="error" variant="body2" sx={{ mt: 2 }}>
+                {customError}
+              </Typography>
+            )}
             <Button
               type="submit"
               fullWidth

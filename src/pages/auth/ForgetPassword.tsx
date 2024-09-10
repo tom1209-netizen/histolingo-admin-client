@@ -13,6 +13,7 @@ import EmailInputField from "../../components/formComponents/EmailInputField";
 import LanguageSelect from "../../components/layouts/LanguageSelect";
 import Copyright from "../../components/reusable/Copyright";
 import theme from "../../theme/GlobalCustomTheme";
+import { set } from "mongoose";
 
 interface FormValues {
   email: string;
@@ -25,26 +26,23 @@ export default function ForgetPassword() {
     formState: { errors },
   } = useForm<FormValues>();
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
+  const [state, setState] = React.useState<string | null>(null);
   const onSubmit = async (data: FormValues) => {
     try {
       const response = await forgetPassword(data.email);
       if (response.status === 200) {
-        alert('Password reset instructions sent to your email.');
-      } else {
-        alert('Failed to send password reset instructions. Please try again.');
+        setState(t("forgotPassword.result.success"));
       }
     } catch (error) {
       console.error("Failed to send password reset instructions", error);
-      alert("Failed to send password reset instructions. Please try again.");
+      setState(t("forgotPassword.result.error"));
     }
   };
-  
+
   const handleBackToLogin = () => {
     navigate("/login");
   };
-
-  const { t } = useTranslation();
 
   return (
     <ThemeProvider theme={theme}>
@@ -58,14 +56,14 @@ export default function ForgetPassword() {
             alignItems: "center",
           }}
         >
-           <Box sx={{position: "absolute", top: 16, right: 20}}>
-              <LanguageSelect />
-            </Box>
+          <Box sx={{ position: "absolute", top: 16, right: 20 }}>
+            <LanguageSelect />
+          </Box>
           <Typography component="h1" variant="h5">
-          {t("forgotPassword.title")}
+            {t("forgotPassword.title")}
           </Typography>
           <Typography component="h2">
-          {t("forgotPassword.instruction")}
+            {t("forgotPassword.instruction")}
           </Typography>
           <Box
             component="form"
@@ -74,8 +72,13 @@ export default function ForgetPassword() {
             sx={{ mt: 1 }}
           >
             <EmailInputField control={control} errors={errors} />
+            {state && (
+              <Typography color="error" variant="body2" sx={{ mt: 2 }}>
+                {state}
+              </Typography>
+            )}
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-            {t("forgotPassword.sendLink")}
+              {t("forgotPassword.sendLink")}
             </Button>
             <Button
               onClick={handleBackToLogin}
@@ -84,7 +87,7 @@ export default function ForgetPassword() {
               variant="outlined"
               sx={{ mt: 1, mb: 2 }}
             >
-               {t("forgotPassword.backToLogin")}
+              {t("forgotPassword.backToLogin")}
             </Button>
           </Box>
         </Box>

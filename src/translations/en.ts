@@ -6,12 +6,22 @@ export default {
     welcome: "Welcome back to Histolingo Admin!",
     logIn: "Log in",
     forgotPassword: "Forgot password?",
+    validation: {
+        invalid: "Invalid email or password",
+        inactive: "User not found",
+        unexpectedError: "An unexpected error occurred. Please try again.",
+    }
   },
   forgotPassword: {
     title: "Forgot your password?",
     instruction: "No worries. We will send instruction via email.",
     sendLink: "Send reset link",
     backToLogin: "Back to login",
+    result: {
+        failedToSend: "Failed to send password reset instructions. Please try again.",
+        success: "Password reset instructions sent to your email.",
+        unexpectedError: "An unexpected error occurred. Please try again.",
+    }
   },
   resetPassword: {
     title: "Reset your password",
@@ -43,6 +53,9 @@ export default {
       role: "Role",
       password: "Password (at least 8 characters)",
     },
+    validation: {
+        exist: "Admin name or email already existed",
+    }
   },
   createRole: {
     role: "role",

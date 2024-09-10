@@ -6,12 +6,23 @@ export default {
     welcome: "Chào mừng quay trở lại Histolingo Admin!",
     logIn: "Đăng nhập",
     forgotPassword: "Quên mật khẩu?",
+    validation: {
+      invalid: "Email hoặc mật khẩu không hợp lệ",
+      inactive: "Người dùng không tồn tại",
+      unexpectedError: "Có lỗi xảy ra. Xin thử lại sau",
+    },
   },
   forgotPassword: {
     title: "Quên mật khẩu?",
-    instruction: "Đừng lo. Chúng tôi sẽ gửi hướng dẫn cho bạn qua email",
+    instruction: "Chúng tôi sẽ gửi hướng dẫn cho bạn qua email",
     sendLink: "Gửi hướng dẫn",
     backToLogin: "Quay lại đăng nhập",
+    result: {
+      failedToSend:
+        "Gửi hướng dẫn đặt lại mật khẩu không thành công. Vui lòng thử lại.",
+      success: "Hướng dẫn đặt lại mật khẩu đã được gửi đến email của bạn.",
+      unexpectedError: "Có lỗi xảy ra. Xin thử lại sau",
+    },
   },
   resetPassword: {
     title: "Đặt lại mật khẩu",
@@ -43,6 +54,9 @@ export default {
       role: "Vai trò",
       password: "Mật khẩu (ít nhất 8 ký tự)",
     },
+    validation: {
+      exist: "Tên admin hoặc email đã tồn tại",
+  }
   },
   createRole: {
     role: "vai trò",
@@ -149,7 +163,7 @@ export default {
       selectMin: "Vui lòng chọn ít nhất",
       selectMax: "Vui lòng chọn nhiều nhất",
       question: "câu hỏi",
-  }
+    },
   },
   documentationDashboard: {
     documentation: "tài liệu",
@@ -278,7 +292,7 @@ export default {
     true: "Đúng",
     false: "Sai",
   },
-  
+
   dropzone: {
     required: "Ảnh là bắt buộc",
     instruction: "Thả file vào đây hoặc click để chọn file",
@@ -307,8 +321,8 @@ export default {
     active: "Đang hoạt động",
     inactive: "Không hoạt động",
   },
-   // AVATAR MENu
-   avatarMenu: {
+  // AVATAR MENu
+  avatarMenu: {
     profile: "Hồ sơ",
     logout: "Đăng xuất",
   },
