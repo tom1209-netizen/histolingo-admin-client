@@ -14,6 +14,7 @@ import LanguageSelect from "../../components/layouts/LanguageSelect";
 import Copyright from "../../components/reusable/Copyright";
 import theme from "../../theme/GlobalCustomTheme";
 import { set } from "mongoose";
+import { CircularProgress } from "@mui/material";
 
 interface FormValues {
   email: string;
@@ -28,15 +29,18 @@ export default function ForgetPassword() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [state, setState] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const onSubmit = async (data: FormValues) => {
+    setLoading(true);
     try {
       const response = await forgetPassword(data.email);
       if (response.status === 200) {
         setState(t("forgotPassword.result.success"));
+        setLoading(false);
       }
     } catch (error) {
-      console.error("Failed to send password reset instructions", error);
       setState(t("forgotPassword.result.error"));
+      setLoading(false);
     }
   };
 
@@ -77,7 +81,14 @@ export default function ForgetPassword() {
                 {state}
               </Typography>
             )}
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3 }}
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} /> : null}
+            >
               {t("forgotPassword.sendLink")}
             </Button>
             <Button

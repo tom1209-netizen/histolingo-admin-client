@@ -19,6 +19,7 @@ import Copyright from "../../components/reusable/Copyright";
 import LanguageSelect from "../../components/layouts/LanguageSelect";
 import { login } from "../../api/auth";
 import { set } from "mongoose";
+import { CircularProgress } from "@mui/material";
 
 interface FormValues {
   email: string;
@@ -35,17 +36,19 @@ export default function Login() {
 
   const { t } = useTranslation();
   const [customError, setCustomError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const onSubmit = async (data: FormValues) => {
+    setLoading(true);
     try {
       const response = await login(data.email, data.password);
       console.log(response.data, "in result");
       if (response.data.success) {
         document.cookie = `accessToken=${response.data.data.accessToken};path=/`;
         document.cookie = `refreshToken=${response.data.data.refreshToken};path=/`;
+        setLoading(false);
         navigate("/");
       }
     } catch (error) {
-      console.error("An error occurred:", error);
       if (error.status === 401) {
         setCustomError(t("login.validation.invalid"));
       } else if (error.status === 404) {
@@ -53,6 +56,7 @@ export default function Login() {
       } else {
         setCustomError(t("login.validation.unexpectedError"));
       }
+      setLoading(false);
     }
   };
 
@@ -95,6 +99,8 @@ export default function Login() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} /> : null}
             >
               {t("login.logIn")}
             </Button>

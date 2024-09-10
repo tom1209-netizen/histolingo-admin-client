@@ -29,6 +29,11 @@ export default {
     instruction: "Điền mật khẩu mới của bạn",
     resetPassword: "Đặt lại mật khẩu",
     backToLogin: "Quay lại đăng nhập",
+    result: {
+      success:
+        "Đặt lại mật khẩu thành công. Vui lòng đăng nhập bằng mật khẩu mới.",
+      fail: "Đặt lại mật khẩu không thành công. Vui lòng thử lại.",
+    },
   },
   adminDashboard: {
     admin: "admin",
@@ -56,7 +61,7 @@ export default {
     },
     validation: {
       exist: "Tên admin hoặc email đã tồn tại",
-  }
+    },
   },
   createRole: {
     role: "vai trò",

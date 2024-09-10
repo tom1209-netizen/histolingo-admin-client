@@ -7,10 +7,10 @@ export default {
     logIn: "Log in",
     forgotPassword: "Forgot password?",
     validation: {
-        invalid: "Invalid email or password",
-        inactive: "User not found",
-        unexpectedError: "An unexpected error occurred. Please try again.",
-    }
+      invalid: "Invalid email or password",
+      inactive: "User not found",
+      unexpectedError: "An unexpected error occurred. Please try again.",
+    },
   },
   forgotPassword: {
     title: "Forgot your password?",
@@ -18,16 +18,21 @@ export default {
     sendLink: "Send reset link",
     backToLogin: "Back to login",
     result: {
-        failedToSend: "Failed to send password reset instructions. Please try again.",
-        success: "Password reset instructions sent to your email.",
-        unexpectedError: "An unexpected error occurred. Please try again.",
-    }
+      failedToSend:
+        "Failed to send password reset instructions. Please try again.",
+      success: "Password reset instructions sent to your email.",
+      unexpectedError: "An unexpected error occurred. Please try again.",
+    },
   },
   resetPassword: {
     title: "Reset your password",
     instruction: "Fill in your new password",
     resetPassword: "Send reset link",
     backToLogin: "Back to login",
+    result: {
+      success: "Password reset successfully. Please login with new password.",
+      fail: "Failed to reset password. Please try again.",
+    },
   },
   adminDashboard: {
     admin: "admin",
@@ -54,8 +59,8 @@ export default {
       password: "Password (at least 8 characters)",
     },
     validation: {
-        exist: "Admin name or email already existed",
-    }
+      exist: "Admin name or email already existed",
+    },
   },
   createRole: {
     role: "role",
