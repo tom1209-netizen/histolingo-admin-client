@@ -88,13 +88,12 @@ export const getIndividualDocument = async (
 
 export const getDocumentationsByCountryAndTopic = async (
   countryId: string,
-  topicId: string
 ): Promise<string[]> => {
   try {
     const accessToken = Cookies.get("accessToken");
     const response = await api.get(`/tests/getDocumentations`, {
       headers: { Authorization: `Bearer ${accessToken}` },
-      params: { countryId, topicId },
+      params: { countryId },
     });
     return response.data.data;   
   } catch (error) {

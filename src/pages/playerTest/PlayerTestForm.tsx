@@ -115,7 +115,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
       try {
         const documentations = await getDocumentationsByCountryAndTopic(
           country,
-          topic
+          // topic
         );
         const documentationArray = documentations.map((doc: any) => ({
           value: doc._id,
@@ -428,7 +428,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
             required={false}
             name="documentationsId"
             options={documentationArray}
-            disabled={!country || !topic}
+            // disabled={!country || !topic}
           />
         </FormGrid>
 

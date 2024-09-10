@@ -21,11 +21,7 @@ export default function UnstyledSelectIntroduction() {
 
   React.useEffect(() => {
     i18n.changeLanguage(storedLanguage);
-  }, );
-
-  // React.useEffect(() => {
-  //   i18n.changeLanguage(storedLanguage);
-  // }, [i18n, storedLanguage]);
+  }, [i18n, storedLanguage]);
 
   const handleChange = (event: React.SyntheticEvent<Element, Event> | null, value: unknown) => {
     if (event !== null) {
