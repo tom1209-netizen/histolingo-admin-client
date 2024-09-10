@@ -342,5 +342,6 @@ export default {
     uploadSuccess: "Tải ảnh lên thành công",
     uploadFail: "Tải ảnh lên không thành công",
     atLeastOnePair: "Vui lòng tạo ít nhất một cặp",
+    sendReplySuccess: "Gửi trả lời thành công",
   },
 };

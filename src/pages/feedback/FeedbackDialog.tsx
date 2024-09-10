@@ -10,6 +10,7 @@ import NonLocaleInputField from "../../components/formComponents/NonLocaleInputF
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { replyFeedback } from "../../api/feedback";
+import { CircularProgress } from "@mui/material";
 
 export default function FeedbackDialog({ feedback, open, handleClose }) {
   const {
@@ -22,9 +23,10 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
   });
 
   const { t } = useTranslation();
+  const [submitting, setSubmitting] = React.useState(false);
 
   const onSubmit = async (data) => {
-    console.log(data);
+    setSubmitting(true);
     const body = {
       reply: data.reply,
       subject: data.subject,
@@ -36,6 +38,8 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
       console.log(error);
       toast.error(t("toast.error"));
     }
+    setSubmitting(false);
+    toast.success(t("toast.sendReplySuccess"));
     reset();
     handleClose();
   };
@@ -62,7 +66,11 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
             {t("feedbackDialog.playerName")}
           </DialogContentText>
           <DialogContentText sx={{ marginBottom: "1rem" }}>
-            {feedback ? feedback.createdBy : ""}
+            {feedback
+              ? feedback.player.fullName
+                ? feedback.player.fullName
+                : "N/A"
+              : ""}
           </DialogContentText>
           <DialogContentText sx={{ color: "black" }}>
             Feedback
@@ -94,7 +102,13 @@ export default function FeedbackDialog({ feedback, open, handleClose }) {
           />
           <DialogActions>
             <Button onClick={handleClose}>{t("feedbackDialog.cancel")}</Button>
-            <Button type="submit" variant="contained" color="primary">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={submitting}
+              startIcon={submitting ? <CircularProgress size={20} /> : null}
+            >
               {t("feedbackDialog.send")}
             </Button>
           </DialogActions>

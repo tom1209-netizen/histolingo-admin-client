@@ -159,12 +159,6 @@ const Feedback = () => {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <NavTabs
-            onChange={(value: any) =>
-              setSearchParams({ ...searchFeedbackQuery, status: value })
-            }
-            value={searchFeedbackQuery.status}
-          />
           <SearchField
             label={`${t("search")} feedback`}
             delay={1500}

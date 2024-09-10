@@ -353,5 +353,6 @@ export default {
     uploadSuccess: "Upload image successfully",
     uploadFail: "Upload image failed",
     atLeastOnePair: "Please create at least one pair",
+    sendReplySuccess: "Reply sent successfully",
   },
 };
