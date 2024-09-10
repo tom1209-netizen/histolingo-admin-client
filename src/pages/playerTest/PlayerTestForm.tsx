@@ -24,7 +24,7 @@ import {
   getDocuments,
 } from "../../api/documentation";
 import { createPlayerTest, updatePlayerTest } from "../../api/playerTest";
-import { getQuestions } from "../../api/question";
+import { getQuestions, getQuestionsByPassAuthorization } from "../../api/question";
 import { getTopicsByCountry } from "../../api/topic";
 import LocaleTextInputField from "../../components/formComponents/LocaleTextInputField";
 import MultiSelect2 from "../../components/formComponents/MultiSelect2";
@@ -119,7 +119,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
           country,
           topic
         );
-        // const documentations = response.data.data.documentations;
         const documentationArray = documentations.map((doc: any) => ({
           value: doc._id,
           label: doc.name,
@@ -244,7 +243,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   const fetchQuestions = async (page: number, pageSize: number) => {
     setIsTableLoading(true);
     try {
-      const response = await getQuestions({
+      const response = await getQuestionsByPassAuthorization({
         ...searchQuestionQuery,
         status: 1,
         page: paginationModel.page + 1,
