@@ -113,9 +113,9 @@ const AdminForm: React.FC<AdminFormProps> = ({ typeOfForm, adminData }) => {
         } 
       }
     } catch (error) {
-      if (error.toString().includes("Admin is already existed")) {
-        console.log("is this called????")
-        toast.error("Admin name already exists");
+      console.log(error, "error");
+      if (error.status === 400) {
+        toast.error(t("createAdmin.validation.exist"));
       } else {
         toast.error(t("toast.error"));
       }

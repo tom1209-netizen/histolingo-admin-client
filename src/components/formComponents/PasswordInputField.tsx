@@ -20,10 +20,10 @@ const PasswordInputField: React.FC<PasswordInputFieldProps> = ({
       defaultValue=""
       rules={{
         required: t("passwordInputField.validation.required"),
-        minLength: {
-          value: 8,
-          message: t("passwordInputField.validation.length"),
-        },
+        // minLength: {
+        //   value: 8,
+        //   message: t("passwordInputField.validation.length"),
+        // },
       }}
       render={({ field }) => (
         <TextField

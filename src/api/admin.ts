@@ -41,7 +41,7 @@ export const createAdmin = async (body: any): Promise<AxiosResponse<any>> => {
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data.message || "Create admin failed");
+      throw { status: error.response?.status, message: error.response?.data.message || "Create admin failed" };
     } else {
       throw error;
     }

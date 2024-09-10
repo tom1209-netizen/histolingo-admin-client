@@ -46,9 +46,7 @@ const App: React.FC = () => {
           <Route path="*" element={<NotFound />} />
        
           <Route element={<DataProvider ><Dashboard /></DataProvider >} >
-          {/* <Route element={<Dashboard />} > */}
             <Route path="/" element={<MyAccount />} />
-            {/* <Route path="/" element={<Country />} /> */}
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/:adminId" element={<UpdateAdmin />} />
             <Route path="/createadmin" element={<CreateAdmin />} />
