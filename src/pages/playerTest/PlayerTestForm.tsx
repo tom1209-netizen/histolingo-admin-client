@@ -245,7 +245,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
     try {
       const response = await getQuestionsByPassAuthorization({
         ...searchQuestionQuery,
-        status: 1,
         page: paginationModel.page + 1,
         pageSize: paginationModel.pageSize,
       });
@@ -255,7 +254,7 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
         createdAt: formatTimestamp(question.createdAt),
         updatedAt: formatTimestamp(question.updatedAt),
       }));
-      const totalRows = response.data.data.totalQuestions;
+      const totalRows = response.data.data.totalCount;
       setQuestions(formattedQuestions);
       setRowCount(totalRows);
     } catch (error) {
