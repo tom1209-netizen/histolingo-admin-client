@@ -70,7 +70,7 @@ const DocumentationForm: React.FC<DocumentationFormProps> = ({
     const fetchCountries = async () => {
       try {
         const response = await getCountriesByPassAuthorization();
-        const countries = response.data.data.countries;
+        const countries = response.data.data;
         console.log(countries);
         const countryNames = countries.map((country: any) => ({
           value: country._id,
