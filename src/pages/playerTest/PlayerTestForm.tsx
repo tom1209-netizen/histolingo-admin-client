@@ -113,8 +113,6 @@ const PlayerTestForm: React.FC<TestFormProps> = ({ typeOfForm, testData }) => {
   useEffect(() => {
     const fetchDocumentations = async () => {
       try {
-        const query = { status: 1 };
-
         const documentations = await getDocumentationsByCountryAndTopic(
           country,
           topic

@@ -68,7 +68,8 @@ const Feedback = () => {
     {
       field: "createdBy",
       headerName: t("feedbackDashboard.table.playerName"),
-      valueGetter: (value, row) => row.player.fullName,
+      valueGetter: (value, row) =>
+        row.player.fullName ? row.player.fullName : "N/A",
       flex: 1,
       sortable: false,
     },
@@ -77,7 +78,7 @@ const Feedback = () => {
       field: "testId",
       headerName: t("feedbackDashboard.table.test"),
       flex: 1,
-      valueGetter: (value, row) => row.test.name,
+      valueGetter: (value, row) => (row.test ? row.test.name : "N/A"),
       sortable: false,
     },
     {
