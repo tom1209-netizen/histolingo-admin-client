@@ -25,6 +25,25 @@ export const getQuestions = async (
   }
 };
 
+export const getQuestionsByPassAuthorization = async (
+  query: SearchQuery = {}
+): Promise<AxiosResponse<any>> => {
+  try {
+    const accessToken = Cookies.get("accessToken");
+    const response = await api.get(`/tests/getQuestions`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      params: query,
+    });
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "Get questions failed");
+    } else {
+      throw error;
+    }
+  }
+};
+
 export const createQuestion = async (
   body: any
 ): Promise<AxiosResponse<any>> => {
@@ -105,20 +124,4 @@ export const switchQuestionStatus = async (id: string, status: string, questionT
   }
 }
 
-export const getQuestionsByPassAuthorization = async (
-  query: SearchQuery = {}
-): Promise<AxiosResponse<any>> => {
-  try {
-    const accessToken = Cookies.get("accessToken");
-    const response = await api.get(`/tests/getQuestions`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
-    return response;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data.message || "Get questions failed");
-    } else {
-      throw error;
-    }
-  }
-};
+

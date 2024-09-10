@@ -27,7 +27,7 @@ export default {
   resetPassword: {
     title: "Reset your password",
     instruction: "Fill in your new password",
-    resetPassword: "Send reset link",
+    resetPassword: "Reset password",
     backToLogin: "Back to login",
     result: {
       success: "Password reset successfully. Please login with new password.",
